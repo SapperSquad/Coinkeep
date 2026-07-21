@@ -1,0 +1,16 @@
+{
+    "id":  "mine_redstone",
+    "line":  "mining",
+    "trigger":  "block_break",
+    "target":  "minecraft:redstone_ore",
+    "count":  16,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  700
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

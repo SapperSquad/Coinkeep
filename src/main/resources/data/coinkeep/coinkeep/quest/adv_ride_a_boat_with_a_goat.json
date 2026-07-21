@@ -1,0 +1,13 @@
+{
+    "id":  "adv_ride_a_boat_with_a_goat",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/ride_a_boat_with_a_goat",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1000
+                    }
+                ]
+}

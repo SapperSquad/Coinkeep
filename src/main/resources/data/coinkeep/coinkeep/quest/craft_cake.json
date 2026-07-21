@@ -1,0 +1,13 @@
+{
+    "id":  "craft_cake",
+    "line":  "farming",
+    "trigger":  "item_craft",
+    "target":  "minecraft:cake",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  600
+                    }
+                ]
+}

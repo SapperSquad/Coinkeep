@@ -1,0 +1,13 @@
+{
+    "id":  "adv_trade",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/trade",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  500
+                    }
+                ]
+}

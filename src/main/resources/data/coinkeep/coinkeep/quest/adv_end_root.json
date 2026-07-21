@@ -1,0 +1,13 @@
+{
+    "id":  "adv_end_root",
+    "line":  "end",
+    "trigger":  "advancement",
+    "target":  "minecraft:end/root",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2000
+                    }
+                ]
+}

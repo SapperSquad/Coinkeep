@@ -1,0 +1,13 @@
+{
+    "id":  "adv_froglights",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/froglights",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  5000
+                    }
+                ]
+}

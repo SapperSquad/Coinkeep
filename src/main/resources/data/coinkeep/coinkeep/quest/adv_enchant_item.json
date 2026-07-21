@@ -1,0 +1,13 @@
+{
+    "id":  "adv_enchant_item",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/enchant_item",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1200
+                    }
+                ]
+}

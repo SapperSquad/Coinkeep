@@ -1,0 +1,13 @@
+{
+    "id":  "adv_allay_deliver_cake",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/allay_deliver_cake_to_note_block",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2500
+                    }
+                ]
+}

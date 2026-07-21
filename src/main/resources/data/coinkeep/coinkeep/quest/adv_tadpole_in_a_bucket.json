@@ -1,0 +1,13 @@
+{
+    "id":  "adv_tadpole_in_a_bucket",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/tadpole_in_a_bucket",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  800
+                    }
+                ]
+}

@@ -1,0 +1,9 @@
+{
+    "id":  "book_unbreaking3",
+    "category":  "enchantments",
+    "item":  "minecraft:enchanted_book",
+    "count":  1,
+    "price":  18000,
+    "enchantment":  "minecraft:unbreaking",
+    "enchantment_level":  3
+}

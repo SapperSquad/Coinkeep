@@ -1,0 +1,16 @@
+{
+    "id":  "mine_deepslate",
+    "line":  "mining",
+    "trigger":  "block_break",
+    "target":  "minecraft:deepslate",
+    "count":  64,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  60
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

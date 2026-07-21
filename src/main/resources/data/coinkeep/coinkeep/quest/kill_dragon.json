@@ -1,0 +1,22 @@
+{
+    "id":  "kill_dragon",
+    "line":  "combat",
+    "name":  "The Ender Dragon",
+    "description":  "The traditional finish line.",
+    "icon":  "minecraft:dragon_head",
+    "trigger":  "mob_kill",
+    "target":  "minecraft:ender_dragon",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  25000
+                    },
+                    {
+                        "type":  "item",
+                        "item":  "minecraft:dragon_breath",
+                        "count":  4
+                    }
+                ],
+    "max_tier":  1
+}

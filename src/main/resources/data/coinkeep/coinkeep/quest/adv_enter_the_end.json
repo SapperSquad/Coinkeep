@@ -1,0 +1,13 @@
+{
+    "id":  "adv_enter_the_end",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/enter_the_end",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  4000
+                    }
+                ]
+}

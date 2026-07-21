@@ -1,0 +1,13 @@
+{
+    "id":  "adv_two_birds_one_arrow",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/two_birds_one_arrow",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2000
+                    }
+                ]
+}

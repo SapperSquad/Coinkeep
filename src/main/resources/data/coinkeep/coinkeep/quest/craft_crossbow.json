@@ -1,0 +1,13 @@
+{
+    "id":  "craft_crossbow",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:crossbow",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

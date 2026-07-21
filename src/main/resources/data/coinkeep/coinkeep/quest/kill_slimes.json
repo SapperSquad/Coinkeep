@@ -1,0 +1,16 @@
+{
+    "id":  "kill_slimes",
+    "line":  "combat",
+    "trigger":  "mob_kill",
+    "target":  "minecraft:slime",
+    "count":  20,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  600
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

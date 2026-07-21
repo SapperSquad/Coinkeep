@@ -1,0 +1,7 @@
+{
+    "id":  "redstone",
+    "category":  "ores",
+    "item":  "minecraft:redstone",
+    "count":  16,
+    "price":  250
+}

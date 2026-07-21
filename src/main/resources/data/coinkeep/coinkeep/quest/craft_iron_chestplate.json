@@ -1,0 +1,13 @@
+{
+    "id":  "craft_iron_chestplate",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:iron_chestplate",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

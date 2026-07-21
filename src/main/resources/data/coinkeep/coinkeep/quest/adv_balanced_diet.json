@@ -1,0 +1,13 @@
+{
+    "id":  "adv_balanced_diet",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/balanced_diet",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  12000
+                    }
+                ]
+}

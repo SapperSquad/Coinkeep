@@ -1,0 +1,13 @@
+{
+    "id":  "adv_safely_harvest_honey",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/safely_harvest_honey",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  700
+                    }
+                ]
+}

@@ -1,0 +1,7 @@
+{
+    "id":  "combat",
+    "name":  "Combat",
+    "icon":  "minecraft:iron_sword",
+    "description":  "Something has to keep the nights profitable.",
+    "sort_order":  20
+}

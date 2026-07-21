@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [ " DR", "DND", "RD " ],
+  "key": {
+    "D": { "item": "minecraft:diamond" },
+    "N": { "item": "minecraft:netherite_ingot" },
+    "R": { "item": "minecraft:redstone_block" }
+  },
+  "result": { "count": 1, "id": "coinkeep:vault_cracker" }
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_obtain_armor",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/obtain_armor",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

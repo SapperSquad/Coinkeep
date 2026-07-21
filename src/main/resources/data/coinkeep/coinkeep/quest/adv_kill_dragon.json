@@ -1,0 +1,13 @@
+{
+    "id":  "adv_kill_dragon",
+    "line":  "end",
+    "trigger":  "advancement",
+    "target":  "minecraft:end/kill_dragon",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  8000
+                    }
+                ]
+}

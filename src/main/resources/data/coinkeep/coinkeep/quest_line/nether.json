@@ -1,0 +1,7 @@
+{
+    "id":  "nether",
+    "name":  "Nether",
+    "icon":  "minecraft:netherrack",
+    "description":  "Hot, hostile, and lucrative.",
+    "sort_order":  70
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_dragon_breath",
+    "line":  "end",
+    "trigger":  "advancement",
+    "target":  "minecraft:end/dragon_breath",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  3000
+                    }
+                ]
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_whos_the_pillager_now",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/whos_the_pillager_now",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    }
+                ]
+}

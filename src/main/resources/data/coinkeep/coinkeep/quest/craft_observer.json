@@ -1,0 +1,13 @@
+{
+    "id":  "craft_observer",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:observer",
+    "count":  4,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  900
+                    }
+                ]
+}

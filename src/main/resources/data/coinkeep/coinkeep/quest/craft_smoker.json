@@ -1,0 +1,13 @@
+{
+    "id":  "craft_smoker",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:smoker",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

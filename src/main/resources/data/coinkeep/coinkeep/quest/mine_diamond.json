@@ -1,0 +1,22 @@
+{
+    "id":  "mine_diamond",
+    "line":  "mining",
+    "description":  "The real payday.",
+    "trigger":  "block_break",
+    "target":  "minecraft:diamond_ore",
+    "count":  8,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2500
+                    },
+                    {
+                        "type":  "item",
+                        "item":  "minecraft:diamond",
+                        "count":  3
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

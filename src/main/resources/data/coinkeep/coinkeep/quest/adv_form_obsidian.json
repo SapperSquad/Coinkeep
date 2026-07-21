@@ -1,0 +1,13 @@
+{
+    "id":  "adv_form_obsidian",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/form_obsidian",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  700
+                    }
+                ]
+}

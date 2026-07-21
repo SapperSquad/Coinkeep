@@ -1,0 +1,13 @@
+{
+    "id":  "craft_torch",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:torch",
+    "count":  32,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  100
+                    }
+                ]
+}

@@ -1,0 +1,7 @@
+{
+    "id":  "crossbow",
+    "category":  "weapons",
+    "item":  "minecraft:crossbow",
+    "count":  1,
+    "price":  1200
+}

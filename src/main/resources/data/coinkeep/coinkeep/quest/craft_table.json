@@ -1,0 +1,13 @@
+{
+    "id":  "craft_table",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:crafting_table",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  50
+                    }
+                ]
+}

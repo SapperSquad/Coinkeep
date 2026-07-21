@@ -1,0 +1,7 @@
+{
+    "id":  "bricks",
+    "category":  "materials",
+    "item":  "minecraft:brick",
+    "count":  16,
+    "price":  100
+}

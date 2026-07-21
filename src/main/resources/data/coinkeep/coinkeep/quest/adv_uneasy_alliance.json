@@ -1,0 +1,13 @@
+{
+    "id":  "adv_uneasy_alliance",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/uneasy_alliance",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  3000
+                    }
+                ]
+}

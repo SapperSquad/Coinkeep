@@ -1,0 +1,13 @@
+{
+    "id":  "adv_obtain_blaze_rod",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/obtain_blaze_rod",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    }
+                ]
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_mine_stone",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/mine_stone",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  100
+                    }
+                ]
+}

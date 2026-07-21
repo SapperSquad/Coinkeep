@@ -1,0 +1,14 @@
+{
+    "id":  "craft_conduit",
+    "line":  "building",
+    "description":  "Rule the ocean.",
+    "trigger":  "item_craft",
+    "target":  "minecraft:conduit",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  8000
+                    }
+                ]
+}

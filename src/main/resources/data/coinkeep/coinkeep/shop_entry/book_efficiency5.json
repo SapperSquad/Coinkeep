@@ -1,0 +1,9 @@
+{
+    "id":  "book_efficiency5",
+    "category":  "enchantments",
+    "item":  "minecraft:enchanted_book",
+    "count":  1,
+    "price":  24000,
+    "enchantment":  "minecraft:efficiency",
+    "enchantment_level":  5
+}

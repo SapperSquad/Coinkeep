@@ -1,0 +1,13 @@
+{
+    "id":  "adv_ol_betsy",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/ol_betsy",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  600
+                    }
+                ]
+}

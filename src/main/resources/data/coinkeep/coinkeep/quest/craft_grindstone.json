@@ -1,0 +1,13 @@
+{
+    "id":  "craft_grindstone",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:grindstone",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  300
+                    }
+                ]
+}

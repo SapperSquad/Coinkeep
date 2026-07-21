@@ -1,0 +1,13 @@
+{
+    "id":  "craft_shield",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:shield",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  200
+                    }
+                ]
+}

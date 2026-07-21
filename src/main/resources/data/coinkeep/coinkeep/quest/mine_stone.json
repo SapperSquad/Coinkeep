@@ -1,0 +1,16 @@
+{
+    "id":  "mine_stone",
+    "line":  "mining",
+    "trigger":  "block_break",
+    "target":  "minecraft:stone",
+    "count":  64,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  50
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

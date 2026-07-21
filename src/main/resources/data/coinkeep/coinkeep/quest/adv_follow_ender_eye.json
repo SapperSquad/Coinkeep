@@ -1,0 +1,13 @@
+{
+    "id":  "adv_follow_ender_eye",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/follow_ender_eye",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2500
+                    }
+                ]
+}

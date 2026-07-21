@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_netherite": {
+      "conditions": { "items": [ { "items": "minecraft:netherite_ingot" } ] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": { "recipe": "coinkeep:vault_cracker" },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [ [ "has_the_recipe", "has_netherite" ] ],
+  "rewards": { "recipes": [ "coinkeep:vault_cracker" ] }
+}

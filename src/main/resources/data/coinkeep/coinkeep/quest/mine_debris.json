@@ -1,0 +1,24 @@
+{
+    "id":  "mine_debris",
+    "line":  "mining",
+    "name":  "Ancient Debris",
+    "description":  "The rarest thing in the ground.",
+    "icon":  "minecraft:ancient_debris",
+    "trigger":  "block_break",
+    "target":  "minecraft:ancient_debris",
+    "count":  4,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  6000
+                    },
+                    {
+                        "type":  "item",
+                        "item":  "minecraft:netherite_scrap",
+                        "count":  2
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

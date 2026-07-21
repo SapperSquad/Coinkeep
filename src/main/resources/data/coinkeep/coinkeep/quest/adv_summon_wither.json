@@ -1,0 +1,13 @@
+{
+    "id":  "adv_summon_wither",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/summon_wither",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  6000
+                    }
+                ]
+}

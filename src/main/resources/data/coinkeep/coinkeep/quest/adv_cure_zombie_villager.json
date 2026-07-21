@@ -1,0 +1,13 @@
+{
+    "id":  "adv_cure_zombie_villager",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/cure_zombie_villager",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  3000
+                    }
+                ]
+}

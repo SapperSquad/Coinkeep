@@ -1,0 +1,13 @@
+{
+    "id":  "craft_bed",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:red_bed",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  200
+                    }
+                ]
+}

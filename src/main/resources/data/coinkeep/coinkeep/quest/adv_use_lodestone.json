@@ -1,0 +1,13 @@
+{
+    "id":  "adv_use_lodestone",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/use_lodestone",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    }
+                ]
+}

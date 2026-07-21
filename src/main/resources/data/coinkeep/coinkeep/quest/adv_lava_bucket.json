@@ -1,0 +1,13 @@
+{
+    "id":  "adv_lava_bucket",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/lava_bucket",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

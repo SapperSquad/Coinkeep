@@ -1,0 +1,16 @@
+{
+    "id":  "harvest_nether_wart",
+    "line":  "farming",
+    "trigger":  "block_break",
+    "target":  "minecraft:nether_wart",
+    "count":  32,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  800
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

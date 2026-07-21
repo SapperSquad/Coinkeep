@@ -1,0 +1,13 @@
+{
+    "id":  "craft_bread",
+    "line":  "farming",
+    "trigger":  "item_craft",
+    "target":  "minecraft:bread",
+    "count":  16,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  250
+                    }
+                ]
+}

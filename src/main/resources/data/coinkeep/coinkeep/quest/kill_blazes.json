@@ -1,0 +1,16 @@
+{
+    "id":  "kill_blazes",
+    "line":  "combat",
+    "trigger":  "mob_kill",
+    "target":  "minecraft:blaze",
+    "count":  15,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

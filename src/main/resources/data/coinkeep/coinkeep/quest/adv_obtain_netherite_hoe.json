@@ -1,0 +1,13 @@
+{
+    "id":  "adv_obtain_netherite_hoe",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/obtain_netherite_hoe",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  6000
+                    }
+                ]
+}

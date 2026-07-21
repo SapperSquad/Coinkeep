@@ -1,0 +1,7 @@
+{
+    "id":  "end",
+    "name":  "The End",
+    "icon":  "minecraft:end_stone",
+    "description":  "Where the money runs out and the loot begins.",
+    "sort_order":  80
+}

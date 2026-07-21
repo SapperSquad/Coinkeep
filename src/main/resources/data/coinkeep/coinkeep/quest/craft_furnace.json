@@ -1,0 +1,13 @@
+{
+    "id":  "craft_furnace",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:furnace",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  100
+                    }
+                ]
+}

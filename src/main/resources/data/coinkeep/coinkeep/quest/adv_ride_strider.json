@@ -1,0 +1,13 @@
+{
+    "id":  "adv_ride_strider",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/ride_strider",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  800
+                    }
+                ]
+}

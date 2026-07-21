@@ -1,0 +1,13 @@
+{
+    "id":  "craft_golden_carrot",
+    "line":  "farming",
+    "trigger":  "item_craft",
+    "target":  "minecraft:golden_carrot",
+    "count":  8,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1200
+                    }
+                ]
+}

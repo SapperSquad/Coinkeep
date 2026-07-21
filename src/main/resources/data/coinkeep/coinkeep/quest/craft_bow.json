@@ -1,0 +1,13 @@
+{
+    "id":  "craft_bow",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:bow",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  150
+                    }
+                ]
+}

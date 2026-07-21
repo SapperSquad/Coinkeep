@@ -1,0 +1,13 @@
+{
+    "id":  "craft_iron_sword",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:iron_sword",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  200
+                    }
+                ]
+}

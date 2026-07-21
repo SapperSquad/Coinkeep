@@ -1,0 +1,13 @@
+{
+    "id":  "adv_distract_piglin",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/distract_piglin",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  800
+                    }
+                ]
+}

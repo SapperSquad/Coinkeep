@@ -1,0 +1,9 @@
+{
+    "id":  "book_protection4",
+    "category":  "enchantments",
+    "item":  "minecraft:enchanted_book",
+    "count":  1,
+    "price":  28000,
+    "enchantment":  "minecraft:protection",
+    "enchantment_level":  4
+}

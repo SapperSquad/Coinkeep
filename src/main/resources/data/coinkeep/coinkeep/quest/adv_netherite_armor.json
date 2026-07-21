@@ -1,0 +1,13 @@
+{
+    "id":  "adv_netherite_armor",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/netherite_armor",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  8000
+                    }
+                ]
+}

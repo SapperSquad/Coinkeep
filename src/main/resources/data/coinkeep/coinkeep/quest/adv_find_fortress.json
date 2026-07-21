@@ -1,0 +1,13 @@
+{
+    "id":  "adv_find_fortress",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/find_fortress",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1200
+                    }
+                ]
+}

@@ -1,0 +1,9 @@
+{
+    "id":  "book_fortune3",
+    "category":  "enchantments",
+    "item":  "minecraft:enchanted_book",
+    "count":  1,
+    "price":  60000,
+    "enchantment":  "minecraft:fortune",
+    "enchantment_level":  3
+}

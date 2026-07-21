@@ -1,0 +1,13 @@
+{
+    "id":  "adv_leash_all_frog_variants",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/leash_all_frog_variants",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  6000
+                    }
+                ]
+}

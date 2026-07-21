@@ -1,0 +1,13 @@
+{
+    "id":  "adv_adventuring_time",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/adventuring_time",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  15000
+                    }
+                ]
+}

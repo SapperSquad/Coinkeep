@@ -1,0 +1,13 @@
+{
+    "id":  "adv_brew_potion",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/brew_potion",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1200
+                    }
+                ]
+}

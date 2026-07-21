@@ -1,0 +1,22 @@
+{
+    "id":  "kill_warden",
+    "line":  "combat",
+    "name":  "The Warden",
+    "description":  "Do not do this quietly.",
+    "icon":  "minecraft:sculk_catalyst",
+    "trigger":  "mob_kill",
+    "target":  "minecraft:warden",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  15000
+                    },
+                    {
+                        "type":  "item",
+                        "item":  "minecraft:netherite_ingot",
+                        "count":  1
+                    }
+                ],
+    "max_tier":  1
+}

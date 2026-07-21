@@ -1,0 +1,13 @@
+{
+    "id":  "craft_campfire",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:campfire",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  250
+                    }
+                ]
+}

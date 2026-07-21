@@ -1,0 +1,13 @@
+{
+    "id":  "adv_tactical_fishing",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/tactical_fishing",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  900
+                    }
+                ]
+}

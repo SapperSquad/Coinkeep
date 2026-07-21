@@ -1,0 +1,13 @@
+{
+    "id":  "adv_return_to_sender",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/return_to_sender",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    }
+                ]
+}

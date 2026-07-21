@@ -1,0 +1,13 @@
+{
+    "id":  "craft_bell",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:bell",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1000
+                    }
+                ]
+}

@@ -1,0 +1,16 @@
+{
+    "id":  "harvest_sugar_cane",
+    "line":  "farming",
+    "trigger":  "block_break",
+    "target":  "minecraft:sugar_cane",
+    "count":  32,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  250
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

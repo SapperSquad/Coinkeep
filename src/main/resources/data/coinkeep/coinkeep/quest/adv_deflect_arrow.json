@@ -1,0 +1,13 @@
+{
+    "id":  "adv_deflect_arrow",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/deflect_arrow",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  500
+                    }
+                ]
+}

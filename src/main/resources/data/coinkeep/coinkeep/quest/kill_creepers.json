@@ -1,0 +1,25 @@
+{
+    "id":  "kill_creepers",
+    "line":  "combat",
+    "name":  "Bomb Squad",
+    "description":  "Deal with the walking explosives.",
+    "icon":  "minecraft:gunpowder",
+    "trigger":  "mob_kill",
+    "target":  "minecraft:creeper",
+    "count":  15,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    },
+                    {
+                        "type":  "command",
+                        "command":  "effect give @p minecraft:resistance 600 1",
+                        "label":  "10 min Resistance II",
+                        "icon":  "minecraft:potion"
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_get_wither_skull",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/get_wither_skull",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  3000
+                    }
+                ]
+}

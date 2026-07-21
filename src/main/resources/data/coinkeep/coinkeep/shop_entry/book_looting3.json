@@ -1,0 +1,9 @@
+{
+    "id":  "book_looting3",
+    "category":  "enchantments",
+    "item":  "minecraft:enchanted_book",
+    "count":  1,
+    "price":  34000,
+    "enchantment":  "minecraft:looting",
+    "enchantment_level":  3
+}

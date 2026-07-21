@@ -1,0 +1,16 @@
+{
+    "id":  "kill_ghasts",
+    "line":  "combat",
+    "trigger":  "mob_kill",
+    "target":  "minecraft:ghast",
+    "count":  5,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1800
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

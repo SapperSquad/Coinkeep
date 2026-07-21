@@ -1,0 +1,25 @@
+{
+    "id":  "kill_wither",
+    "line":  "combat",
+    "name":  "The Wither",
+    "description":  "Three skulls, one very bad idea.",
+    "icon":  "minecraft:nether_star",
+    "dependencies":  [
+                         "kill_wither_skeletons"
+                     ],
+    "trigger":  "mob_kill",
+    "target":  "minecraft:wither",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  20000
+                    },
+                    {
+                        "type":  "item",
+                        "item":  "minecraft:nether_star",
+                        "count":  1
+                    }
+                ],
+    "max_tier":  1
+}

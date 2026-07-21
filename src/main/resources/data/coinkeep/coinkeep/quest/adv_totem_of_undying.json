@@ -1,0 +1,13 @@
+{
+    "id":  "adv_totem_of_undying",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/totem_of_undying",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  3000
+                    }
+                ]
+}

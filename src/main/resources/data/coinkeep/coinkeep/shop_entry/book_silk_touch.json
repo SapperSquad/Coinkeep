@@ -1,0 +1,9 @@
+{
+    "id":  "book_silk_touch",
+    "category":  "enchantments",
+    "item":  "minecraft:enchanted_book",
+    "count":  1,
+    "price":  35000,
+    "enchantment":  "minecraft:silk_touch",
+    "enchantment_level":  1
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "craft_wood_pick",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:wooden_pickaxe",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  25
+                    }
+                ]
+}

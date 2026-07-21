@@ -1,0 +1,13 @@
+{
+    "id":  "craft_lodestone",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:lodestone",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2500
+                    }
+                ]
+}

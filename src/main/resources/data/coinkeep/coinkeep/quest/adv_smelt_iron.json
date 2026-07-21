@@ -1,0 +1,13 @@
+{
+    "id":  "adv_smelt_iron",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/smelt_iron",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  300
+                    }
+                ]
+}

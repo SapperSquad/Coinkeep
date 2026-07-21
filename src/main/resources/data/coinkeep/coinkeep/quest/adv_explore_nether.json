@@ -1,0 +1,13 @@
+{
+    "id":  "adv_explore_nether",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/explore_nether",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  5000
+                    }
+                ]
+}

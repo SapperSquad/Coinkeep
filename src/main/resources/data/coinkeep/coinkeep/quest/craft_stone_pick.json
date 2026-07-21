@@ -1,0 +1,16 @@
+{
+    "id":  "craft_stone_pick",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:stone_pickaxe",
+    "count":  1,
+    "dependencies":  [
+                         "craft_wood_pick"
+                     ],
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  50
+                    }
+                ]
+}

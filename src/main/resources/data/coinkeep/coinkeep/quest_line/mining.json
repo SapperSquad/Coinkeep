@@ -1,0 +1,7 @@
+{
+    "id":  "mining",
+    "name":  "Mining",
+    "icon":  "minecraft:iron_pickaxe",
+    "description":  "Dig deep. The money is in the stone.",
+    "sort_order":  10
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "craft_piston",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:piston",
+    "count":  8,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  700
+                    }
+                ]
+}

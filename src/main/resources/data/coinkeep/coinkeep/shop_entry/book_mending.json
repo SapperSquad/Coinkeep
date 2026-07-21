@@ -1,0 +1,9 @@
+{
+    "id":  "book_mending",
+    "category":  "enchantments",
+    "item":  "minecraft:enchanted_book",
+    "count":  1,
+    "price":  65000,
+    "enchantment":  "minecraft:mending",
+    "enchantment_level":  1
+}

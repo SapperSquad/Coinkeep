@@ -1,0 +1,13 @@
+{
+    "id":  "adv_bred_all_animals",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/bred_all_animals",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  15000
+                    }
+                ]
+}

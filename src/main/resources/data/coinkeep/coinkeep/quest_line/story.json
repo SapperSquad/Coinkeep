@@ -1,0 +1,7 @@
+{
+    "id":  "story",
+    "name":  "Story",
+    "icon":  "minecraft:grass_block",
+    "description":  "The main line of the base game.",
+    "sort_order":  60
+}

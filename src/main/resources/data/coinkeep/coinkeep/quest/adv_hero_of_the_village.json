@@ -1,0 +1,13 @@
+{
+    "id":  "adv_hero_of_the_village",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/hero_of_the_village",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  4000
+                    }
+                ]
+}

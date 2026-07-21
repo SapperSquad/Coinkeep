@@ -1,0 +1,16 @@
+{
+    "id":  "kill_wither_skeletons",
+    "line":  "combat",
+    "trigger":  "mob_kill",
+    "target":  "minecraft:wither_skeleton",
+    "count":  15,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2000
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

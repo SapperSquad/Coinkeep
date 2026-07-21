@@ -1,0 +1,13 @@
+{
+    "id":  "craft_cookie",
+    "line":  "farming",
+    "trigger":  "item_craft",
+    "target":  "minecraft:cookie",
+    "count":  32,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  300
+                    }
+                ]
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_charge_respawn_anchor",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/charge_respawn_anchor",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    }
+                ]
+}

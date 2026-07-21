@@ -1,0 +1,13 @@
+{
+    "id":  "adv_obtain_ancient_debris",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/obtain_ancient_debris",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  3000
+                    }
+                ]
+}

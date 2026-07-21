@@ -1,0 +1,13 @@
+{
+    "id":  "craft_smithing_table",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:smithing_table",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

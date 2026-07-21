@@ -1,0 +1,13 @@
+{
+    "id":  "adv_dragon_egg",
+    "line":  "end",
+    "trigger":  "advancement",
+    "target":  "minecraft:end/dragon_egg",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  6000
+                    }
+                ]
+}

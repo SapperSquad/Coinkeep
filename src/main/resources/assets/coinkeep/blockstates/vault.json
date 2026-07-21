@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "coinkeep:block/vault" },
+    "facing=east":  { "model": "coinkeep:block/vault", "y": 90 },
+    "facing=south": { "model": "coinkeep:block/vault", "y": 180 },
+    "facing=west":  { "model": "coinkeep:block/vault", "y": 270 }
+  }
+}

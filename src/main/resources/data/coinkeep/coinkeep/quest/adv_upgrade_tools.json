@@ -1,0 +1,13 @@
+{
+    "id":  "adv_upgrade_tools",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/upgrade_tools",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  150
+                    }
+                ]
+}

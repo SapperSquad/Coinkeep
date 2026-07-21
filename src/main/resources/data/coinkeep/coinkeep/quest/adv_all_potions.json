@@ -1,0 +1,13 @@
+{
+    "id":  "adv_all_potions",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/all_potions",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  10000
+                    }
+                ]
+}

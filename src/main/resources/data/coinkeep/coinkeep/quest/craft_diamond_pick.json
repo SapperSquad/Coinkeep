@@ -1,0 +1,16 @@
+{
+    "id":  "craft_diamond_pick",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:diamond_pickaxe",
+    "count":  1,
+    "dependencies":  [
+                         "craft_iron_pick"
+                     ],
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1000
+                    }
+                ]
+}

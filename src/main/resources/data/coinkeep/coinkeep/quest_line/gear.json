@@ -1,0 +1,7 @@
+{
+    "id":  "gear",
+    "name":  "Tools \u0026 Armor",
+    "icon":  "minecraft:diamond_chestplate",
+    "description":  "Upgrade or die poor.",
+    "sort_order":  30
+}

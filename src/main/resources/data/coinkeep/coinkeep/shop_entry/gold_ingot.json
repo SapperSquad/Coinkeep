@@ -1,0 +1,7 @@
+{
+    "id":  "gold_ingot",
+    "category":  "ores",
+    "item":  "minecraft:gold_ingot",
+    "count":  1,
+    "price":  400
+}

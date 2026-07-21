@@ -1,0 +1,13 @@
+{
+    "id":  "adv_throw_trident",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/throw_trident",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    }
+                ]
+}

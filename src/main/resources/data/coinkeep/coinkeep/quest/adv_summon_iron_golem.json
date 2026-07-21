@@ -1,0 +1,13 @@
+{
+    "id":  "adv_summon_iron_golem",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/summon_iron_golem",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1500
+                    }
+                ]
+}

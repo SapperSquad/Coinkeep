@@ -1,0 +1,13 @@
+{
+    "id":  "craft_stonecutter",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:stonecutter",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  300
+                    }
+                ]
+}

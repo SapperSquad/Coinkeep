@@ -1,0 +1,13 @@
+{
+    "id":  "adv_wax_off",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/wax_off",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  600
+                    }
+                ]
+}

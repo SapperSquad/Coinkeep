@@ -1,0 +1,13 @@
+{
+    "id":  "adv_make_a_sign_glow",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/make_a_sign_glow",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  500
+                    }
+                ]
+}

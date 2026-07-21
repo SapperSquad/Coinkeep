@@ -1,0 +1,13 @@
+{
+    "id":  "adv_loot_bastion",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/loot_bastion",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2000
+                    }
+                ]
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_shiny_gear",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/shiny_gear",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2000
+                    }
+                ]
+}

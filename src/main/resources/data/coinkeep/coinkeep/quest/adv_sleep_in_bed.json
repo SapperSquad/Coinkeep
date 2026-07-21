@@ -1,0 +1,13 @@
+{
+    "id":  "adv_sleep_in_bed",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/sleep_in_bed",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  300
+                    }
+                ]
+}

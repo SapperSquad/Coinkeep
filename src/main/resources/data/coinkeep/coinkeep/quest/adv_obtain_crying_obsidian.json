@@ -1,0 +1,13 @@
+{
+    "id":  "adv_obtain_crying_obsidian",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/obtain_crying_obsidian",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1000
+                    }
+                ]
+}

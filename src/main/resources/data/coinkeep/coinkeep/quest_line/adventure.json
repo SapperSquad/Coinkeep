@@ -1,0 +1,7 @@
+{
+    "id":  "adventure",
+    "name":  "Adventure",
+    "icon":  "minecraft:filled_map",
+    "description":  "Everything the world throws at you.",
+    "sort_order":  90
+}

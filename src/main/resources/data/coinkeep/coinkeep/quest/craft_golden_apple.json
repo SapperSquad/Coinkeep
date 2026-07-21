@@ -1,0 +1,19 @@
+{
+    "id":  "craft_golden_apple",
+    "line":  "farming",
+    "description":  "Worth every ingot.",
+    "trigger":  "item_craft",
+    "target":  "minecraft:golden_apple",
+    "count":  4,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2500
+                    },
+                    {
+                        "type":  "item",
+                        "item":  "minecraft:golden_apple",
+                        "count":  2
+                    }
+                ]
+}

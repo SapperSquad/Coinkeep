@@ -1,0 +1,7 @@
+{
+    "id":  "building",
+    "name":  "Building",
+    "icon":  "minecraft:crafting_table",
+    "description":  "Build the tools that build everything else.",
+    "sort_order":  40
+}

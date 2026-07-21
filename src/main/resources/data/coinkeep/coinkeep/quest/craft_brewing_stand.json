@@ -1,0 +1,13 @@
+{
+    "id":  "craft_brewing_stand",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:brewing_stand",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  1200
+                    }
+                ]
+}

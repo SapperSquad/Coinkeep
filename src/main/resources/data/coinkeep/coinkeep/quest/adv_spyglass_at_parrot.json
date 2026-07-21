@@ -1,0 +1,13 @@
+{
+    "id":  "adv_spyglass_at_parrot",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/spyglass_at_parrot",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  800
+                    }
+                ]
+}

@@ -1,0 +1,16 @@
+{
+    "id":  "mine_coal",
+    "line":  "mining",
+    "trigger":  "block_break",
+    "target":  "minecraft:coal_ore",
+    "count":  32,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  200
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_kill_all_mobs",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/kill_all_mobs",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  20000
+                    }
+                ]
+}

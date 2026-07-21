@@ -1,0 +1,22 @@
+{
+    "id":  "gear_harvester",
+    "category":  "signature",
+    "item":  "minecraft:netherite_axe",
+    "count":  1,
+    "price":  120000,
+    "name":  "The Harvester",
+    "enchantments":  [
+                         {
+                             "id":  "minecraft:efficiency",
+                             "level":  5
+                         },
+                         {
+                             "id":  "minecraft:unbreaking",
+                             "level":  3
+                         },
+                         {
+                             "id":  "minecraft:mending",
+                             "level":  1
+                         }
+                     ]
+}

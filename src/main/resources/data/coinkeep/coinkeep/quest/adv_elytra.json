@@ -1,0 +1,21 @@
+{
+    "id":  "adv_elytra",
+    "line":  "end",
+    "name":  "Sky\u0027s the Limit",
+    "description":  "Find the elytra.",
+    "icon":  "minecraft:elytra",
+    "trigger":  "advancement",
+    "target":  "minecraft:end/elytra",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  12000
+                    },
+                    {
+                        "type":  "item",
+                        "item":  "minecraft:firework_rocket",
+                        "count":  32
+                    }
+                ]
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "craft_composter",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:composter",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  250
+                    }
+                ]
+}

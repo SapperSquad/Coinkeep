@@ -1,0 +1,13 @@
+{
+    "id":  "adv_all_effects",
+    "line":  "nether",
+    "trigger":  "advancement",
+    "target":  "minecraft:nether/all_effects",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  20000
+                    }
+                ]
+}

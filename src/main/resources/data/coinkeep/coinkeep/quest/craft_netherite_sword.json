@@ -1,0 +1,16 @@
+{
+    "id":  "craft_netherite_sword",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:netherite_sword",
+    "count":  1,
+    "dependencies":  [
+                         "craft_diamond_sword"
+                     ],
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  5000
+                    }
+                ]
+}

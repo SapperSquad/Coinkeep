@@ -1,0 +1,14 @@
+{
+    "id":  "kill_elder_guardian",
+    "line":  "combat",
+    "trigger":  "mob_kill",
+    "target":  "minecraft:elder_guardian",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  4000
+                    }
+                ],
+    "max_tier":  1
+}

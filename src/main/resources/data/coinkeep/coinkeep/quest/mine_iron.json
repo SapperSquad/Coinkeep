@@ -1,0 +1,16 @@
+{
+    "id":  "mine_iron",
+    "line":  "mining",
+    "trigger":  "block_break",
+    "target":  "minecraft:iron_ore",
+    "count":  32,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ],
+    "max_tier":  0,
+    "target_growth":  1.5,
+    "reward_growth":  1.3
+}

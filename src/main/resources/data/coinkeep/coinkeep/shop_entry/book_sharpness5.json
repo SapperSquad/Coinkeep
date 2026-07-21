@@ -1,0 +1,9 @@
+{
+    "id":  "book_sharpness5",
+    "category":  "enchantments",
+    "item":  "minecraft:enchanted_book",
+    "count":  1,
+    "price":  26000,
+    "enchantment":  "minecraft:sharpness",
+    "enchantment_level":  5
+}

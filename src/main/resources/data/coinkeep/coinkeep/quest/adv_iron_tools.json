@@ -1,0 +1,13 @@
+{
+    "id":  "adv_iron_tools",
+    "line":  "story",
+    "trigger":  "advancement",
+    "target":  "minecraft:story/iron_tools",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

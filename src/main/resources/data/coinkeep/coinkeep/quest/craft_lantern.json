@@ -1,0 +1,13 @@
+{
+    "id":  "craft_lantern",
+    "line":  "building",
+    "trigger":  "item_craft",
+    "target":  "minecraft:lantern",
+    "count":  4,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

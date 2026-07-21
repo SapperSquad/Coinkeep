@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "coinkeep:block/vault_side",
+    "north": "coinkeep:block/vault_front",
+    "south": "coinkeep:block/vault_side",
+    "east": "coinkeep:block/vault_side",
+    "west": "coinkeep:block/vault_side",
+    "up": "coinkeep:block/vault_top",
+    "down": "coinkeep:block/vault_top"
+  }
+}

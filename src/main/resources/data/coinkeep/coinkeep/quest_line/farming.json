@@ -1,0 +1,7 @@
+{
+    "id":  "farming",
+    "name":  "Farming",
+    "icon":  "minecraft:wheat",
+    "description":  "Slow money, but it never stops.",
+    "sort_order":  50
+}

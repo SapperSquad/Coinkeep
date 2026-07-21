@@ -1,0 +1,13 @@
+{
+    "id":  "adv_shoot_arrow",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/shoot_arrow",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  400
+                    }
+                ]
+}

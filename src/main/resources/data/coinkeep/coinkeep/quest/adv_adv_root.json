@@ -1,0 +1,13 @@
+{
+    "id":  "adv_adv_root",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/root",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  200
+                    }
+                ]
+}

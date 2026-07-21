@@ -1,0 +1,13 @@
+{
+    "id":  "adv_levitate",
+    "line":  "end",
+    "trigger":  "advancement",
+    "target":  "minecraft:end/levitate",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  4000
+                    }
+                ]
+}

@@ -1,0 +1,7 @@
+{
+    "id":  "husbandry",
+    "name":  "Husbandry",
+    "icon":  "minecraft:hay_block",
+    "description":  "Animals, crops, and patience.",
+    "sort_order":  100
+}

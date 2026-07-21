@@ -1,0 +1,13 @@
+{
+    "id":  "adv_tame_an_animal",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/tame_an_animal",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  500
+                    }
+                ]
+}

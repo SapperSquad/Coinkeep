@@ -1,0 +1,13 @@
+{
+    "id":  "craft_elytra_rocket",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:firework_rocket",
+    "count":  16,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  300
+                    }
+                ]
+}

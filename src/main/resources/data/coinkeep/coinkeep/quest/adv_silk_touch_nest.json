@@ -1,0 +1,13 @@
+{
+    "id":  "adv_silk_touch_nest",
+    "line":  "husbandry",
+    "trigger":  "advancement",
+    "target":  "minecraft:husbandry/silk_touch_nest",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2000
+                    }
+                ]
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_honey_block_slide",
+    "line":  "adventure",
+    "trigger":  "advancement",
+    "target":  "minecraft:adventure/honey_block_slide",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  500
+                    }
+                ]
+}

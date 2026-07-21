@@ -1,0 +1,16 @@
+{
+    "id":  "craft_diamond_chestplate",
+    "line":  "gear",
+    "trigger":  "item_craft",
+    "target":  "minecraft:diamond_chestplate",
+    "count":  1,
+    "dependencies":  [
+                         "craft_iron_chestplate"
+                     ],
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  2000
+                    }
+                ]
+}

@@ -1,0 +1,13 @@
+{
+    "id":  "adv_respawn_dragon",
+    "line":  "end",
+    "trigger":  "advancement",
+    "target":  "minecraft:end/respawn_dragon",
+    "count":  1,
+    "rewards":  [
+                    {
+                        "type":  "money",
+                        "amount":  6000
+                    }
+                ]
+}
