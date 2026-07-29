@@ -174,10 +174,9 @@ short, per-upload note — `CHANGELOG.md` in the repo is the long-form history. 
 - Environment: **client and server required**
 - Categories: `economy`, `adventure`, `game-mechanics`, `utility`
 - Tags: economy, quests, money, shop, market, vault, currency, multiplayer
-- License: **All Rights Reserved** (`mod_license` in `gradle.properties`). Fine for a standalone
-  gameplay mod. Worth noting it discourages pack makers who want to tweak shop contents — since
-  all content is datapack JSON, an explicit "packs may redistribute and retune" note in the
-  description would remove that friction without changing the license.
+- License: split policy (Alex, 2026-07-28) — **All Rights Reserved** on the Modrinth/CurseForge
+  listing (`mod_license`/jar metadata match), **MIT** LICENSE in the GitHub repo. Pack makers who
+  want to tweak shop contents can be pointed at the MIT source.
 - Donation: `ko-fi.com/sappersquad`
 - Discord: https://discord.gg/mZ9CG6xh2A
 - Platforms that received the last release: **none yet — unpublished.**
