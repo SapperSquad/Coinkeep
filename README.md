@@ -177,11 +177,3 @@ screen proves nothing. To boot straight into a world for testing:
   progress rather than corrupting a save.
 - **A vault's money and owner live on the item** via a data component, which is what lets a
   broken vault be carried, dropped on death, and still need cracking by whoever finds it.
-
-## Copyright
-
-Copyright (c) 2026 SapperSquad. All rights reserved.
-
-No license is granted: this work may not be copied, modified,
-redistributed, or included in other distributions without express
-permission from the copyright holder.
