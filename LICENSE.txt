@@ -1,0 +1,31 @@
+Coinkeep
+Copyright (c) 2026 SapperSquad. All rights reserved.
+
+This mod, including its source code, assets, and generated content, may not be
+copied, modified, redistributed, or published without the express permission of
+the copyright holder.
+
+PERMITTED WITHOUT ASKING
+------------------------
+- Playing the mod, including on public or private servers.
+- Including the unmodified mod file in a modpack, on any platform, provided the
+  mod is credited and linked to an official download page.
+- Creating and distributing datapacks that add to, retune, or override Coinkeep
+  content (quests, chapters, shop entries). Content authored this way belongs to
+  its author, not to the copyright holder.
+- Videos, streams, screenshots, and written coverage.
+
+NOT PERMITTED WITHOUT ASKING
+----------------------------
+- Redistributing modified versions of the mod file.
+- Reusing the source code or original artwork in another project.
+- Re-uploading the mod to other download sites.
+
+If you want to do something this license does not cover, ask - the answer is
+usually yes.
+
+---
+
+The project scaffolding supplied by the NeoForged MDK (build scripts, Gradle
+wrapper, and workflow files) remains under its own MIT license; see
+TEMPLATE_LICENSE.txt.
