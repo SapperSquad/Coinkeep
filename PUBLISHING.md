@@ -179,5 +179,5 @@ short, per-upload note — `CHANGELOG.md` in the repo is the long-form history. 
   all content is datapack JSON, an explicit "packs may redistribute and retune" note in the
   description would remove that friction without changing the license.
 - Donation: `ko-fi.com/sappersquad`
-- Discord: *(add the invite once the server exists)*
+- Discord: https://discord.gg/mZ9CG6xh2A
 - Platforms that received the last release: **none yet — unpublished.**
