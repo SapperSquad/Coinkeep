@@ -6,7 +6,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -21,10 +20,17 @@ import java.util.Optional;
  *
  * @param customName overrides the item's own name, so gear can be sold as
  *                   "The Prospector" rather than "Netherite Pickaxe".
+ * @param category   the {@code id} of a {@link ShopCategory} - a bare
+ *                   lowercase string like {@code "rare"}, unchanged from
+ *                   1.0.0. It is a plain String rather than a resolved
+ *                   object because categories are a datapack registry now
+ *                   and JSON files load in arbitrary order: an entry must
+ *                   be allowed to name a category that has not been read
+ *                   yet. Resolution happens once, in {@link ShopRegistry}.
  */
 public record ShopEntry(
         String id,
-        ShopCategory category,
+        String category,
         Item item,
         int count,
         long price,
@@ -83,10 +89,13 @@ public record ShopEntry(
      */
     public static final Codec<ShopEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("id").forGetter(ShopEntry::id),
-            Codec.STRING.xmap(
-                    name -> ShopCategory.valueOf(name.toUpperCase(Locale.ROOT)),
-                    category -> category.name().toLowerCase(Locale.ROOT)
-            ).fieldOf("category").forGetter(ShopEntry::category),
+            // 1.0.0 parsed this straight into an enum constant, which THREW
+            // on anything unknown and took the whole entry down with it.
+            // Lower-casing and keeping the string means a 1.0.0 datapack
+            // reads identically, an addon's own category id is legal, and a
+            // typo costs a validator warning instead of a vanished item.
+            Codec.STRING.xmap(ShopCategory::normaliseId, category -> category)
+                    .fieldOf("category").forGetter(ShopEntry::category),
             BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(ShopEntry::item),
             Codec.INT.optionalFieldOf("count", 1).forGetter(ShopEntry::count),
             Codec.LONG.fieldOf("price").forGetter(ShopEntry::price),

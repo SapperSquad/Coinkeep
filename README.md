@@ -40,8 +40,11 @@ Husbandry), so the book covers the whole base game.
 ## Shop & Market
 
 - **Buy** from a categorised catalog, cheapest first, priced green or red by affordability.
-  Categories include **Rare** (Elytra, Totem, Nether Star…) and **Signature** — named,
-  pre-enchanted endgame gear like *The Prospector* at $210,000.
+  Eight categories ship — Food, Weapons, Armor, Enchantments, Ores, Materials, **Rare**
+  (Elytra, Totem, Nether Star…) and **Signature**, named pre-enchanted endgame gear like
+  *The Prospector* at $210,000.
+- **Categories are data now (1.1.0).** Any mod or datapack can add its own tab instead of
+  dumping its items into Materials — see *Adding your own content* below.
 - **Sell** your haul. Each sale saturates that item's demand, so it pays a little less than
   the last, and demand recovers over time. Grinding one block forever stops being worth it
   without anything ever being locked.
@@ -77,12 +80,14 @@ Husbandry), so the book covers the whole base game.
 
 ## Adding your own content
 
-Every quest, chapter and shop entry is a JSON file in a datapack registry, so a modpack can
-add, retune or override anything without touching the jar. `/reload` applies changes live.
+Every quest, chapter, shop category and shop entry is a JSON file in a datapack registry, so
+a modpack can add, retune or override anything without touching the jar. `/reload` applies
+changes live.
 
 ```
 data/<namespace>/coinkeep/quest_line/<id>.json
 data/<namespace>/coinkeep/quest/<id>.json
+data/<namespace>/coinkeep/shop_category/<id>.json
 data/<namespace>/coinkeep/shop_entry/<id>.json
 ```
 
@@ -118,9 +123,41 @@ the bare word "command":
 (defaults to 40% of the per-unit buy price), `saturation`, `name`, and an `enchantments`
 list for pre-enchanted gear. Items from any other mod work by id.
 
+### Your own shop category (1.1.0)
+
+`category` matches a shop category's `id`, the same way a quest names its `line`. The eight
+built-ins (`food`, `weapons`, `armor`, `enchantments`, `ores`, `materials`, `rare`,
+`signature`) are shipped as Coinkeep's own JSON, so nothing written for 1.0.0 changes — but
+a companion mod no longer has to squeeze 90 blocks into **Materials**. Drop this in and the
+Shop grows a tab:
+
+```json
+data/highroller/coinkeep/shop_category/highroller_games.json
+{
+  "id": "highroller_games",
+  "name": "Highroller - Games",
+  "sort_order": 200,
+  "icon": "highroller:slot_machine"
+}
+```
+
+- `id` — what `shop_entry.category` matches on. Lower case; matching is case-insensitive.
+- `name` — the sidebar label. Free text.
+- `sort_order` — low first, ties broken by id. **Set it.** JSON files load in an arbitrary
+  order, so without it your tab moves between launches. Built-ins use 10–80; leave room
+  above 100 for yourself. Defaults to 100.
+- `icon` — optional. Without one the sidebar draws the category's cheapest entry.
+
+A category with nothing in it never renders, so the tab appears exactly when the mod that
+defines it is installed and disappears with it. If an entry names a category nobody defined,
+the entry still works — it lands in a placeholder tab at the end of the sidebar, and the
+content validator names the missing id in the log.
+
 Content is validated on server start and on every `/reload`: dangling dependency ids,
-duplicate ids and dependency cycles are all reported, because a typo would otherwise leave a
-quest silently unreachable.
+duplicate ids, dependency cycles and undefined shop categories are all reported, because a
+typo would otherwise leave a quest silently unreachable or an item in the wrong tab. The
+same log line lists every category and how many entries it holds, so you can see at a glance
+which mod contributed what.
 
 ---
 
@@ -156,7 +193,7 @@ quest silently unreachable.
 Requires **JDK 21**.
 
 ```
-./gradlew build        # produces build/libs/coinkeep-1.0.0.jar
+./gradlew build        # produces build/libs/coinkeep-1.1.0.jar
 ./gradlew runClient    # dev client
 ```
 

@@ -1,4 +1,4 @@
-# Coinkeep — publishing kit (v1.0.0, UNRELEASED)
+# Coinkeep — publishing kit (v1.1.0)
 
 Store copy for the Modrinth / CurseForge project pages, plus the upload plan.
 Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one alone.
@@ -6,11 +6,23 @@ Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one 
 > This is the **single** publishing doc. An earlier `promo/STORE-PAGE.md` was folded in
 > here and deleted, because two copies of store copy drift apart silently.
 
+> **STATUS CONFLICT — Alex to resolve.** The 1.0.0 section below still reads UNRELEASED
+> with open release blockers, but 1.0.0 has since been uploaded to Modrinth and
+> CurseForge. Treat 1.1.0 as a real update on a live listing (that is how it was built —
+> see the migration tests in `gametest/ShopCategoryGameTests`) and prune the stale
+> blocker list on the next pass.
+
 **Files to upload — ADD as new versions; never delete older ones.**
 
 | Upload as version | File | Game version tag | Loader |
 |---|---|---|---|
 | `1.0.0+mc1.21.1` | `build/libs/coinkeep-1.0.0.jar` | 1.21.1 | neoforge |
+| `1.1.0+mc1.21.1` | `build/libs/coinkeep-1.1.0.jar` | 1.21.1 | neoforge |
+
+> **Redeploy note.** Highroller requires Coinkeep **1.1.0+** from its 2.0.0 build onward,
+> so Alex's server and BOTH players' clients need the new Coinkeep jar in the same pass as
+> the new Highroller jar. A 1.1.0 client against a 1.0.0 server (or vice versa) will not
+> agree on the shop-category registry.
 
 ## Release blockers
 
@@ -95,9 +107,14 @@ does not.**
 
 ## Built for modpacks
 
-Every quest, chapter and shop entry is a JSON file in a datapack registry. Add, retune or
-override anything without touching the jar. Items from any other mod work by id. `/reload`
-applies changes live, and content is validated on load so a typo cannot silently strand a quest.
+Every quest, chapter, **shop category** and shop entry is a JSON file in a datapack registry.
+Add, retune or override anything without touching the jar. Items from any other mod work by id.
+`/reload` applies changes live, and content is validated on load so a typo cannot silently
+strand a quest.
+
+Companion mods get their **own Shop tab** rather than being dumped into Materials: drop a
+`shop_category` JSON with an id, a name and a sort order, point your entries at it, and the tab
+appears exactly when your mod is installed and disappears with it.
 
 ## Commands
 
@@ -137,6 +154,32 @@ every release.** Images cannot be grepped, so they go stale invisibly. Regenerat
 `scratchpad/gen-coinkeep-promo.ps1`.
 
 ---
+
+## Changelog for the 1.1.0 upload
+
+Paste into the **changelog field on the version upload**:
+
+> **1.1.0 — Shop categories are data.**
+>
+> Shop categories used to be hardcoded, so a companion mod had no way to add one — every
+> item it sold got squeezed into one of Coinkeep's eight, and a big addon buried Coinkeep's
+> own catalog. Now any mod or datapack can define its own Shop tab:
+> `data/<namespace>/coinkeep/shop_category/<id>.json`, with a name, a sort order and an
+> optional icon. A tab appears exactly when the mod that defines it is installed, and
+> disappears with it.
+>
+> - **Nothing to do on upgrade.** The eight built-ins ship as Coinkeep's own JSON with the
+>   same ids, labels and order, so existing worlds and existing datapacks load unchanged —
+>   `"category": "rare"` still means what it always meant.
+> - **A typo no longer eats an item.** An entry naming an unknown category used to fail its
+>   whole entry and vanish from the shop; it now lands in a clearly-named placeholder tab
+>   and the content validator reports the missing id on load.
+> - **Categories can carry their own icon**; without one the sidebar still shows the
+>   category's cheapest entry.
+> - Startup now logs every category and how many entries it holds.
+> - **Mod authors:** `ShopEntry.category()` returns a `String` id rather than an enum, so
+>   anything compiled against 1.0.0 that read that field needs a recompile. `BalanceHelper`
+>   is untouched.
 
 ## Changelog for the 1.0.0 upload
 

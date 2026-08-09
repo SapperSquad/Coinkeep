@@ -127,6 +127,21 @@ public class QuestRegistry {
                 problems.add("Quest '" + id + "' is part of a dependency cycle - it can never unlock");
             }
         }
+
+        // Shop categories are a datapack registry as of 1.1.0, so an entry
+        // can name one nothing defines. That no longer deletes the entry (it
+        // lands in a placeholder tab at the end of the sidebar), which means
+        // the typo would otherwise be invisible - hence the report.
+        for (String category : ShopRegistry.danglingCategories(access)) {
+            List<String> orphans = new ArrayList<>();
+            for (ShopEntry entry : ShopRegistry.inCategory(access, category)) {
+                orphans.add(entry.id());
+            }
+            problems.add("Shop category '" + category + "' is not defined by any datapack"
+                    + " (expected data/<namespace>/coinkeep/shop_category/" + category + ".json)"
+                    + " - " + orphans.size() + " entr" + (orphans.size() == 1 ? "y" : "ies")
+                    + " fell back to a placeholder tab: " + orphans);
+        }
         return problems;
     }
 

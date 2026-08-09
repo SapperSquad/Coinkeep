@@ -3,6 +3,48 @@
 All notable changes to Coinkeep. Bump this in the same pass as `PUBLISHING.md` and
 `README.md` — never one alone.
 
+## 1.1.0 — Shop categories are data (2026-08-09)
+
+Shop categories were a hardcoded Java enum, so a companion mod could not add one — every
+entry it shipped had to be squeezed into one of Coinkeep's eight, and a big addon swamped
+Coinkeep's own browsing. They are a **datapack registry** now, exactly like `quest_line`,
+`quest` and `shop_entry`.
+
+### Added
+- **`data/<namespace>/coinkeep/shop_category/<id>.json`** — any mod or datapack can define
+  its own Shop tab. Fields: `id`, `name`, optional `sort_order` (defaults 100) and optional
+  `icon`. Documented in the README.
+- **Category icons.** A category may name its own icon item; without one the sidebar keeps
+  doing what it always did and draws the category's cheapest entry.
+- **Empty categories never render**, so a tab appears exactly when the mod that defines it
+  is installed and vanishes with it.
+- **Validator coverage.** Server start and every `/reload` now also report a shop entry that
+  names a category nobody defined, and log every category with its entry count.
+- **First GameTests** (6, `./gradlew runGameTestServer`) — written specifically because 1.0.0
+  is published and this is a data migration on live worlds. They pin the eight built-ins,
+  their sidebar order, the per-category entry counts, that 1.0.0-shaped JSON still parses,
+  the addon contract, and that all four content registries are declared with a **network
+  codec** (a server-only registry would leave the client's book and shop empty — Coinkeep's
+  own hard-won lesson, now an assertion instead of a comment).
+
+### Changed — nothing a server or datapack has to do
+- The eight built-ins (`food`, `weapons`, `armor`, `enchantments`, `ores`, `materials`,
+  `rare`, `signature`) ship as Coinkeep's own JSON with the same ids, the same labels and
+  the same sidebar order. **A 1.0.0 world, and any 1.0.0 datapack, loads unchanged.**
+- `ShopEntry.category` is a `String` id instead of an enum constant. JSON is byte-identical
+  (`"category": "rare"`), and an upper-case spelling still works.
+- An entry naming an unknown category used to **throw inside the codec and lose the entire
+  entry** — one typo silently deleted a purchasable item. It now lands in a placeholder tab
+  at the end of the sidebar and the validator names the missing id.
+
+### Upgrade notes
+- **Drop-in for servers and clients.** No world data, config or datapack change is required.
+  The only visible difference on an unmodified install is the extra category lines in the
+  server log at startup.
+- **For mod authors:** `ShopEntry.category()` returns `String` rather than `ShopCategory`.
+  Anything compiled against 1.0.0 that read that field needs a recompile. Nothing else in
+  the API moved — `BalanceHelper` is untouched.
+
 ## 1.0.0 — Initial release (unreleased)
 
 A full economy loop for NeoForge 1.21.1: earn it, bank it, defend it.
