@@ -40,10 +40,17 @@ public class QuestContentValidator {
     private static void report(RegistryAccess access) {
         List<String> problems = QuestRegistry.validate(access);
         if (problems.isEmpty()) {
-            LOGGER.info("Quest content OK: {} quests across {} lines, {} shop entries",
+            LOGGER.info("Quest content OK: {} quests across {} lines, {} shop entries in {} categories",
                     QuestRegistry.all(access).size(),
                     QuestRegistry.lines(access).size(),
-                    ShopRegistry.all(access).size());
+                    ShopRegistry.all(access).size(),
+                    ShopRegistry.categories(access).size());
+            // One greppable line per tab, so a server owner can see at a
+            // glance which mod contributed which category and how big it is.
+            ShopRegistry.categories(access).forEach(category ->
+                    LOGGER.info("  shop category '{}' ({}): {} entries",
+                            category.id(), category.getLabel(),
+                            ShopRegistry.inCategory(access, category.id()).size()));
         } else {
             problems.forEach(problem -> LOGGER.error("QUEST CONTENT: {}", problem));
         }

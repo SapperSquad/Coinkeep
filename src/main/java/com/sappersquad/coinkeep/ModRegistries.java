@@ -15,6 +15,7 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
  * Content paths:
  *   data/&lt;namespace&gt;/coinkeep/quest_line/&lt;id&gt;.json
  *   data/&lt;namespace&gt;/coinkeep/quest/&lt;id&gt;.json
+ *   data/&lt;namespace&gt;/coinkeep/shop_category/&lt;id&gt;.json   (1.1.0)
  *   data/&lt;namespace&gt;/coinkeep/shop_entry/&lt;id&gt;.json
  *
  * IMPORTANT: each registry is declared with a **network codec** (the third
@@ -22,6 +23,9 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
  * quest book and shop screens render client-side, so a server-only registry
  * would leave them empty - that is the trap with the simpler
  * AddReloadListenerEvent approach, and why this uses datapack registries.
+ * SHOP_CATEGORY is declared the same way for exactly that reason: the Shop
+ * tab's sidebar is drawn on the client, so a server-only category registry
+ * would give every player an empty shop.
  */
 @EventBusSubscriber(modid = Coinkeep.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ModRegistries {
@@ -32,6 +36,9 @@ public class ModRegistries {
     public static final ResourceKey<Registry<Quest>> QUEST = ResourceKey.createRegistryKey(
             ResourceLocation.fromNamespaceAndPath(Coinkeep.MODID, "quest"));
 
+    public static final ResourceKey<Registry<ShopCategory>> SHOP_CATEGORY = ResourceKey.createRegistryKey(
+            ResourceLocation.fromNamespaceAndPath(Coinkeep.MODID, "shop_category"));
+
     public static final ResourceKey<Registry<ShopEntry>> SHOP_ENTRY = ResourceKey.createRegistryKey(
             ResourceLocation.fromNamespaceAndPath(Coinkeep.MODID, "shop_entry"));
 
@@ -39,6 +46,7 @@ public class ModRegistries {
     public static void registerDataPackRegistries(DataPackRegistryEvent.NewRegistry event) {
         event.dataPackRegistry(QUEST_LINE, QuestLine.CODEC, QuestLine.CODEC);
         event.dataPackRegistry(QUEST, Quest.CODEC, Quest.CODEC);
+        event.dataPackRegistry(SHOP_CATEGORY, ShopCategory.CODEC, ShopCategory.CODEC);
         event.dataPackRegistry(SHOP_ENTRY, ShopEntry.CODEC, ShopEntry.CODEC);
     }
 }

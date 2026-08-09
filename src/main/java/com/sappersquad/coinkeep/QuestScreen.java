@@ -96,8 +96,11 @@ public class QuestScreen extends Screen {
     private String sortedCacheLine;
     private long sortedCacheSignature = Long.MIN_VALUE;
 
-    // Shop tab state
-    private ShopCategory selectedCategory;
+    // Shop tab state. The selection is the category's ID, not the record:
+    // categories come from a datapack registry now, so a /reload hands out
+    // fresh ShopCategory objects and an identity-held reference would go
+    // stale (or, worse, quietly compare unequal to its own replacement).
+    private String selectedCategory;
     private int shopScroll;
     private int shopSidebarScroll;
 
@@ -139,7 +142,7 @@ public class QuestScreen extends Screen {
             selectedLine = lines().stream().findFirst().map(QuestLine::id).orElse(null);
         }
         if (selectedCategory == null) {
-            selectedCategory = shopCategories().stream().findFirst().orElse(null);
+            selectedCategory = shopCategories().stream().findFirst().map(ShopCategory::id).orElse(null);
         }
         layout();
     }
@@ -819,7 +822,7 @@ public class QuestScreen extends Screen {
         for (int i = 0; i < categories.size(); i++) {
             ShopCategory category = categories.get(i);
             if (y + LINE_ROW_H >= contentTop && y <= contentBottom) {
-                boolean active = category == selectedCategory;
+                boolean active = category.id().equals(selectedCategory);
                 if (active) {
                     g.fill(panelLeft + 1, y, listLeft - 1, y + LINE_ROW_H, MoneyUI.TAB_ACTIVE);
                     g.fill(panelLeft + 1, y, panelLeft + 3, y + LINE_ROW_H, MoneyUI.GOLD);
@@ -827,10 +830,13 @@ public class QuestScreen extends Screen {
                     g.fill(panelLeft + 1, y, listLeft - 1, y + LINE_ROW_H, MoneyUI.TAB_HOVER);
                 }
 
-                // Cheapest entry doubles as the category icon - free, and
-                // always representative.
-                List<ShopEntry> inCategory = ShopRegistry.inCategory(access, category);
-                if (!inCategory.isEmpty()) {
+                // A category may name its own icon (1.1.0); when it does not,
+                // the cheapest entry doubles as one - free, always
+                // representative, and what every 1.0.0 category still does.
+                List<ShopEntry> inCategory = ShopRegistry.inCategory(access, category.id());
+                if (category.icon().isPresent()) {
+                    g.renderItem(new ItemStack(category.icon().get()), panelLeft + 8, y + 5);
+                } else if (!inCategory.isEmpty()) {
                     ShopEntry first = inCategory.get(0);
                     g.renderItem(new ItemStack(first.item()), panelLeft + 8, y + 5);
                 }
@@ -1206,8 +1212,8 @@ public class QuestScreen extends Screen {
                 if (inSidebar(mouseX, mouseY)) {
                     List<ShopCategory> categories = shopCategories();
                     int index = hoveredIndex((int) mouseY, shopSidebarScroll, LINE_ROW_H, categories.size());
-                    if (index >= 0 && categories.get(index) != selectedCategory) {
-                        selectedCategory = categories.get(index);
+                    if (index >= 0 && !categories.get(index).id().equals(selectedCategory)) {
+                        selectedCategory = categories.get(index).id();
                         shopScroll = 0;
                         click();
                     }
