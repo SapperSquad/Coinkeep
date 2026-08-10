@@ -6,11 +6,20 @@ Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one 
 > This is the **single** publishing doc. An earlier `promo/STORE-PAGE.md` was folded in
 > here and deleted, because two copies of store copy drift apart silently.
 
-> **STATUS CONFLICT — Alex to resolve.** The 1.0.0 section below still reads UNRELEASED
-> with open release blockers, but 1.0.0 has since been uploaded to Modrinth and
-> CurseForge. Treat 1.1.0 as a real update on a live listing (that is how it was built —
-> see the migration tests in `gametest/ShopCategoryGameTests`) and prune the stale
-> blocker list on the next pass.
+> **STATUS (resolved 2026-08-09): 1.0.0 IS LIVE on Modrinth and CurseForge.**
+> The old pre-release blocker list is gone — it described a world before the
+> upload. **1.1.0 is an update on a live listing**, and it was built as one:
+> the migration tests in `gametest/ShopCategoryGameTests` pin that a 1.0.0
+> world and any 1.0.0 datapack load unchanged.
+
+## 1.1.0 upload — order matters
+
+**Coinkeep 1.1.0 must be live on BOTH stores before Highroller 2.0.0 goes up
+anywhere.** Highroller 2.0.0 hard-requires `coinkeep [1.1.0,)` — a player who
+installs Highroller 2.0.0 while the stores' latest Coinkeep is 1.0.0 gets a
+mod that refuses to load. Upload here first, then Highroller, and pin the
+dependency version on Highroller's listings (its PUBLISHING.md has the full
+launch checklist).
 
 **Files to upload — ADD as new versions; never delete older ones.**
 
@@ -24,22 +33,19 @@ Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one 
 > the new Highroller jar. A 1.1.0 client against a 1.0.0 server (or vice versa) will not
 > agree on the shop-category registry.
 
-## Release blockers
+## 1.1.0 release state (verified 2026-08-09)
 
-- [ ] **Create the GitHub repo `SapperSquad/Coinkeep`.** The jar's `issueTrackerURL` and
-      `displayURL` already point there, so those links 404 until it exists.
-- [ ] **Play a real session.** Every number is defensible on paper and every exploit found has
-      been closed, but nobody has judged the economy by *feel* — whether the grind is
-      satisfying, whether $65k Mending is right, whether losing a carried vault is thrilling
-      or just brutal.
-
-### Cleared
-
-- ~~Package was `com.example.moneymanager`~~ → now `com.sappersquad.coinkeep`.
-- ~~README was a port-handoff note~~ → rewritten as product docs.
-- ~~No CHANGELOG~~ → `CHANGELOG.md` created.
-- ~~Item id `task_book` displayed as "Quest Book"~~ → now `coinkeep:ledger`, "Coinkeep Ledger".
-- ~~No art~~ → full promo kit in `promo/`.
+- **Build green**, jar `build/libs/coinkeep-1.1.0.jar`; **6/6 GameTests green**
+  (`./gradlew runGameTestServer` — the built-ins, sidebar order, per-category
+  counts, 1.0.0-JSON migration, the addon contract, network-codec assertion).
+- **Docs in step**: CHANGELOG, README (data-driven categories + the addon
+  how-to) and this file all speak 1.1.0.
+- **GitHub**: repo `github.com/SapperSquad/Coinkeep` exists and is the
+  configured remote; the 1.1.0 commit is local-only until the orchestrator's
+  push. (The old "create the repo" blocker is history — it exists, and the
+  jar's `displayURL`/`issueTrackerURL` resolve.)
+- The 1.0.0-era blocker list (repo creation, feel-pass) is retired: 1.0.0
+  shipped and is live on both stores.
 
 ---
 
@@ -114,7 +120,9 @@ strand a quest.
 
 Companion mods get their **own Shop tab** rather than being dumped into Materials: drop a
 `shop_category` JSON with an id, a name and a sort order, point your entries at it, and the tab
-appears exactly when your mod is installed and disappears with it.
+appears exactly when your mod is installed and disappears with it. **Highroller** (our casino
+mod) is the worked example — its 90 machines, tables and decor blocks all sell from a
+Highroller tab of their own.
 
 ## Commands
 
@@ -168,6 +176,11 @@ Paste into the **changelog field on the version upload**:
 > optional icon. A tab appears exactly when the mod that defines it is installed, and
 > disappears with it.
 >
+> The first mod to use it is our own: **Highroller 2.0.0** ships a **Highroller** tab with
+> all 90 of its casino entries — slot machines to a $250,000 Grand Casino blueprint —
+> instead of burying them in Materials and Rare. (Which is why Highroller 2.0.0 requires
+> Coinkeep 1.1.0+.)
+>
 > - **Nothing to do on upgrade.** The eight built-ins ship as Coinkeep's own JSON with the
 >   same ids, labels and order, so existing worlds and existing datapacks load unchanged —
 >   `"category": "rare"` still means what it always meant.
@@ -211,8 +224,10 @@ short, per-upload note — `CHANGELOG.md` in the repo is the long-form history. 
 
 ## Platform facts
 
-- Modrinth project id: *(not created yet)*
-- CurseForge project id: *(not created yet)*
+- Modrinth project: **live** (1.0.0 uploaded) — *record the URL/project id here on the next
+  store visit*
+- CurseForge project: **live** (1.0.0 uploaded) — *record the URL/project id here on the next
+  store visit*
 - Minecraft **1.21.1** · NeoForge **21.1.235**
 - Environment: **client and server required**
 - Categories: `economy`, `adventure`, `game-mechanics`, `utility`
@@ -222,4 +237,6 @@ short, per-upload note — `CHANGELOG.md` in the repo is the long-form history. 
   want to tweak shop contents can be pointed at the MIT source.
 - Donation: `ko-fi.com/sappersquad`
 - Discord: https://discord.gg/mZ9CG6xh2A
-- Platforms that received the last release: **none yet — unpublished.**
+- Platforms that received the last release: **Modrinth + CurseForge, version 1.0.0.**
+  Next up: **1.1.0 to both** — and it must land BEFORE Highroller 2.0.0 (see the
+  upload-order note at the top).

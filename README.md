@@ -128,18 +128,21 @@ list for pre-enchanted gear. Items from any other mod work by id.
 `category` matches a shop category's `id`, the same way a quest names its `line`. The eight
 built-ins (`food`, `weapons`, `armor`, `enchantments`, `ores`, `materials`, `rare`,
 `signature`) are shipped as Coinkeep's own JSON, so nothing written for 1.0.0 changes — but
-a companion mod no longer has to squeeze 90 blocks into **Materials**. Drop this in and the
-Shop grows a tab:
+a companion mod no longer has to squeeze 90 blocks into **Materials**. This is the real tab
+**Highroller** ships (all 90 of its entries point at it):
 
 ```json
-data/highroller/coinkeep/shop_category/highroller_games.json
+data/highroller/coinkeep/shop_category/highroller.json
 {
-  "id": "highroller_games",
-  "name": "Highroller - Games",
+  "id": "highroller",
+  "name": "Highroller",
   "sort_order": 200,
   "icon": "highroller:slot_machine"
 }
 ```
+
+Keep the `name` short — the Shop sidebar allows about 78px for a label, so "Highroller"
+fits and "Highroller - Games" would clip mid-brand.
 
 - `id` — what `shop_entry.category` matches on. Lower case; matching is case-insensitive.
 - `name` — the sidebar label. Free text.
