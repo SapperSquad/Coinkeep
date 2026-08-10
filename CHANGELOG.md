@@ -45,7 +45,7 @@ Coinkeep's own browsing. They are a **datapack registry** now, exactly like `que
   Anything compiled against 1.0.0 that read that field needs a recompile. Nothing else in
   the API moved — `BalanceHelper` is untouched.
 
-## 1.0.0 — Initial release (unreleased)
+## 1.0.0 — Initial release (live on Modrinth and CurseForge)
 
 A full economy loop for NeoForge 1.21.1: earn it, bank it, defend it.
 
