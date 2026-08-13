@@ -68,6 +68,9 @@ public class VaultCrackerItem extends Item {
             return InteractionResult.FAIL;
         }
 
+        // Remember who to notify BEFORE the claim is cleared - checking the
+        // vault after setOwner(null) meant the victim was never told.
+        java.util.UUID robbedOwner = vault.getOwner();
         vault.setStored(0L);
         // Cracking breaks the claim as well as the lock: the vault is no
         // longer anyone's, so the robber can now break it and keep the block
@@ -86,8 +89,8 @@ public class VaultCrackerItem extends Item {
 
         // Tell the victim, if they're online. A silent theft they only notice
         // days later is far more frustrating than being told they were raided.
-        if (vault.getOwner() != null && level.getServer() != null) {
-            ServerPlayer owner = level.getServer().getPlayerList().getPlayer(vault.getOwner());
+        if (robbedOwner != null && level.getServer() != null) {
+            ServerPlayer owner = level.getServer().getPlayerList().getPlayer(robbedOwner);
             if (owner != null) {
                 owner.displayClientMessage(Component.literal(
                         "Your vault was cracked - $" + CurrencyItem.formatValue(stored) + " was taken!"
