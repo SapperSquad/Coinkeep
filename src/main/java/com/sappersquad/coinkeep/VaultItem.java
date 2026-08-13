@@ -25,14 +25,16 @@ public class VaultItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context,
+                                net.minecraft.world.item.component.TooltipDisplay display,
+                                java.util.function.Consumer<Component> tooltip, TooltipFlag flag) {
         VaultContents contents = stack.getOrDefault(ModDataComponents.VAULT_CONTENTS.get(), VaultContents.EMPTY);
         if (contents.stored() > 0) {
-            tooltip.add(Component.literal("Holding $" + CurrencyItem.formatValue(contents.stored()))
+            tooltip.accept(Component.literal("Holding $" + CurrencyItem.formatValue(contents.stored()))
                     .withStyle(ChatFormatting.GOLD));
         }
         if (contents.owner().isPresent()) {
-            tooltip.add(Component.literal("Locked - crack it to open")
+            tooltip.accept(Component.literal("Locked - crack it to open")
                     .withStyle(ChatFormatting.RED));
         }
     }

@@ -16,9 +16,14 @@ public class ModAttachments {
     // .sync() mirrors the balance to the owning client so the Task/Shop
     // screens can display it (and grey out what you can't afford) without
     // any custom packet of our own - NeoForge handles the sync itself.
+    //
+    // 21.11's builder takes a MapCodec, so every attachment is stored as a
+    // small compound ({"value": ...}) rather than a bare tag. That is also
+    // why a 1.21.1 world's attachment data does not carry over - NeoForge
+    // changed the storage layer underneath at the same time.
     public static final Supplier<AttachmentType<Long>> BALANCE = ATTACHMENT_TYPES.register("balance",
             () -> AttachmentType.builder(() -> 0L)
-                    .serialize(Codec.LONG)
+                    .serialize(Codec.LONG.fieldOf("value"))
                     .sync(ByteBufCodecs.VAR_LONG)
                     .copyOnDeath()
                     .build());
@@ -29,7 +34,7 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<Boolean>> GOT_STARTER_BOOK =
             ATTACHMENT_TYPES.register("got_starter_book",
                     () -> AttachmentType.builder(() -> Boolean.FALSE)
-                            .serialize(Codec.BOOL)
+                            .serialize(Codec.BOOL.fieldOf("value"))
                             .copyOnDeath()
                             .build());
 
@@ -38,7 +43,7 @@ public class ModAttachments {
     // buyers' appetite, which is a small mercy rather than a punishment.
     public static final Supplier<AttachmentType<MarketData>> MARKET = ATTACHMENT_TYPES.register("market",
             () -> AttachmentType.builder(MarketData::empty)
-                    .serialize(MarketData.CODEC)
+                    .serialize(MarketData.CODEC.fieldOf("value"))
                     .sync(MarketData.STREAM_CODEC)
                     .build());
 
@@ -46,7 +51,7 @@ public class ModAttachments {
     // per-chapter completion counts without a menu or any custom packet.
     public static final Supplier<AttachmentType<QuestProgressData>> QUEST_PROGRESS = ATTACHMENT_TYPES.register("quest_progress",
             () -> AttachmentType.builder(QuestProgressData::empty)
-                    .serialize(QuestProgressData.CODEC)
+                    .serialize(QuestProgressData.CODEC.fieldOf("value"))
                     .sync(QuestProgressData.STREAM_CODEC)
                     .copyOnDeath()
                     .build());

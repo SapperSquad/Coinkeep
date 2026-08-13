@@ -2,7 +2,7 @@ package com.sappersquad.coinkeep;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -27,20 +27,20 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
  * tab's sidebar is drawn on the client, so a server-only category registry
  * would give every player an empty shop.
  */
-@EventBusSubscriber(modid = Coinkeep.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Coinkeep.MODID)
 public class ModRegistries {
 
     public static final ResourceKey<Registry<QuestLine>> QUEST_LINE = ResourceKey.createRegistryKey(
-            ResourceLocation.fromNamespaceAndPath(Coinkeep.MODID, "quest_line"));
+            Identifier.fromNamespaceAndPath(Coinkeep.MODID, "quest_line"));
 
     public static final ResourceKey<Registry<Quest>> QUEST = ResourceKey.createRegistryKey(
-            ResourceLocation.fromNamespaceAndPath(Coinkeep.MODID, "quest"));
+            Identifier.fromNamespaceAndPath(Coinkeep.MODID, "quest"));
 
     public static final ResourceKey<Registry<ShopCategory>> SHOP_CATEGORY = ResourceKey.createRegistryKey(
-            ResourceLocation.fromNamespaceAndPath(Coinkeep.MODID, "shop_category"));
+            Identifier.fromNamespaceAndPath(Coinkeep.MODID, "shop_category"));
 
     public static final ResourceKey<Registry<ShopEntry>> SHOP_ENTRY = ResourceKey.createRegistryKey(
-            ResourceLocation.fromNamespaceAndPath(Coinkeep.MODID, "shop_entry"));
+            Identifier.fromNamespaceAndPath(Coinkeep.MODID, "shop_entry"));
 
     @SubscribeEvent
     public static void registerDataPackRegistries(DataPackRegistryEvent.NewRegistry event) {

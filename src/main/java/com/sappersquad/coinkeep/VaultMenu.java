@@ -78,7 +78,7 @@ public class VaultMenu extends AbstractContainerMenu {
     public boolean clickMenuButton(Player player, int id) {
         // Re-checked here, not just on open: a menu left open across a config
         // change or ownership change must not keep working.
-        if (vault == null || player.level().isClientSide || !vault.canOpen(player)) {
+        if (vault == null || player.level().isClientSide() || !vault.canOpen(player)) {
             return false;
         }
         if (id < 0 || id >= PER_ROW * 2) {

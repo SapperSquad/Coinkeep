@@ -1,6 +1,9 @@
 package com.sappersquad.coinkeep;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -13,14 +16,23 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(BuiltInRegistries.ITEM, Coinkeep.MODID);
 
+    /**
+     * 1.21.11 requires every Item.Properties to carry its own registry id
+     * before construction ("Item id not set" at registration otherwise) -
+     * the id now bakes the description id and model pointer into the item.
+     */
+    static ResourceKey<Item> itemId(String name) {
+        return ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Coinkeep.MODID, name));
+    }
+
     // The one book - Quests, Shop and Cash are tabs of a single screen, so
     // there's no separate Shop Book any more. A plain Item: QuestClientEvents
     // opens the screen client-side, so there's no server menu to hook here.
     public static final DeferredHolder<Item, Item> BOOK = ITEMS.register("ledger",
-            () -> new Item(new Item.Properties().stacksTo(1)));
+            () -> new Item(new Item.Properties().stacksTo(1).setId(itemId("ledger"))));
 
     public static final DeferredHolder<Item, Item> VAULT_CRACKER = ITEMS.register("vault_cracker",
-            () -> new VaultCrackerItem(new Item.Properties().stacksTo(4)));
+            () -> new VaultCrackerItem(new Item.Properties().stacksTo(4).setId(itemId("vault_cracker"))));
 
     private static final LinkedHashMap<String, Long> BILL_VALUES = new LinkedHashMap<>();
     static {
@@ -49,7 +61,8 @@ public class ModItems {
         for (Map.Entry<String, Long> entry : BILL_VALUES.entrySet()) {
             String id = entry.getKey();
             long value = entry.getValue();
-            BILLS.put(id, ITEMS.register(id, () -> new CurrencyItem(value, new Item.Properties())));
+            BILLS.put(id, ITEMS.register(id,
+                    () -> new CurrencyItem(value, new Item.Properties().setId(itemId(id)))));
         }
     }
 

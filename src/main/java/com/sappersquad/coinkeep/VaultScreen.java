@@ -90,7 +90,10 @@ public class VaultScreen extends AbstractContainerScreen<VaultMenu> {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         if (button == 0) {
             for (Map.Entry<Integer, int[]> entry : buttons.entrySet()) {
                 int[] b = entry.getValue();
@@ -105,7 +108,7 @@ public class VaultScreen extends AbstractContainerScreen<VaultMenu> {
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

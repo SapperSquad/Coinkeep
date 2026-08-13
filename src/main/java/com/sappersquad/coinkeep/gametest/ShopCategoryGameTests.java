@@ -2,19 +2,15 @@ package com.sappersquad.coinkeep.gametest;
 
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
-import com.sappersquad.coinkeep.Coinkeep;
 import com.sappersquad.coinkeep.ModRegistries;
 import com.sappersquad.coinkeep.ShopCategory;
 import com.sappersquad.coinkeep.ShopEntry;
 import com.sappersquad.coinkeep.ShopRegistry;
 import com.sappersquad.coinkeep.QuestRegistry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 
 import java.util.ArrayList;
@@ -41,9 +37,10 @@ import java.util.Map;
  *       server-only registry would leave every player an empty shop - the
  *       trap this mod already learned once and wrote down in ModRegistries.</li>
  * </ul>
+ *
+ * <p>Registered in {@link ModTestFunctions}; each method is named by a
+ * {@code test_instance} JSON.
  */
-@GameTestHolder(Coinkeep.MODID)
-@PrefixGameTestTemplate(false)
 public class ShopCategoryGameTests {
 
     /** id -> label, in the exact order the 1.0.0 enum declared them. */
@@ -83,7 +80,6 @@ public class ShopCategoryGameTests {
      * enum's old declaration order. A player upgrading a 1.0.0 world sees
      * the same sidebar, in the same order, reading the same words.
      */
-    @GameTest(template = "empty")
     public static void theEightBuiltInsSurviveTheConversion(GameTestHelper helper) {
         RegistryAccess access = helper.getLevel().registryAccess();
         List<ShopCategory> categories = ShopRegistry.categories(access);
@@ -107,7 +103,6 @@ public class ShopCategoryGameTests {
      * an entry silently dropping into a placeholder tab would still have a
      * category, so only the numbers catch it.
      */
-    @GameTest(template = "empty")
     public static void everyShippedEntryLandsInItsOldCategory(GameTestHelper helper) {
         RegistryAccess access = helper.getLevel().registryAccess();
         int total = 0;
@@ -131,13 +126,12 @@ public class ShopCategoryGameTests {
      * sidebar is drawn client-side, so {@code shop_category} must be
      * declared with a network codec or every client gets an empty shop.
      */
-    @GameTest(template = "empty")
     public static void everyContentRegistryIsSyncedToClients(GameTestHelper helper) {
         var synced = DataPackRegistriesHooks.getSyncedCustomRegistries();
         for (ResourceKey<?> key : List.of(ModRegistries.QUEST_LINE, ModRegistries.QUEST,
                 ModRegistries.SHOP_CATEGORY, ModRegistries.SHOP_ENTRY)) {
             helper.assertTrue(synced.contains(key),
-                    key.location() + " must be registered with a NETWORK codec - a server-only "
+                    key.identifier() + " must be registered with a NETWORK codec - a server-only "
                             + "registry leaves the client's book empty");
         }
         helper.succeed();
@@ -148,7 +142,6 @@ public class ShopCategoryGameTests {
      * byte, including the upper-case category spelling the old
      * {@code ShopCategory.valueOf(name.toUpperCase())} tolerated.
      */
-    @GameTest(template = "empty")
     public static void oneZeroZeroEntryJsonStillParses(GameTestHelper helper) {
         ShopEntry lower = parse(helper, """
                 { "id": "test_lower", "category": "rare", "item": "minecraft:elytra", "price": 100 }""");
@@ -180,7 +173,6 @@ public class ShopCategoryGameTests {
      * category JSON with a name, a sort order and an icon round-trips, and
      * sort_order defaults sanely when omitted.
      */
-    @GameTest(template = "empty")
     public static void anAddonCategoryJsonRoundTrips(GameTestHelper helper) {
         ShopCategory full = parseCategory(helper, """
                 { "id": "highroller", "name": "Highroller", "sort_order": 200,
@@ -200,7 +192,6 @@ public class ShopCategoryGameTests {
     }
 
     /** The whole content set still validates - the /reload check, run headless. */
-    @GameTest(template = "empty")
     public static void contentStillValidates(GameTestHelper helper) {
         List<String> problems = QuestRegistry.validate(helper.getLevel().registryAccess());
         helper.assertTrue(problems.isEmpty(), "content validation must be clean: " + problems);

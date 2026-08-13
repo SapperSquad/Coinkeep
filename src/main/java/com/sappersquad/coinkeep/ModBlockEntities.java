@@ -13,5 +13,5 @@ public class ModBlockEntities {
 
     public static final Supplier<BlockEntityType<VaultBlockEntity>> VAULT =
             BLOCK_ENTITIES.register("vault",
-                    () -> BlockEntityType.Builder.of(VaultBlockEntity::new, ModBlocks.VAULT.get()).build(null));
+                    () -> new BlockEntityType<>(VaultBlockEntity::new, ModBlocks.VAULT.get()));
 }

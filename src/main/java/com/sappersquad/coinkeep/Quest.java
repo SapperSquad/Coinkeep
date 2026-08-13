@@ -3,7 +3,7 @@ package com.sappersquad.coinkeep;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -138,18 +138,18 @@ public record Quest(
 
     /** The item matching the trigger target id, or AIR when there isn't one. */
     private Item triggerItem() {
-        ResourceLocation key = ResourceLocation.tryParse(triggerTarget);
+        Identifier key = Identifier.tryParse(triggerTarget);
         if (key == null) {
             return Items.AIR;
         }
-        return BuiltInRegistries.ITEM.get(key);
+        return BuiltInRegistries.ITEM.getValue(key);
     }
 
     /** "minecraft:diamond_ore" -> "Diamond Ore" (registry name when possible). */
     private String prettyTargetName() {
         Item item = triggerItem();
         if (item != Items.AIR) {
-            return item.getDescription().getString();
+            return item.getName(item.getDefaultInstance()).getString();
         }
         String raw = triggerTarget.contains(":")
                 ? triggerTarget.substring(triggerTarget.indexOf(':') + 1)

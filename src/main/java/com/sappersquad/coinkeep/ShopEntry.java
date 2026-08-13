@@ -92,7 +92,7 @@ public record ShopEntry(
     private static boolean applyEnchant(
             net.minecraft.core.HolderLookup.RegistryLookup<net.minecraft.world.item.enchantment.Enchantment> lookup,
             net.minecraft.world.item.enchantment.ItemEnchantments.Mutable target, String id, int level) {
-        net.minecraft.resources.ResourceLocation location = net.minecraft.resources.ResourceLocation.tryParse(id);
+        net.minecraft.resources.Identifier location = net.minecraft.resources.Identifier.tryParse(id);
         if (location == null || level <= 0) {
             return false;
         }
@@ -212,6 +212,6 @@ public record ShopEntry(
             String level = enchantmentLevel < ROMAN.length ? ROMAN[enchantmentLevel] : String.valueOf(enchantmentLevel);
             return nice + " " + level + " Book";
         }
-        return item.getDescription().getString();
+        return item.getName(item.getDefaultInstance()).getString();
     }
 }

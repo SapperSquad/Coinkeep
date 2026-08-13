@@ -5,7 +5,7 @@
   "block.coinkeep.vault": "Vault",
   "item.coinkeep.vault_cracker": "Vault Cracker",
 
-  "key.categories.coinkeep": "Coinkeep",
+  "key.category.coinkeep.coinkeep": "Coinkeep",
   "key.coinkeep.open_tasks": "Open Coinkeep",
   "key.coinkeep.open_shop": "Open Shop Tab",
 

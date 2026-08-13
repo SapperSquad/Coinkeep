@@ -23,6 +23,10 @@ public class Coinkeep {
         ModMenus.MENUS.register(modEventBus);
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModCreativeTabs.TABS.register(modEventBus);
+        // GameTest functions: 1.21.11 registers tests as registry entries
+        // (paired with data/coinkeep/test_instance JSONs) instead of the old
+        // annotation scan. A handful of no-op consumers in production.
+        com.sappersquad.coinkeep.gametest.ModTestFunctions.TEST_FUNCTIONS.register(modEventBus);
 
         // SERVER-scoped: death rules are the host's call and must not vary
         // per client. Written to serverconfig/coinkeep-server.toml.

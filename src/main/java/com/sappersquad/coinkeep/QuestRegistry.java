@@ -42,7 +42,7 @@ public class QuestRegistry {
     private static Map<TriggerType, Map<String, List<Quest>>> byTrigger = Map.of();
 
     private static void ensure(RegistryAccess access) {
-        Registry<Quest> registry = access.registryOrThrow(ModRegistries.QUEST);
+        Registry<Quest> registry = access.lookupOrThrow(ModRegistries.QUEST);
         if (registry == cachedQuestRegistry) {
             return;
         }
@@ -51,7 +51,7 @@ public class QuestRegistry {
         Map<String, List<Quest>> lines = new LinkedHashMap<>();
         Map<TriggerType, Map<String, List<Quest>>> triggers = new java.util.EnumMap<>(TriggerType.class);
 
-        List<QuestLine> orderedLines = access.registryOrThrow(ModRegistries.QUEST_LINE).stream()
+        List<QuestLine> orderedLines = access.lookupOrThrow(ModRegistries.QUEST_LINE).stream()
                 .sorted(Comparator.comparingInt(QuestLine::sortOrder).thenComparing(QuestLine::id))
                 .toList();
         for (QuestLine line : orderedLines) {

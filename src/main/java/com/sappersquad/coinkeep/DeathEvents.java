@@ -5,7 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -30,7 +30,7 @@ public class DeathEvents {
             return;
         }
         if (CoinkeepConfig.RESPECT_KEEP_INVENTORY.get()
-                && player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+                && player.level().getGameRules().get(GameRules.KEEP_INVENTORY)) {
             return;
         }
 

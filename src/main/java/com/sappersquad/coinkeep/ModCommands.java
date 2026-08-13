@@ -14,7 +14,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -54,7 +54,7 @@ public class ModCommands {
         // hence requiring op permission. A quest's reward command would
         // read: addbalance @s 500
         dispatcher.register(Commands.literal("addbalance")
-                .requires(source -> source.hasPermission(2))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("amount", LongArgumentType.longArg(1))
                                 .executes(ctx -> {
@@ -203,14 +203,14 @@ public class ModCommands {
         }
         BalanceHelper.addBalance(target, amount);
 
-        String payerName = payer.getGameProfile().getName();
+        String payerName = payer.getScoreboardName();
         target.displayClientMessage(Component.literal(
                 "+$" + CurrencyItem.formatValue(amount) + " from " + payerName
                         + "  (balance: $" + CurrencyItem.formatValue(BalanceHelper.getBalance(target)) + ")"
         ).withStyle(ChatFormatting.GOLD), false);
 
         source.sendSuccess(() -> Component.literal(
-                "Paid $" + CurrencyItem.formatValue(amount) + " to " + target.getGameProfile().getName()
+                "Paid $" + CurrencyItem.formatValue(amount) + " to " + target.getScoreboardName()
                         + "  (balance: $" + CurrencyItem.formatValue(BalanceHelper.getBalance(payer)) + ")"
         ).withStyle(ChatFormatting.GREEN), false);
         return 1;
@@ -271,7 +271,7 @@ public class ModCommands {
         long total = 0L;
         int bills = 0;
 
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.getItem() instanceof CurrencyItem currency) {
                 total += currency.getValue() * stack.getCount();
                 bills += stack.getCount();
@@ -320,7 +320,7 @@ public class ModCommands {
         MarketHelper.applyRecovery(player);
 
         int held = 0;
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.is(entry.item()) && isPlain(stack)) {
                 held += stack.getCount();
             }
@@ -336,7 +336,7 @@ public class ModCommands {
 
         // Remove the items first; only pay for what was actually taken.
         int remaining = selling;
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (remaining <= 0) {
                 break;
             }

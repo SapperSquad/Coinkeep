@@ -43,7 +43,7 @@ public class VaultCrackerItem extends Item {
         if (!(level.getBlockEntity(context.getClickedPos()) instanceof VaultBlockEntity vault)) {
             return InteractionResult.PASS;
         }
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -98,8 +98,10 @@ public class VaultCrackerItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("Empties another player's vault").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.literal("Consumed on use").withStyle(ChatFormatting.DARK_GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context,
+                                net.minecraft.world.item.component.TooltipDisplay display,
+                                java.util.function.Consumer<Component> tooltip, TooltipFlag flag) {
+        tooltip.accept(Component.literal("Empties another player's vault").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.literal("Consumed on use").withStyle(ChatFormatting.DARK_GRAY));
     }
 }
