@@ -2,7 +2,8 @@
 
 **Earn it. Bank it. Defend it.**
 
-A full in-game economy for **Minecraft 1.21.1 / NeoForge 21.1.235** — quests to earn from,
+A full in-game economy for **Minecraft 1.21.11 / NeoForge 21.11.45** (this branch; 1.21.1
+lives on `main`) — quests to earn from,
 a market that reacts to what you sell, banknotes you can hold, and vaults other players
 can crack open.
 

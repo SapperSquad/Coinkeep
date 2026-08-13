@@ -3,6 +3,21 @@
 All notable changes to Coinkeep. Bump this in the same pass as `PUBLISHING.md` and
 `README.md` — never one alone.
 
+## 1.3.0+1.21.11 — The same 1.3.0, for Minecraft 1.21.11 (2026-08-13)
+
+A straight port of 1.3.0 to **Minecraft 1.21.11 / NeoForge 21.11.45** — same features,
+same content, new target. Verified: all 13 GameTests pass on the rebuilt (registry-based)
+test framework, and the book, shop and recipes were smoke-tested in a live client.
+
+### Upgrade note — only if you carry a 1.21.1 world across
+- **Stored balances, market demand and the starter-book flag do not carry over** when a
+  1.21.1 world is opened on 1.21.11 — NeoForge changed how data attachments are stored
+  between those Minecraft versions, so the old data is skipped (a warning appears in the
+  log). Vault contents and banknotes survive, since they live in ordinary block/item data.
+  On a live server: have players **vault their money or withdraw it as banknotes** before
+  upgrading, then deposit again after.
+- Fresh 1.21.11 worlds are unaffected.
+
 ## 1.3.0 — Economy levers, grid view, and a faster quest engine (2026-08-09)
 
 Round two of player feedback: server owners asked for inflation controls, purchase limits

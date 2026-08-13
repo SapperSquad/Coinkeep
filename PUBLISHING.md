@@ -47,6 +47,25 @@ launch checklist).
 > the new Highroller jar. A 1.1.0 client against a 1.0.0 server (or vice versa) will not
 > agree on the shop-category registry.
 
+## 1.3.0+1.21.11 release state (verified 2026-08-13, branch `mc/1.21.11`)
+
+- **Port of 1.3.0 to Minecraft 1.21.11 / NeoForge 21.11.45.** Same features and content;
+  jar `build/libs/coinkeep-1.3.0+1.21.11.jar` built from the `mc/1.21.11` branch.
+- **13/13 GameTests green** on the rebuilt registry-based test framework
+  (runGameTestServer reports 14 — vanilla's own `always_pass` runs alongside).
+- **Client smoke-tested live**: booted into a world on 1.21.11, book renders (tabs,
+  search, sidebar, quest rows and icons), click selection works, recipes parse, no
+  pack-metadata errors.
+- **Store upload**: create a *new version* on Modrinth/CurseForge under the same project —
+  version number `1.3.0+1.21.11`, game version **1.21.11**, loader NeoForge. Changelog =
+  the "1.3.0+1.21.11" section of CHANGELOG.md (short: "Coinkeep 1.3.0 for Minecraft
+  1.21.11 — same features, new game version"). Keep the 1.21.1 file listed for 1.21.1.
+- **Upgrade caveat for the changelog** (already written in CHANGELOG.md): carrying a
+  1.21.1 world to 1.21.11 resets balances/market/starter-book flag (NeoForge attachment
+  storage changed); vaults and banknotes survive. Advise vaulting money before upgrading.
+- **Highroller note**: Highroller stays 1.21.1-only until it is ported — the store page
+  compatibility note should keep saying so.
+
 ## 1.3.0 release state (verified 2026-08-09)
 
 - **Build green**, jar `build/libs/coinkeep-1.3.0.jar`; **13/13 GameTests green** —

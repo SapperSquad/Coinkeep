@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:book"
-    },
-    {
-      "item": "minecraft:gold_nugget"
-    }
+    "minecraft:book",
+    "minecraft:gold_nugget"
   ],
   "result": {
     "count": 1,
