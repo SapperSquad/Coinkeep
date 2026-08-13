@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
  */
 public class ShopClientOpener {
     public static void open() {
-        Minecraft.getInstance().setScreen(
+        Minecraft.getInstance().setScreenAndShow(
                 QuestScreen.onShopTab(Component.literal("Coinkeep")));
     }
 }

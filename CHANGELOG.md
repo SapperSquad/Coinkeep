@@ -3,6 +3,18 @@
 All notable changes to Coinkeep. Bump this in the same pass as `PUBLISHING.md` and
 `README.md` — never one alone.
 
+## 1.3.0+26.2 — The same 1.3.0, for Minecraft 26.2 (2026-08-13)
+
+A straight port of 1.3.0 to **Minecraft 26.2 / NeoForge 26.2.0.59** — same features, same
+content. Requires **Java 25** (as all of Minecraft 26.x does). Verified: all 13 GameTests
+pass, and the book, shop and click handling were smoke-tested in a live 26.2 client.
+
+Also fixed here first: the **"your vault was cracked" message now actually reaches the
+victim** — the owner was being cleared before the notification check, so it never sent.
+(Fix lands on the other versions too.)
+
+The 1.21.11 upgrade note below applies the same way when carrying an old world forward.
+
 ## 1.3.0+1.21.11 — The same 1.3.0, for Minecraft 1.21.11 (2026-08-13)
 
 A straight port of 1.3.0 to **Minecraft 1.21.11 / NeoForge 21.11.45** — same features,

@@ -53,21 +53,24 @@ public class VaultCrackerItem extends Item {
             return InteractionResult.PASS;
         }
         if (!CoinkeepConfig.ALLOW_VAULT_CRACKING.get()) {
-            player.displayClientMessage(Component.literal(
+            player.sendOverlayMessage(Component.literal(
                     "Vaults cannot be cracked on this server."
-            ).withStyle(ChatFormatting.RED), true);
+            ).withStyle(ChatFormatting.RED));
             return InteractionResult.FAIL;
         }
 
         long stored = vault.getStored();
         if (stored <= 0) {
             // Don't burn the cracker on an empty safe.
-            player.displayClientMessage(Component.literal(
+            player.sendOverlayMessage(Component.literal(
                     "This vault is empty."
-            ).withStyle(ChatFormatting.GRAY), true);
+            ).withStyle(ChatFormatting.GRAY));
             return InteractionResult.FAIL;
         }
 
+        // Remember who to notify BEFORE the claim is cleared - checking the
+        // vault after setOwner(null) meant the victim was never told.
+        java.util.UUID robbedOwner = vault.getOwner();
         vault.setStored(0L);
         // Cracking breaks the claim as well as the lock: the vault is no
         // longer anyone's, so the robber can now break it and keep the block
@@ -80,18 +83,18 @@ public class VaultCrackerItem extends Item {
 
         level.playSound(null, context.getClickedPos(),
                 SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, 1.0F, 0.5F);
-        player.displayClientMessage(Component.literal(
+        player.sendSystemMessage(Component.literal(
                 "Cracked the vault - $" + CurrencyItem.formatValue(stored) + " spills out!"
-        ).withStyle(ChatFormatting.GOLD), false);
+        ).withStyle(ChatFormatting.GOLD));
 
         // Tell the victim, if they're online. A silent theft they only notice
         // days later is far more frustrating than being told they were raided.
-        if (vault.getOwner() != null && level.getServer() != null) {
-            ServerPlayer owner = level.getServer().getPlayerList().getPlayer(vault.getOwner());
+        if (robbedOwner != null && level.getServer() != null) {
+            ServerPlayer owner = level.getServer().getPlayerList().getPlayer(robbedOwner);
             if (owner != null) {
-                owner.displayClientMessage(Component.literal(
+                owner.sendSystemMessage(Component.literal(
                         "Your vault was cracked - $" + CurrencyItem.formatValue(stored) + " was taken!"
-                ).withStyle(ChatFormatting.RED), false);
+                ).withStyle(ChatFormatting.RED));
             }
         }
         return InteractionResult.CONSUME;

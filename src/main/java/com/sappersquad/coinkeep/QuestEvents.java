@@ -14,7 +14,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 /**
  * Drives quest progress. Only quests that are unlocked (all prerequisites
@@ -25,7 +25,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 public class QuestEvents {
 
     @SubscribeEvent
-    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+    public static void onBlockBreak(BreakBlockEvent event) {
         Player player = event.getPlayer();
         if (player.level().isClientSide()) {
             return;
@@ -129,16 +129,16 @@ public class QuestEvents {
         String heading = quest.repeatable()
                 ? "Tier " + tier + " complete: " + quest.resolveName()
                 : "Quest complete: " + quest.resolveName();
-        player.displayClientMessage(Component.literal(heading).withStyle(ChatFormatting.GOLD), false);
+        player.sendSystemMessage(Component.literal(heading).withStyle(ChatFormatting.GOLD));
         if (rewardText.length() > 0) {
-            player.displayClientMessage(Component.literal("Rewards: " + rewardText)
-                    .withStyle(ChatFormatting.GREEN), false);
+            player.sendSystemMessage(Component.literal("Rewards: " + rewardText)
+                    .withStyle(ChatFormatting.GREEN));
         }
         if (quest.repeatable() && !quest.isMaxed(tier)) {
             int next = quest.cumulativeTargetForTier(tier + 1);
-            player.displayClientMessage(Component.literal(
+            player.sendSystemMessage(Component.literal(
                             "Next tier: " + next + " total (" + quest.targetForTier(tier + 1) + " more)")
-                    .withStyle(ChatFormatting.DARK_AQUA), false);
+                    .withStyle(ChatFormatting.DARK_AQUA));
         }
 
         // Announce anything this quest just unlocked.
@@ -146,8 +146,8 @@ public class QuestEvents {
             if (candidate.dependencies().contains(quest.id())
                     && !QuestHelper.isCompleted(player, candidate.id())
                     && QuestHelper.isUnlocked(player, candidate)) {
-                player.displayClientMessage(Component.literal("Unlocked: " + candidate.resolveName())
-                        .withStyle(ChatFormatting.AQUA), false);
+                player.sendSystemMessage(Component.literal("Unlocked: " + candidate.resolveName())
+                        .withStyle(ChatFormatting.AQUA));
             }
         }
     }

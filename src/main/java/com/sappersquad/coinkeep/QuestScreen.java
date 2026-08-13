@@ -2,7 +2,7 @@ package com.sappersquad.coinkeep;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -579,7 +579,7 @@ public class QuestScreen extends Screen {
      * when searching across chapters: without it, an empty list is ambiguous
      * between "no matches" and "something is broken".
      */
-    private void drawSearchRow(GuiGraphics g) {
+    private void drawSearchRow(GuiGraphicsExtractor g) {
         g.fill(listLeft, searchTop, listRight, searchTop + SEARCH_H - 1, MoneyUI.TAB_IDLE);
         g.fill(listLeft, searchTop + SEARCH_H - 1, listRight, searchTop + SEARCH_H, MoneyUI.DIVIDER);
     }
@@ -589,7 +589,7 @@ public class QuestScreen extends Screen {
      * a long query's text runs straight over the count. Opaque behind the label
      * so the two never interleave.
      */
-    private void drawSearchCount(GuiGraphics g) {
+    private void drawSearchCount(GuiGraphicsExtractor g) {
         if (!searching()) {
             return;
         }
@@ -597,23 +597,23 @@ public class QuestScreen extends Screen {
         String label = count == 0 ? "no matches" : count + (count == 1 ? " match" : " matches");
         int labelW = this.font.width(label);
         g.fill(listRight - labelW - 10, searchTop, listRight, searchTop + SEARCH_H - 1, MoneyUI.TAB_IDLE);
-        g.drawString(this.font, label, listRight - labelW - 4, searchTop + 5,
+        g.text(this.font, label, listRight - labelW - 4, searchTop + 5,
                 count == 0 ? MoneyUI.RED : MoneyUI.TEXT_FAINT, false);
     }
 
     // ==================== render ====================
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         g.fill(0, 0, this.width, this.height, MoneyUI.BACKDROP);
 
         MoneyUI.panel(g, panelLeft, panelTop, panelW, panelH);
         MoneyUI.headerBar(g, panelLeft, panelTop, panelW, HEADER_H);
-        g.drawString(this.font, this.title, panelLeft + PAD, panelTop + 8, MoneyUI.TEXT, false);
+        g.text(this.font, this.title, panelLeft + PAD, panelTop + 8, MoneyUI.TEXT, false);
 
         long balance = balance();
         String balanceText = MoneyUI.money(balance);
-        g.drawString(this.font, balanceText,
+        g.text(this.font, balanceText,
                 panelLeft + panelW - PAD - this.font.width(balanceText), panelTop + 8, MoneyUI.GOLD, false);
 
         for (Map.Entry<Tab, int[]> tab : topTabBounds.entrySet()) {
@@ -655,7 +655,7 @@ public class QuestScreen extends Screen {
             drawGuideBody(g);
         }
 
-        super.render(g, mouseX, mouseY, partialTick);
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
 
         if (tabHasSearch()) {
             drawSearchCount(g);
@@ -744,7 +744,7 @@ public class QuestScreen extends Screen {
         }
     }
 
-    private void drawQuestSidebar(GuiGraphics g, int mouseX, int mouseY) {
+    private void drawQuestSidebar(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         LocalPlayer player = player();
         int viewH = contentBottom - contentTop;
         int hovered = inSidebar(mouseX, mouseY)
@@ -762,13 +762,13 @@ public class QuestScreen extends Screen {
                 } else if (i == hovered) {
                     g.fill(panelLeft + 1, y, listLeft - 1, y + LINE_ROW_H, MoneyUI.TAB_HOVER);
                 }
-                g.renderItem(new ItemStack(line.icon()), panelLeft + 8, y + 5);
+                g.item(new ItemStack(line.icon()), panelLeft + 8, y + 5);
 
                 int total = questsIn(line.id()).size();
                 int done = player == null ? 0 : QuestHelper.completedIn(player, line.id());
-                g.drawString(this.font, MoneyUI.fit(this.font, line.name(), sidebarW - 34),
+                g.text(this.font, MoneyUI.fit(this.font, line.name(), sidebarW - 34),
                         panelLeft + 28, y + 4, active ? MoneyUI.TEXT : MoneyUI.TEXT_DIM, false);
-                g.drawString(this.font, done + "/" + total, panelLeft + 28, y + 14,
+                g.text(this.font, done + "/" + total, panelLeft + 28, y + 14,
                         total > 0 && done >= total ? MoneyUI.GOLD : MoneyUI.TEXT_FAINT, false);
             }
             y += LINE_ROW_H;
@@ -780,7 +780,7 @@ public class QuestScreen extends Screen {
                 lines().size() * LINE_ROW_H, viewH, sidebarScroll);
     }
 
-    private void drawQuestList(GuiGraphics g, int mouseX, int mouseY) {
+    private void drawQuestList(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         List<Quest> quests = quests();
         QuestLine line = selectedLine == null ? null : QuestRegistry.lineById(access, selectedLine);
         int viewH = contentBottom - contentTop;
@@ -799,7 +799,7 @@ public class QuestScreen extends Screen {
         MoneyUI.scrollbar(g, listRight - 5, contentTop, viewH, quests.size() * QUEST_ROW_H, viewH, scroll);
     }
 
-    private void drawQuestRow(GuiGraphics g, Quest quest, QuestLine line, int y, boolean hovered) {
+    private void drawQuestRow(GuiGraphicsExtractor g, Quest quest, QuestLine line, int y, boolean hovered) {
         LocalPlayer player = player();
         int w = rowWidth();
         QuestHelper.State state = player == null ? QuestHelper.State.LOCKED : QuestHelper.stateOf(player, quest);
@@ -810,7 +810,7 @@ public class QuestScreen extends Screen {
             g.fill(listLeft, y, listLeft + w, y + QUEST_ROW_H, MoneyUI.ROW_HOVER);
         }
 
-        g.renderItem(quest.resolveIcon(line), listLeft + 6, y + 4);
+        g.item(quest.resolveIcon(line), listLeft + 6, y + 4);
 
         int cleared = player == null ? 0 : QuestHelper.getTier(player, quest.id());
         int tier = quest.isMaxed(cleared) ? Math.max(1, quest.maxTier()) : cleared + 1;
@@ -843,9 +843,9 @@ public class QuestScreen extends Screen {
         }
 
         int statusW = this.font.width(status);
-        g.drawString(this.font, MoneyUI.fit(this.font, quest.resolveName(), w - 30 - statusW - PAD - 6),
+        g.text(this.font, MoneyUI.fit(this.font, quest.resolveName(), w - 30 - statusW - PAD - 6),
                 listLeft + 28, y + 4, nameColor, false);
-        g.drawString(this.font, status, listLeft + w - PAD - statusW, y + 4,
+        g.text(this.font, status, listLeft + w - PAD - statusW, y + 4,
                 state == QuestHelper.State.COMPLETED ? MoneyUI.GOLD : MoneyUI.TEXT_DIM, false);
 
         float pct = state == QuestHelper.State.COMPLETED ? 1.0F
@@ -854,18 +854,18 @@ public class QuestScreen extends Screen {
     }
 
     /** Bottom strip: what the selected quest is, and what it actually pays. */
-    private void drawDetail(GuiGraphics g) {
+    private void drawDetail(GuiGraphicsExtractor g) {
         int top = contentBottom;
         g.fill(panelLeft + 1, top, panelLeft + panelW - 1, top + 1, MoneyUI.DIVIDER);
 
         Quest quest = selectedQuest == null ? null : QuestRegistry.byId(access, selectedQuest);
         if (quest == null) {
-            g.drawString(this.font, "Select a quest to see its details and rewards.",
+            g.text(this.font, "Select a quest to see its details and rewards.",
                     panelLeft + PAD, top + 10, MoneyUI.TEXT_FAINT, false);
             return;
         }
 
-        g.drawString(this.font, MoneyUI.fit(this.font, quest.resolveName(), panelW - PAD * 2),
+        g.text(this.font, MoneyUI.fit(this.font, quest.resolveName(), panelW - PAD * 2),
                 panelLeft + PAD, top + 7, MoneyUI.TEXT, false);
 
         LocalPlayer player = player();
@@ -882,14 +882,14 @@ public class QuestScreen extends Screen {
                 }
                 needs.append(dependency.resolveName());
             }
-            g.drawString(this.font, MoneyUI.fit(this.font, needs.toString(), panelW - PAD * 2),
+            g.text(this.font, MoneyUI.fit(this.font, needs.toString(), panelW - PAD * 2),
                     panelLeft + PAD, top + 19, MoneyUI.RED, false);
         } else if (quest.description() != null && !quest.description().isBlank()) {
-            g.drawString(this.font, MoneyUI.fit(this.font, quest.description(), panelW - PAD * 2),
+            g.text(this.font, MoneyUI.fit(this.font, quest.description(), panelW - PAD * 2),
                     panelLeft + PAD, top + 19, MoneyUI.TEXT_DIM, false);
         }
 
-        g.drawString(this.font, "Rewards", panelLeft + PAD, top + 33, MoneyUI.TEXT_FAINT, false);
+        g.text(this.font, "Rewards", panelLeft + PAD, top + 33, MoneyUI.TEXT_FAINT, false);
         int x = panelLeft + PAD + this.font.width("Rewards") + 8;
         int y = top + 31;
         int cleared = player == null ? 0 : QuestHelper.getTier(player, quest.id());
@@ -908,8 +908,8 @@ public class QuestScreen extends Screen {
             if (x + chunk > panelLeft + panelW - PAD) {
                 break;
             }
-            g.renderItem(shown.icon(), x, y);
-            g.drawString(this.font, label, x + 20, y + 4, MoneyUI.GREEN, false);
+            g.item(shown.icon(), x, y);
+            g.text(this.font, label, x + 20, y + 4, MoneyUI.GREEN, false);
             x += chunk;
         }
 
@@ -922,14 +922,14 @@ public class QuestScreen extends Screen {
      * of where you are, so the fact that it keeps going is obvious without
      * listing an infinite sequence.
      */
-    private void drawTierLadder(GuiGraphics g, Quest quest, int y, LocalPlayer player, int cleared, int tier) {
+    private void drawTierLadder(GuiGraphicsExtractor g, Quest quest, int y, LocalPlayer player, int cleared, int tier) {
         tierPipBounds.clear();
         if (!quest.repeatable()) {
-            g.drawString(this.font, "One-time quest", panelLeft + PAD, y + 2, MoneyUI.TEXT_FAINT, false);
+            g.text(this.font, "One-time quest", panelLeft + PAD, y + 2, MoneyUI.TEXT_FAINT, false);
             return;
         }
 
-        g.drawString(this.font, "Tiers", panelLeft + PAD, y + 2, MoneyUI.TEXT_FAINT, false);
+        g.text(this.font, "Tiers", panelLeft + PAD, y + 2, MoneyUI.TEXT_FAINT, false);
         int x = panelLeft + PAD + this.font.width("Tiers") + 8;
 
         // Window of 6 tiers, sliding so the current one stays visible.
@@ -957,7 +957,7 @@ public class QuestScreen extends Screen {
         }
         String summary = "T" + tier + ": " + nextTotal + " total"
                 + (pay > 0 ? "  ->  " + MoneyUI.money(pay) : "") + "   (repeats)";
-        g.drawString(this.font, MoneyUI.fit(this.font, summary, panelLeft + panelW - PAD - (x + 6)),
+        g.text(this.font, MoneyUI.fit(this.font, summary, panelLeft + panelW - PAD - (x + 6)),
                 x + 6, y + 2, MoneyUI.TEXT_DIM, false);
     }
 
@@ -966,7 +966,7 @@ public class QuestScreen extends Screen {
      * so a player looking at Iron can see Diamond and Ancient Debris exist
      * further up the ladder.
      */
-    private void drawChapterLadder(GuiGraphics g, Quest quest, int y, LocalPlayer player) {
+    private void drawChapterLadder(GuiGraphicsExtractor g, Quest quest, int y, LocalPlayer player) {
         chapterPipBounds.clear();
         List<Quest> ladder = chapterLadder(quest.lineId());
         if (ladder.isEmpty()) {
@@ -974,7 +974,7 @@ public class QuestScreen extends Screen {
         }
         QuestLine line = QuestRegistry.lineById(access, quest.lineId());
         String label = line == null ? "Chapter" : line.name();
-        g.drawString(this.font, label, panelLeft + PAD, y + 2, MoneyUI.TEXT_FAINT, false);
+        g.text(this.font, label, panelLeft + PAD, y + 2, MoneyUI.TEXT_FAINT, false);
 
         int x = panelLeft + PAD + this.font.width(label) + 8;
         int done = 0;
@@ -1001,7 +1001,7 @@ public class QuestScreen extends Screen {
         String summary = done + " of " + ladder.size() + " started";
         int summaryX = panelLeft + panelW - PAD - this.font.width(summary);
         if (summaryX > x + 6) {
-            g.drawString(this.font, summary, summaryX, y + 2, MoneyUI.TEXT_DIM, false);
+            g.text(this.font, summary, summaryX, y + 2, MoneyUI.TEXT_DIM, false);
         }
     }
 
@@ -1015,7 +1015,7 @@ public class QuestScreen extends Screen {
      * pays. The pips alone show position but not the numbers, which is the
      * thing you actually want when deciding whether to keep going.
      */
-    private void drawLadderTooltips(GuiGraphics g, int mouseX, int mouseY) {
+    private void drawLadderTooltips(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         Quest quest = selectedQuest == null ? null : QuestRegistry.byId(access, selectedQuest);
         if (quest == null) {
             return;
@@ -1108,7 +1108,7 @@ public class QuestScreen extends Screen {
 
     // ==================== shop tab ====================
 
-    private void drawShopSidebar(GuiGraphics g, int mouseX, int mouseY) {
+    private void drawShopSidebar(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         List<ShopCategory> categories = shopCategories();
         int viewH = contentBottom - contentTop;
         int hovered = inSidebar(mouseX, mouseY)
@@ -1132,14 +1132,14 @@ public class QuestScreen extends Screen {
                 // representative, and what every 1.0.0 category still does.
                 List<ShopEntry> inCategory = ShopRegistry.inCategory(access, category.id());
                 if (category.icon().isPresent()) {
-                    g.renderItem(new ItemStack(category.icon().get()), panelLeft + 8, y + 5);
+                    g.item(new ItemStack(category.icon().get()), panelLeft + 8, y + 5);
                 } else if (!inCategory.isEmpty()) {
                     ShopEntry first = inCategory.get(0);
-                    g.renderItem(new ItemStack(first.item()), panelLeft + 8, y + 5);
+                    g.item(new ItemStack(first.item()), panelLeft + 8, y + 5);
                 }
-                g.drawString(this.font, MoneyUI.fit(this.font, category.getLabel(), sidebarW - 34),
+                g.text(this.font, MoneyUI.fit(this.font, category.getLabel(), sidebarW - 34),
                         panelLeft + 28, y + 4, active ? MoneyUI.TEXT : MoneyUI.TEXT_DIM, false);
-                g.drawString(this.font, inCategory.size() + " items", panelLeft + 28, y + 14,
+                g.text(this.font, inCategory.size() + " items", panelLeft + 28, y + 14,
                         MoneyUI.TEXT_FAINT, false);
             }
             y += LINE_ROW_H;
@@ -1150,7 +1150,7 @@ public class QuestScreen extends Screen {
                 categories.size() * LINE_ROW_H, viewH, shopSidebarScroll);
     }
 
-    private void drawShopList(GuiGraphics g, int mouseX, int mouseY, long balance) {
+    private void drawShopList(GuiGraphicsExtractor g, int mouseX, int mouseY, long balance) {
         List<ShopEntry> entries = entries();
         int viewH = contentBottom - contentTop;
         int hovered = hoveredShopIndex(mouseX, mouseY);
@@ -1187,7 +1187,7 @@ public class QuestScreen extends Screen {
      * feedback asked for. A tile carries less than a row, deliberately; the
      * tooltip is the detail surface, the tile is for scanning.
      */
-    private void drawShopCell(GuiGraphics g, ShopEntry entry, int x, int y, boolean hovered, long balance) {
+    private void drawShopCell(GuiGraphicsExtractor g, ShopEntry entry, int x, int y, boolean hovered, long balance) {
         LocalPlayer player = player();
         boolean selling = shopMode == ShopMode.SELL;
 
@@ -1217,32 +1217,32 @@ public class QuestScreen extends Screen {
         ItemStack stack = new ItemStack(entry.item(),
                 selling ? Math.max(1, heldCount(entry)) : Math.max(1, entry.count()));
         int iconX = x + (GRID_CELL_W - 16) / 2;
-        g.renderItem(stack, iconX, y + 4);
+        g.item(stack, iconX, y + 4);
         if (selling) {
-            g.renderItemDecorations(this.font, stack, iconX, y + 4);
+            g.itemDecorations(this.font, stack, iconX, y + 4);
         }
 
         String name = MoneyUI.fit(this.font, entry.displayName(), GRID_CELL_W - 8);
-        g.drawString(this.font, name, x + (GRID_CELL_W - this.font.width(name)) / 2, y + 24,
+        g.text(this.font, name, x + (GRID_CELL_W - this.font.width(name)) / 2, y + 24,
                 actionable ? MoneyUI.TEXT : MoneyUI.TEXT_FAINT, false);
 
         String priceText = MoneyUI.fit(this.font, MoneyUI.money(price), GRID_CELL_W - 8);
         int priceColor = selling
                 ? (actionable ? MoneyUI.GREEN : MoneyUI.TEXT_FAINT)
                 : (actionable ? MoneyUI.GREEN : MoneyUI.RED);
-        g.drawString(this.font, priceText, x + (GRID_CELL_W - this.font.width(priceText)) / 2, y + 35,
+        g.text(this.font, priceText, x + (GRID_CELL_W - this.font.width(priceText)) / 2, y + 35,
                 priceColor, false);
     }
 
-    private void drawShopRow(GuiGraphics g, ShopEntry entry, int y, boolean hovered, long balance) {
+    private void drawShopRow(GuiGraphicsExtractor g, ShopEntry entry, int y, boolean hovered, long balance) {
         int w = rowWidth();
         if (hovered) {
             g.fill(listLeft, y, listLeft + w, y + SHOP_ROW_H, MoneyUI.ROW_HOVER);
         }
 
         ItemStack stack = new ItemStack(entry.item(), Math.max(1, entry.count()));
-        g.renderItem(stack, listLeft + 6, y + 4);
-        g.renderItemDecorations(this.font, stack, listLeft + 6, y + 4);
+        g.item(stack, listLeft + 6, y + 4);
+        g.itemDecorations(this.font, stack, listLeft + 6, y + 4);
 
         // The tax-inclusive figure, so the row quotes what /buy will charge.
         long cost = TaxHelper.buyCost(entry);
@@ -1262,10 +1262,10 @@ public class QuestScreen extends Screen {
             name = name + "  (" + remaining + " left)";
         }
 
-        g.drawString(this.font, MoneyUI.fit(this.font, name,
+        g.text(this.font, MoneyUI.fit(this.font, name,
                         (listLeft + w - PAD - priceW - 10) - nameX),
                 nameX, y + 8, afford ? MoneyUI.TEXT : MoneyUI.TEXT_FAINT, false);
-        g.drawString(this.font, price, listLeft + w - PAD - priceW, y + 8,
+        g.text(this.font, price, listLeft + w - PAD - priceW, y + 8,
                 soldOut ? MoneyUI.TEXT_FAINT : (afford ? MoneyUI.GREEN : MoneyUI.RED), false);
     }
 
@@ -1275,7 +1275,7 @@ public class QuestScreen extends Screen {
      * saturated your buyers are for it (the bar). Rows you hold none of are
      * dimmed rather than hidden - seeing the price is the point.
      */
-    private void drawSellRow(GuiGraphics g, ShopEntry entry, int y, boolean hovered) {
+    private void drawSellRow(GuiGraphicsExtractor g, ShopEntry entry, int y, boolean hovered) {
         LocalPlayer player = player();
         int w = rowWidth();
         if (hovered) {
@@ -1283,7 +1283,7 @@ public class QuestScreen extends Screen {
         }
 
         ItemStack stack = new ItemStack(entry.item());
-        g.renderItem(stack, listLeft + 6, y + 4);
+        g.item(stack, listLeft + 6, y + 4);
 
         int held = heldCount(entry);
         boolean has = held > 0;
@@ -1296,11 +1296,11 @@ public class QuestScreen extends Screen {
         int barW = 34;
         int priceX = listLeft + w - PAD - priceW;
 
-        g.drawString(this.font, MoneyUI.fit(this.font, entry.displayName(), (priceX - 8) - nameX),
+        g.text(this.font, MoneyUI.fit(this.font, entry.displayName(), (priceX - 8) - nameX),
                 nameX, y + 3, has ? MoneyUI.TEXT : MoneyUI.TEXT_FAINT, false);
-        g.drawString(this.font, has ? "you have " + held : "none held", nameX, y + 13,
+        g.text(this.font, has ? "you have " + held : "none held", nameX, y + 13,
                 has ? MoneyUI.TEXT_DIM : MoneyUI.TEXT_FAINT, false);
-        g.drawString(this.font, price, priceX, y + 3, has ? MoneyUI.GREEN : MoneyUI.TEXT_FAINT, false);
+        g.text(this.font, price, priceX, y + 3, has ? MoneyUI.GREEN : MoneyUI.TEXT_FAINT, false);
 
         // Demand bar: full and green when your buyers are fresh, shrinking
         // and amber as you saturate them.
@@ -1313,7 +1313,7 @@ public class QuestScreen extends Screen {
 
     private static final int GUIDE_LINE_H = 10;
 
-    private void drawGuideSidebar(GuiGraphics g, int mouseX, int mouseY) {
+    private void drawGuideSidebar(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         List<GuideTopic> topics = GuideTopic.ALL;
         int viewH = contentBottom - contentTop;
         int hovered = inSidebar(mouseX, mouseY)
@@ -1330,8 +1330,8 @@ public class QuestScreen extends Screen {
                 } else if (i == hovered) {
                     g.fill(panelLeft + 1, y, listLeft - 1, y + LINE_ROW_H, MoneyUI.TAB_HOVER);
                 }
-                g.renderItem(new ItemStack(topics.get(i).icon()), panelLeft + 8, y + 5);
-                g.drawString(this.font, MoneyUI.fit(this.font, topics.get(i).title(), sidebarW - 34),
+                g.item(new ItemStack(topics.get(i).icon()), panelLeft + 8, y + 5);
+                g.text(this.font, MoneyUI.fit(this.font, topics.get(i).title(), sidebarW - 34),
                         panelLeft + 28, y + 9, active ? MoneyUI.TEXT : MoneyUI.TEXT_DIM, false);
             }
             y += LINE_ROW_H;
@@ -1361,7 +1361,7 @@ public class QuestScreen extends Screen {
         return out;
     }
 
-    private void drawGuideBody(GuiGraphics g) {
+    private void drawGuideBody(GuiGraphicsExtractor g) {
         int w = rowWidth();
         int viewH = contentBottom - contentTop;
         List<net.minecraft.util.FormattedCharSequence> lines = guideLines(w - PAD * 2);
@@ -1370,7 +1370,7 @@ public class QuestScreen extends Screen {
         int y = contentTop + 2 - guideScroll;
         for (net.minecraft.util.FormattedCharSequence line : lines) {
             if (y + GUIDE_LINE_H >= contentTop && y <= contentBottom) {
-                g.drawString(this.font, line, listLeft + PAD, y, MoneyUI.TEXT_DIM, false);
+                g.text(this.font, line, listLeft + PAD, y, MoneyUI.TEXT_DIM, false);
             }
             y += GUIDE_LINE_H;
         }
@@ -1421,7 +1421,7 @@ public class QuestScreen extends Screen {
         return total;
     }
 
-    private void drawCashList(GuiGraphics g, int mouseX, int mouseY, long balance) {
+    private void drawCashList(GuiGraphicsExtractor g, int mouseX, int mouseY, long balance) {
         List<String> denominations = ModItems.billIds();
         int viewH = contentBottom - contentTop;
         int hovered = inList(mouseX, mouseY)
@@ -1437,12 +1437,12 @@ public class QuestScreen extends Screen {
             if (hovered == 0) {
                 g.fill(listLeft, y, listLeft + w, y + SHOP_ROW_H, MoneyUI.ROW_HOVER);
             }
-            g.drawString(this.font, "Deposit all bills", listLeft + 8, y + 3,
+            g.text(this.font, "Deposit all bills", listLeft + 8, y + 3,
                     carried > 0 ? MoneyUI.TEXT : MoneyUI.TEXT_FAINT, false);
-            g.drawString(this.font, carried > 0 ? "cash on hand" : "no bills carried",
+            g.text(this.font, carried > 0 ? "cash on hand" : "no bills carried",
                     listLeft + 8, y + 13, MoneyUI.TEXT_FAINT, false);
             String value = MoneyUI.money(carried);
-            g.drawString(this.font, value, listLeft + w - PAD - this.font.width(value), y + 8,
+            g.text(this.font, value, listLeft + w - PAD - this.font.width(value), y + 8,
                     carried > 0 ? MoneyUI.GREEN : MoneyUI.TEXT_FAINT, false);
         }
 
@@ -1458,18 +1458,18 @@ public class QuestScreen extends Screen {
             if (hovered == i + 1) {
                 g.fill(listLeft, rowY, listLeft + w, rowY + SHOP_ROW_H, MoneyUI.ROW_HOVER);
             }
-            g.renderItem(new ItemStack(ModItems.BILLS.get(id).get()), listLeft + 6, rowY + 4);
+            g.item(new ItemStack(ModItems.BILLS.get(id).get()), listLeft + 6, rowY + 4);
 
             String label = MoneyUI.money(faceValue) + " Bill";
-            g.drawString(this.font, label, listLeft + 30, rowY + 3,
+            g.text(this.font, label, listLeft + 30, rowY + 3,
                     affordable ? MoneyUI.TEXT : MoneyUI.TEXT_FAINT, false);
 
             int held = heldBills(id);
-            g.drawString(this.font, held > 0 ? "carrying " + held : "", listLeft + 30, rowY + 13,
+            g.text(this.font, held > 0 ? "carrying " + held : "", listLeft + 30, rowY + 13,
                     MoneyUI.TEXT_FAINT, false);
 
             String action = affordable ? "Withdraw" : "Too expensive";
-            g.drawString(this.font, action, listLeft + w - PAD - this.font.width(action), rowY + 8,
+            g.text(this.font, action, listLeft + w - PAD - this.font.width(action), rowY + 8,
                     affordable ? MoneyUI.GOLD : MoneyUI.TEXT_FAINT, false);
         }
         g.disableScissor();
@@ -1692,7 +1692,7 @@ public class QuestScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        // Deliberately empty - see render() above.
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        // Deliberately empty - see extractRenderState() above.
     }
 }

@@ -32,11 +32,10 @@ public class CurrencyItem extends Item {
 
         if (!level.isClientSide()) {
             BalanceHelper.addBalance(player, value);
-            player.displayClientMessage(
+            player.sendOverlayMessage(
                     Component.literal("Deposited $" + formatValue(value)
                                     + " - balance: $" + formatValue(BalanceHelper.getBalance(player)))
-                            .withStyle(ChatFormatting.GREEN),
-                    true);
+                            .withStyle(ChatFormatting.GREEN));
             stack.shrink(1);
         }
 

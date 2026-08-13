@@ -52,9 +52,9 @@ public class DeathEvents {
             player.level().addFreshEntity(entity);
         }
 
-        player.displayClientMessage(Component.literal(
+        player.sendSystemMessage(Component.literal(
                 "You dropped $" + CurrencyItem.formatValue(dropped) + " in cash!"
-        ).withStyle(ChatFormatting.RED), false);
+        ).withStyle(ChatFormatting.RED));
     }
 
 }

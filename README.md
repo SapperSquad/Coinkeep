@@ -2,8 +2,8 @@
 
 **Earn it. Bank it. Defend it.**
 
-A full in-game economy for **Minecraft 1.21.11 / NeoForge 21.11.45** (this branch; 1.21.1
-lives on `main`) — quests to earn from,
+A full in-game economy for **Minecraft 26.2 / NeoForge 26.2.0.59** (this branch; 1.21.1
+lives on `main`, 1.21.11 on `mc/1.21.11`) — quests to earn from,
 a market that reacts to what you sell, banknotes you can hold, and vaults other players
 can crack open.
 
@@ -216,7 +216,7 @@ which mod contributed what.
 
 ## Building
 
-Requires **JDK 21**.
+Requires **JDK 25** (Minecraft 26.x runs on Java 25).
 
 ```
 ./gradlew build        # produces build/libs/coinkeep-1.1.0.jar

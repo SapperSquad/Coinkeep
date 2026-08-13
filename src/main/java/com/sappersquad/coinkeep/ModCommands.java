@@ -62,10 +62,10 @@ public class ModCommands {
                                     long amount = LongArgumentType.getLong(ctx, "amount");
 
                                     BalanceHelper.addBalance(target, amount);
-                                    target.displayClientMessage(Component.literal(
+                                    target.sendSystemMessage(Component.literal(
                                             "+$" + CurrencyItem.formatValue(amount) + " (balance: $"
                                                     + CurrencyItem.formatValue(BalanceHelper.getBalance(target)) + ")"
-                                    ).withStyle(ChatFormatting.GOLD), false);
+                                    ).withStyle(ChatFormatting.GOLD));
 
                                     ctx.getSource().sendSuccess(() -> Component.literal(
                                             "Gave $" + CurrencyItem.formatValue(amount) + " to " + target.getName().getString()
@@ -204,10 +204,10 @@ public class ModCommands {
         BalanceHelper.addBalance(target, amount);
 
         String payerName = payer.getScoreboardName();
-        target.displayClientMessage(Component.literal(
+        target.sendSystemMessage(Component.literal(
                 "+$" + CurrencyItem.formatValue(amount) + " from " + payerName
                         + "  (balance: $" + CurrencyItem.formatValue(BalanceHelper.getBalance(target)) + ")"
-        ).withStyle(ChatFormatting.GOLD), false);
+        ).withStyle(ChatFormatting.GOLD));
 
         source.sendSuccess(() -> Component.literal(
                 "Paid $" + CurrencyItem.formatValue(amount) + " to " + target.getScoreboardName()
