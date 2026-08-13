@@ -39,26 +39,33 @@ public class VaultBlockEntity extends BlockEntity implements MenuProvider {
     private UUID owner;
 
     /**
-     * ContainerData is an int array, but a balance is a long - so it is sent
-     * as a high/low pair and reassembled client-side. Truncating to int would
-     * cap a vault at ~$2.1bn and silently corrupt anything larger.
+     * The balance, carried across FOUR slots of 16 bits each.
+     *
+     * CRITICAL: vanilla's ClientboundContainerSetDataPacket serializes every
+     * menu data slot with writeShort/readShort - 16 bits, not 32 (verified in
+     * the 1.21.1 decompile). Anything outside -32,768..32,767 is silently
+     * mangled on the way to a REMOTE client. A two-slot 32-bit split therefore
+     * looked correct everywhere it could be tested - single-player, a LAN host,
+     * and GameTests all bypass the codec entirely - and then corrupted the
+     * first real multiplayer guest's view: a $210,000 vault read as $13,392.
+     *
+     * So each slot carries exactly 16 bits and is masked back on read.
      */
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
-            return index == 0 ? (int) (stored >>> 32) : (int) stored;
+            return (int) ((stored >>> (index * 16)) & 0xFFFFL);
         }
 
         @Override
         public void set(int index, int value) {
-            long high = index == 0 ? value : stored >>> 32;
-            long low = index == 0 ? stored & 0xFFFFFFFFL : value & 0xFFFFFFFFL;
-            stored = (high << 32) | low;
+            int shift = index * 16;
+            stored = (stored & ~(0xFFFFL << shift)) | ((value & 0xFFFFL) << shift);
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 4;
         }
     };
 

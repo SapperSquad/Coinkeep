@@ -9,6 +9,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,8 +44,12 @@ public class QuestScreen extends Screen {
         }
     }
 
-    private static final int PANEL_W = 420;
-    private static final int PANEL_H = 282;
+    private static final int MAX_PANEL_W = 640;
+    private static final int MIN_PANEL_W = 360;
+    private static final int MAX_PANEL_H = 400;
+    private static final int MIN_PANEL_H = 200;
+    /** Height of the search row above the list. */
+    private static final int SEARCH_H = 18;
     private static final int HEADER_H = 24;
     private static final int TOPTAB_H = 18;
     private static final int SIDEBAR_W = 112;
@@ -79,7 +84,40 @@ public class QuestScreen extends Screen {
 
     private int panelLeft;
     private int panelTop;
-    private int panelH = PANEL_H;
+    private int panelW = MAX_PANEL_W;
+    private int panelH = MAX_PANEL_H;
+    private int searchTop;
+
+    /**
+     * Filters the list on the Quests and Shop tabs. On Quests it deliberately
+     * searches EVERY chapter, not just the open one - with a modpack's worth of
+     * quests, "which chapter is this in?" is the actual problem, so a search
+     * that only looked in the current chapter would not solve it.
+     */
+    @Nullable
+    private net.minecraft.client.gui.components.EditBox searchBox;
+
+    private boolean tabHasSearch() {
+        return activeTab == Tab.QUESTS || activeTab == Tab.SHOP;
+    }
+
+    private String searchText() {
+        return searchBox == null ? "" : searchBox.getValue().trim().toLowerCase(java.util.Locale.ROOT);
+    }
+
+    private boolean searching() {
+        return tabHasSearch() && !searchText().isEmpty();
+    }
+
+    /** @return true if there was a query to clear. */
+    private boolean clearSearch() {
+        if (searchBox == null || searchBox.getValue().isEmpty()) {
+            return false;
+        }
+        searchBox.setValue("");
+        sortedCache = null;
+        return true;
+    }
     private int contentTop;
     private int contentBottom;
     private int listLeft;
@@ -145,6 +183,39 @@ public class QuestScreen extends Screen {
             selectedCategory = shopCategories().stream().findFirst().map(ShopCategory::id).orElse(null);
         }
         layout();
+        buildSearchBox();
+    }
+
+    /**
+     * Rebuilt on every layout because the panel is responsive - the box has to
+     * follow the list column when the window resizes. The typed text survives,
+     * so resizing mid-search does not wipe what you were looking for.
+     */
+    private void buildSearchBox() {
+        String previous = searchBox == null ? "" : searchBox.getValue();
+        if (searchBox != null) {
+            removeWidget(searchBox);
+            searchBox = null;
+        }
+        if (!tabHasSearch()) {
+            return;
+        }
+        int w = listRight - listLeft - 10;
+        searchBox = new net.minecraft.client.gui.components.EditBox(
+                this.font, listLeft + 4, searchTop + 3, w, SEARCH_H - 5, Component.literal("Search"));
+        searchBox.setBordered(false);
+        searchBox.setMaxLength(64);
+        searchBox.setTextColor(MoneyUI.TEXT);
+        searchBox.setHint(Component.literal(activeTab == Tab.QUESTS
+                ? "Search all quests..." : "Search the shop...").withStyle(ChatFormatting.DARK_GRAY));
+        searchBox.setValue(previous);
+        // Any edit invalidates the cached, sorted list.
+        searchBox.setResponder(text -> {
+            sortedCache = null;
+            scroll = 0;
+            shopScroll = 0;
+        });
+        addRenderableWidget(searchBox);
     }
 
     private List<QuestLine> lines() {
@@ -162,18 +233,25 @@ public class QuestScreen extends Screen {
     /** Recomputed on tab switch: the Shop tab has no detail strip, so its
      *  list runs all the way to the bottom of the panel. */
     private void layout() {
-        panelLeft = (this.width - PANEL_W) / 2;
-        // Shrink to fit rather than overflow: at GUI scale 4 on a 1080p screen
-        // the usable height is only ~270px, less than the panel wants.
-        panelH = Math.min(PANEL_H, this.height - 20);
+        // Grow with the window instead of sitting at a fixed size. Modpacks add
+        // hundreds of quests with long modded item names, so both the row count
+        // and the room per row matter. Clamped so it still fits at GUI scale 4
+        // on 1080p (~480x270 usable) and never sprawls on an ultrawide.
+        panelW = Math.max(MIN_PANEL_W, Math.min(MAX_PANEL_W, this.width - 60));
+        panelH = Math.max(MIN_PANEL_H, Math.min(MAX_PANEL_H, this.height - 40));
+        panelLeft = (this.width - panelW) / 2;
         panelTop = (this.height - panelH) / 2;
-        contentTop = panelTop + HEADER_H + TOPTAB_H;
+
+        // Search sits above the list on the tabs that have one, so the list
+        // starts lower there.
+        searchTop = panelTop + HEADER_H + TOPTAB_H;
+        contentTop = searchTop + (tabHasSearch() ? SEARCH_H : 0);
         contentBottom = panelTop + panelH - (activeTab == Tab.QUESTS ? DETAIL_H : PAD);
         // Cash has no categories, so it uses the full panel width rather than
         // leaving an empty sidebar column. Guide keeps the sidebar for its
         // topic list.
         listLeft = activeTab == Tab.CASH ? panelLeft + 1 : panelLeft + SIDEBAR_W;
-        listRight = panelLeft + PANEL_W - 1;
+        listRight = panelLeft + panelW - 1;
 
         topTabBounds.clear();
         int x = panelLeft + PAD;
@@ -189,7 +267,7 @@ public class QuestScreen extends Screen {
         modeBounds.clear();
         if (activeTab == Tab.SHOP) {
             int modeW = 44;
-            int modeX = panelLeft + PANEL_W - PAD - modeW * ShopMode.values().length - 2;
+            int modeX = panelLeft + panelW - PAD - modeW * ShopMode.values().length - 2;
             for (ShopMode mode : ShopMode.values()) {
                 modeBounds.put(mode, new int[]{modeX, y, modeW, TOPTAB_H});
                 modeX += modeW + 2;
@@ -228,19 +306,49 @@ public class QuestScreen extends Screen {
      * - render() would otherwise re-sort several times a frame.
      */
     private List<Quest> quests() {
-        if (selectedLine == null) {
+        String query = searchText();
+        boolean filtering = !query.isEmpty();
+        if (selectedLine == null && !filtering) {
             return List.of();
         }
         long signature = progressSignature();
-        if (sortedCache == null || !selectedLine.equals(sortedCacheLine) || signature != sortedCacheSignature) {
-            List<Quest> sorted = new ArrayList<>(questsIn(selectedLine));
+        String cacheKey = (filtering ? "?" + query : String.valueOf(selectedLine));
+        if (sortedCache == null || !cacheKey.equals(sortedCacheLine) || signature != sortedCacheSignature) {
+            List<Quest> sorted = new ArrayList<>();
+            if (filtering) {
+                // Every chapter, not just the open one - see the searchBox note.
+                for (QuestLine line : lines()) {
+                    for (Quest quest : questsIn(line.id())) {
+                        if (matchesQuest(quest, query)) {
+                            sorted.add(quest);
+                        }
+                    }
+                }
+            } else {
+                sorted.addAll(questsIn(selectedLine));
+            }
             LocalPlayer player = player();
             sorted.sort(Comparator.comparingInt(quest -> sortRank(quest, player)));
             sortedCache = sorted;
-            sortedCacheLine = selectedLine;
+            sortedCacheLine = cacheKey;
             sortedCacheSignature = signature;
         }
         return sortedCache;
+    }
+
+    /**
+     * Matches the name, the description and the trigger target. Including the
+     * target is what lets you find a quest by the block it is about -
+     * "deepslate" or a modded id like "create:andesite" - which is exactly the
+     * case players hit with a modpack's worth of custom blocks.
+     */
+    private boolean matchesQuest(Quest quest, String query) {
+        if (quest.resolveName().toLowerCase(java.util.Locale.ROOT).contains(query)
+                || quest.triggerTarget().toLowerCase(java.util.Locale.ROOT).contains(query)) {
+            return true;
+        }
+        String description = quest.description();
+        return description != null && description.toLowerCase(java.util.Locale.ROOT).contains(query);
     }
 
     private int sortRank(Quest quest, LocalPlayer player) {
@@ -271,10 +379,23 @@ public class QuestScreen extends Screen {
     }
 
     private List<ShopEntry> entries() {
-        if (selectedCategory == null) {
+        String query = searchText();
+        List<ShopEntry> all;
+        if (!query.isEmpty()) {
+            // Across every category, same reasoning as the quest search.
+            all = new ArrayList<>();
+            for (ShopCategory category : shopCategories()) {
+                for (ShopEntry entry : ShopRegistry.inCategory(access, category.id())) {
+                    if (entry.displayName().toLowerCase(java.util.Locale.ROOT).contains(query)) {
+                        all.add(entry);
+                    }
+                }
+            }
+        } else if (selectedCategory == null) {
             return List.of();
+        } else {
+            all = ShopRegistry.inCategory(access, selectedCategory);
         }
-        List<ShopEntry> all = ShopRegistry.inCategory(access, selectedCategory);
         if (shopMode == ShopMode.BUY) {
             return all;
         }
@@ -357,20 +478,47 @@ public class QuestScreen extends Screen {
         return index >= 0 && index < size ? index : -1;
     }
 
+    /**
+     * The search field's backing plate plus a result count. The count matters
+     * when searching across chapters: without it, an empty list is ambiguous
+     * between "no matches" and "something is broken".
+     */
+    private void drawSearchRow(GuiGraphics g) {
+        g.fill(listLeft, searchTop, listRight, searchTop + SEARCH_H - 1, MoneyUI.TAB_IDLE);
+        g.fill(listLeft, searchTop + SEARCH_H - 1, listRight, searchTop + SEARCH_H, MoneyUI.DIVIDER);
+    }
+
+    /**
+     * Drawn AFTER super.render(), which is what paints the EditBox - otherwise
+     * a long query's text runs straight over the count. Opaque behind the label
+     * so the two never interleave.
+     */
+    private void drawSearchCount(GuiGraphics g) {
+        if (!searching()) {
+            return;
+        }
+        int count = activeTab == Tab.QUESTS ? quests().size() : entries().size();
+        String label = count == 0 ? "no matches" : count + (count == 1 ? " match" : " matches");
+        int labelW = this.font.width(label);
+        g.fill(listRight - labelW - 10, searchTop, listRight, searchTop + SEARCH_H - 1, MoneyUI.TAB_IDLE);
+        g.drawString(this.font, label, listRight - labelW - 4, searchTop + 5,
+                count == 0 ? MoneyUI.RED : MoneyUI.TEXT_FAINT, false);
+    }
+
     // ==================== render ====================
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         g.fill(0, 0, this.width, this.height, MoneyUI.BACKDROP);
 
-        MoneyUI.panel(g, panelLeft, panelTop, PANEL_W, panelH);
-        MoneyUI.headerBar(g, panelLeft, panelTop, PANEL_W, HEADER_H);
+        MoneyUI.panel(g, panelLeft, panelTop, panelW, panelH);
+        MoneyUI.headerBar(g, panelLeft, panelTop, panelW, HEADER_H);
         g.drawString(this.font, this.title, panelLeft + PAD, panelTop + 8, MoneyUI.TEXT, false);
 
         long balance = balance();
         String balanceText = MoneyUI.money(balance);
         g.drawString(this.font, balanceText,
-                panelLeft + PANEL_W - PAD - this.font.width(balanceText), panelTop + 8, MoneyUI.GOLD, false);
+                panelLeft + panelW - PAD - this.font.width(balanceText), panelTop + 8, MoneyUI.GOLD, false);
 
         for (Map.Entry<Tab, int[]> tab : topTabBounds.entrySet()) {
             int[] b = tab.getValue();
@@ -383,6 +531,10 @@ public class QuestScreen extends Screen {
             boolean hovered = mouseX >= b[0] && mouseX < b[0] + b[2] && mouseY >= b[1] && mouseY < b[1] + b[3];
             MoneyUI.tab(g, this.font, b[0], b[1], b[2], b[3], mode.getKey().label,
                     mode.getKey() == shopMode, hovered);
+        }
+
+        if (tabHasSearch()) {
+            drawSearchRow(g);
         }
 
         g.fill(listLeft - 1, contentTop, listLeft, contentBottom, MoneyUI.DIVIDER);
@@ -402,6 +554,10 @@ public class QuestScreen extends Screen {
         }
 
         super.render(g, mouseX, mouseY, partialTick);
+
+        if (tabHasSearch()) {
+            drawSearchCount(g);
+        }
 
         if (activeTab == Tab.QUESTS) {
             drawLadderTooltips(g, mouseX, mouseY);
@@ -559,7 +715,7 @@ public class QuestScreen extends Screen {
     /** Bottom strip: what the selected quest is, and what it actually pays. */
     private void drawDetail(GuiGraphics g) {
         int top = contentBottom;
-        g.fill(panelLeft + 1, top, panelLeft + PANEL_W - 1, top + 1, MoneyUI.DIVIDER);
+        g.fill(panelLeft + 1, top, panelLeft + panelW - 1, top + 1, MoneyUI.DIVIDER);
 
         Quest quest = selectedQuest == null ? null : QuestRegistry.byId(access, selectedQuest);
         if (quest == null) {
@@ -568,7 +724,7 @@ public class QuestScreen extends Screen {
             return;
         }
 
-        g.drawString(this.font, MoneyUI.fit(this.font, quest.resolveName(), PANEL_W - PAD * 2),
+        g.drawString(this.font, MoneyUI.fit(this.font, quest.resolveName(), panelW - PAD * 2),
                 panelLeft + PAD, top + 7, MoneyUI.TEXT, false);
 
         LocalPlayer player = player();
@@ -585,10 +741,10 @@ public class QuestScreen extends Screen {
                 }
                 needs.append(dependency.resolveName());
             }
-            g.drawString(this.font, MoneyUI.fit(this.font, needs.toString(), PANEL_W - PAD * 2),
+            g.drawString(this.font, MoneyUI.fit(this.font, needs.toString(), panelW - PAD * 2),
                     panelLeft + PAD, top + 19, MoneyUI.RED, false);
         } else if (quest.description() != null && !quest.description().isBlank()) {
-            g.drawString(this.font, MoneyUI.fit(this.font, quest.description(), PANEL_W - PAD * 2),
+            g.drawString(this.font, MoneyUI.fit(this.font, quest.description(), panelW - PAD * 2),
                     panelLeft + PAD, top + 19, MoneyUI.TEXT_DIM, false);
         }
 
@@ -608,7 +764,7 @@ public class QuestScreen extends Screen {
             }
             String label = shown.describe();
             int chunk = 20 + this.font.width(label) + 10;
-            if (x + chunk > panelLeft + PANEL_W - PAD) {
+            if (x + chunk > panelLeft + panelW - PAD) {
                 break;
             }
             g.renderItem(shown.icon(), x, y);
@@ -660,7 +816,7 @@ public class QuestScreen extends Screen {
         }
         String summary = "T" + tier + ": " + nextTotal + " total"
                 + (pay > 0 ? "  ->  " + MoneyUI.money(pay) : "") + "   (repeats)";
-        g.drawString(this.font, MoneyUI.fit(this.font, summary, panelLeft + PANEL_W - PAD - (x + 6)),
+        g.drawString(this.font, MoneyUI.fit(this.font, summary, panelLeft + panelW - PAD - (x + 6)),
                 x + 6, y + 2, MoneyUI.TEXT_DIM, false);
     }
 
@@ -702,7 +858,7 @@ public class QuestScreen extends Screen {
         }
 
         String summary = done + " of " + ladder.size() + " started";
-        int summaryX = panelLeft + PANEL_W - PAD - this.font.width(summary);
+        int summaryX = panelLeft + panelW - PAD - this.font.width(summary);
         if (summaryX > x + 6) {
             g.drawString(this.font, summary, summaryX, y + 2, MoneyUI.TEXT_DIM, false);
         }
@@ -1138,7 +1294,12 @@ public class QuestScreen extends Screen {
                         activeTab = tab.getKey();
                         // Shop and Cash share this scroll offset.
                         shopScroll = 0;
+                        // Quests and Shop search different things, so the query
+                        // does not carry across - a stale filter on the tab you
+                        // just opened reads as "the tab is empty".
+                        sortedCache = null;
                         layout();
+                        buildSearchBox();
                     }
                     click();
                     return true;
@@ -1160,11 +1321,19 @@ public class QuestScreen extends Screen {
                 if (inSidebar(mouseX, mouseY)) {
                     List<QuestLine> lines = List.copyOf(lines());
                     int index = hoveredIndex((int) mouseY, sidebarScroll, LINE_ROW_H, lines.size());
-                    if (index >= 0 && !lines.get(index).id().equals(selectedLine)) {
-                        selectedLine = lines.get(index).id();
-                        selectedQuest = null;
-                        scroll = 0;
-                        click();
+                    if (index >= 0) {
+                        // Picking a chapter means "show me this chapter", so it
+                        // drops any active search - otherwise the click looks
+                        // like it did nothing, because the cross-chapter results
+                        // would still be filling the list.
+                        boolean cleared = clearSearch();
+                        if (cleared || !lines.get(index).id().equals(selectedLine)) {
+                            selectedLine = lines.get(index).id();
+                            selectedQuest = null;
+                            scroll = 0;
+                            sortedCache = null;
+                            click();
+                        }
                     }
                     return true;
                 }

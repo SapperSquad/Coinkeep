@@ -41,7 +41,7 @@ public class VaultMenu extends AbstractContainerMenu {
     public VaultMenu(int containerId, Inventory inventory, @Nullable VaultBlockEntity vault) {
         super(ModMenus.VAULT_MENU.get(), containerId);
         this.vault = vault;
-        this.data = vault == null ? new SimpleContainerData(2) : vault.getData();
+        this.data = vault == null ? new SimpleContainerData(4) : vault.getData();
         addDataSlots(this.data);
     }
 
@@ -52,7 +52,13 @@ public class VaultMenu extends AbstractContainerMenu {
 
     /** Reassembled from the high/low int pair - see VaultBlockEntity. */
     public long getStored() {
-        return ((long) data.get(0) << 32) | (data.get(1) & 0xFFFFFFFFL);
+        // Four 16-bit slots, masked because the wire round-trips them through a
+        // signed short - see the note on VaultBlockEntity.data.
+        long value = 0L;
+        for (int i = 0; i < 4; i++) {
+            value |= (data.get(i) & 0xFFFFL) << (i * 16);
+        }
+        return value;
     }
 
     /** "$1k", "$500k", "All" - shared with the screen so labels never disagree. */
