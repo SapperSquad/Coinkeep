@@ -1,9 +1,9 @@
 package com.sappersquad.coinkeep;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +11,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -105,23 +107,24 @@ public class VaultBlockEntity extends BlockEntity implements MenuProvider {
         if (!CoinkeepConfig.VAULT_OWNER_ONLY.get() || owner == null) {
             return true;
         }
-        return owner.equals(player.getUUID()) || player.hasPermissions(2);
+        return owner.equals(player.getUUID())
+                || player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.putLong("Stored", stored);
+    protected void saveAdditional(ValueOutput out) {
+        super.saveAdditional(out);
+        out.putLong("Stored", stored);
         if (owner != null) {
-            tag.putUUID("Owner", owner);
+            out.store("Owner", UUIDUtil.CODEC, owner);
         }
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        stored = tag.getLong("Stored");
-        owner = tag.hasUUID("Owner") ? tag.getUUID("Owner") : null;
+    protected void loadAdditional(ValueInput in) {
+        super.loadAdditional(in);
+        stored = in.getLongOr("Stored", 0L);
+        owner = in.read("Owner", UUIDUtil.CODEC).orElse(null);
     }
 
     @Override

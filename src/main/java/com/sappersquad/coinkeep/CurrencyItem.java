@@ -3,14 +3,15 @@ package com.sappersquad.coinkeep;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class CurrencyItem extends Item {
 
@@ -26,10 +27,10 @@ public class CurrencyItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BalanceHelper.addBalance(player, value);
             player.displayClientMessage(
                     Component.literal("Deposited $" + formatValue(value)
@@ -39,13 +40,17 @@ public class CurrencyItem extends Item {
             stack.shrink(1);
         }
 
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        // The sided variants are gone in 1.21.11: SUCCESS swings client-side
+        // and the server ignores the swing source, which is what sidedSuccess
+        // used to arrange by hand.
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("Worth $" + formatValue(value)).withStyle(ChatFormatting.GOLD));
-        tooltip.add(Component.literal("Right-click to deposit").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag flag) {
+        tooltip.accept(Component.literal("Worth $" + formatValue(value)).withStyle(ChatFormatting.GOLD));
+        tooltip.accept(Component.literal("Right-click to deposit").withStyle(ChatFormatting.GRAY));
     }
 
     public static String formatValue(long value) {

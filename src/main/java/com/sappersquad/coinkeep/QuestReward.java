@@ -92,7 +92,7 @@ public sealed interface QuestReward {
 
         @Override
         public String describe() {
-            String name = item.getDescription().getString();
+            String name = item.getName(item.getDefaultInstance()).getString();
             return count > 1 ? count + "x " + name : name;
         }
 
@@ -139,18 +139,18 @@ public sealed interface QuestReward {
 
         @Override
         public void grant(ServerPlayer player) {
-            MinecraftServer server = player.getServer();
+            MinecraftServer server = player.level().getServer();
             if (server == null) {
                 return;
             }
             CommandSourceStack source = server.createCommandSourceStack()
                     .withEntity(player)
                     .withPosition(player.position())
-                    .withLevel(player.serverLevel())
-                    .withPermission(4)
+                    .withLevel(player.level())
+                    .withPermission(net.minecraft.server.permissions.LevelBasedPermissionSet.OWNER)
                     .withSuppressedOutput();
             server.getCommands().performPrefixedCommand(
-                    source, command.replace("@p", player.getGameProfile().getName()));
+                    source, command.replace("@p", player.getScoreboardName()));
         }
     }
 }

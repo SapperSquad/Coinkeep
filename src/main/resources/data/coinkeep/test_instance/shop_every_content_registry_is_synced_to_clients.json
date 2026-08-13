@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "coinkeep:shop_every_content_registry_is_synced_to_clients",
+  "environment": "minecraft:default",
+  "structure": "minecraft:empty",
+  "max_ticks": 200
+}

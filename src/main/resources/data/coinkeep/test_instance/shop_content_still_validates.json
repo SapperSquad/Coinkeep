@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "coinkeep:shop_content_still_validates",
+  "environment": "minecraft:default",
+  "structure": "minecraft:empty",
+  "max_ticks": 200
+}

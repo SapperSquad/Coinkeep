@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "coinkeep:shop_the_eight_built_ins_survive_the_conversion",
+  "environment": "minecraft:default",
+  "structure": "minecraft:empty",
+  "max_ticks": 200
+}

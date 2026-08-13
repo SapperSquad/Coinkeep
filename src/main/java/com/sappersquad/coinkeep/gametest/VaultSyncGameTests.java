@@ -1,15 +1,10 @@
 package com.sappersquad.coinkeep.gametest;
 
-import com.sappersquad.coinkeep.Coinkeep;
 import com.sappersquad.coinkeep.ModBlocks;
 import com.sappersquad.coinkeep.VaultBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.inventory.ContainerData;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 /**
  * Pins the vault balance against the 16-bit wire.
@@ -32,9 +27,10 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
  * So these tests do not trust the in-memory path. They assert the invariant the
  * wire actually imposes — every slot must survive a signed-short round trip —
  * and simulate that truncation explicitly.
+ *
+ * <p>Registered in {@link ModTestFunctions}; each method is named by a
+ * {@code test_instance} JSON.
  */
-@GameTestHolder(Coinkeep.MODID)
-@PrefixGameTestTemplate(false)
 public class VaultSyncGameTests {
 
     /** Balances that span the boundaries: under a short, over it, and huge. */
@@ -50,12 +46,13 @@ public class VaultSyncGameTests {
     }
 
     private static VaultBlockEntity placeVault(GameTestHelper helper) {
-        BlockPos pos = new BlockPos(1, 1, 1);
+        // The tests run in vanilla's 1x1x1 "minecraft:empty" structure, so the
+        // origin is the only cell inside the test volume.
+        BlockPos pos = BlockPos.ZERO;
         helper.setBlock(pos, ModBlocks.VAULT.get());
-        if (!(helper.getBlockEntity(pos) instanceof VaultBlockEntity vault)) {
-            throw new GameTestAssertException("vault block entity did not form");
-        }
-        return vault;
+        // The Class-token overload fails the test itself if the entity is
+        // missing or of the wrong type.
+        return helper.getBlockEntity(pos, VaultBlockEntity.class);
     }
 
     /**
@@ -64,7 +61,6 @@ public class VaultSyncGameTests {
      * balance. Run against the old two-slot scheme this fails immediately at
      * $32,768.
      */
-    @GameTest(template = "empty")
     public static void everyBalanceSurvivesTheShortWire(GameTestHelper helper) {
         VaultBlockEntity vault = placeVault(helper);
         ContainerData data = vault.getData();
@@ -76,7 +72,7 @@ public class VaultSyncGameTests {
             for (int i = 0; i < data.getCount(); i++) {
                 int sent = data.get(i);
                 if (sent != (sent & 0xFFFF)) {
-                    throw new GameTestAssertException("slot " + i + " of $" + balance
+                    helper.fail("slot " + i + " of $" + balance
                             + " carries " + sent + ", which does not fit in 16 bits -"
                             + " the wire would mangle it");
                 }
@@ -84,8 +80,7 @@ public class VaultSyncGameTests {
             }
 
             if (rebuilt != balance) {
-                throw new GameTestAssertException("$" + balance
-                        + " reached a remote client as $" + rebuilt);
+                helper.fail("$" + balance + " reached a remote client as $" + rebuilt);
             }
         }
         helper.succeed();
@@ -95,27 +90,23 @@ public class VaultSyncGameTests {
      * The block entity is still the source of truth after a set, independent of
      * how the value is chopped up for sync.
      */
-    @GameTest(template = "empty")
     public static void storedValueRoundTripsLocally(GameTestHelper helper) {
         VaultBlockEntity vault = placeVault(helper);
         for (long balance : BALANCES) {
             vault.setStored(balance);
             if (vault.getStored() != balance) {
-                throw new GameTestAssertException(
-                        "vault stored $" + balance + " but reports $" + vault.getStored());
+                helper.fail("vault stored $" + balance + " but reports $" + vault.getStored());
             }
         }
         helper.succeed();
     }
 
     /** A vault cannot hold a negative balance, however it is written to. */
-    @GameTest(template = "empty")
     public static void negativeBalancesAreClamped(GameTestHelper helper) {
         VaultBlockEntity vault = placeVault(helper);
         vault.setStored(-5_000L);
         if (vault.getStored() != 0L) {
-            throw new GameTestAssertException(
-                    "negative balance was not clamped, got $" + vault.getStored());
+            helper.fail("negative balance was not clamped, got $" + vault.getStored());
         }
         helper.succeed();
     }

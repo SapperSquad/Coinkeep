@@ -467,7 +467,7 @@ public class QuestScreen extends Screen {
             return 0;
         }
         int held = 0;
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             // Must mirror ModCommands.isPlain() - enchanted or renamed items
             // are never sellable, so counting them here would show a sell
             // quantity the server then refuses.
@@ -715,7 +715,7 @@ public class QuestScreen extends Screen {
                             lines.add(Component.literal("You have bought your limit")
                                     .withStyle(ChatFormatting.RED));
                         }
-                        g.renderComponentTooltip(this.font, lines, mouseX, mouseY);
+                        g.setComponentTooltipForNextFrame(this.font, lines, mouseX, mouseY);
                     }
                 } else {
                     LocalPlayer player = player();
@@ -738,7 +738,7 @@ public class QuestScreen extends Screen {
                     } else {
                         lines.add(Component.literal("You have none to sell").withStyle(ChatFormatting.GRAY));
                     }
-                    g.renderComponentTooltip(this.font, lines, mouseX, mouseY);
+                    g.setComponentTooltipForNextFrame(this.font, lines, mouseX, mouseY);
                 }
             }
         }
@@ -1055,7 +1055,7 @@ public class QuestScreen extends Screen {
                 lines.add(Component.literal((cumulative - lifetime) + " to go")
                         .withStyle(ChatFormatting.DARK_GRAY));
             }
-            g.renderComponentTooltip(this.font, lines, mouseX, mouseY);
+            g.setComponentTooltipForNextFrame(this.font, lines, mouseX, mouseY);
             return;
         }
 
@@ -1085,7 +1085,7 @@ public class QuestScreen extends Screen {
             } else {
                 lines.add(Component.literal("Not started").withStyle(ChatFormatting.DARK_GRAY));
             }
-            g.renderComponentTooltip(this.font, lines, mouseX, mouseY);
+            g.setComponentTooltipForNextFrame(this.font, lines, mouseX, mouseY);
             return;
         }
     }
@@ -1398,7 +1398,7 @@ public class QuestScreen extends Screen {
         }
         long value = ModItems.billValue(denomination);
         int held = 0;
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.getItem() instanceof CurrencyItem currency && currency.getValue() == value) {
                 held += stack.getCount();
             }
@@ -1413,7 +1413,7 @@ public class QuestScreen extends Screen {
             return 0L;
         }
         long total = 0L;
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.getItem() instanceof CurrencyItem currency) {
                 total += currency.getValue() * stack.getCount();
             }
@@ -1501,7 +1501,10 @@ public class QuestScreen extends Screen {
     // ==================== input ====================
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         if (button == 0) {
             for (Map.Entry<Tab, int[]> tab : topTabBounds.entrySet()) {
                 int[] b = tab.getValue();
@@ -1597,7 +1600,7 @@ public class QuestScreen extends Screen {
                             // Click withdraws one; shift-click takes as many
                             // as the balance covers, capped at a stack.
                             int max = (int) Math.min(64, balance / faceValue);
-                            withdraw(id, hasShiftDown() ? Math.max(1, max) : 1);
+                            withdraw(id, event.hasShiftDown() ? Math.max(1, max) : 1);
                             click();
                         }
                     }
@@ -1626,7 +1629,7 @@ public class QuestScreen extends Screen {
                             // you hold (at the saturating per-unit price).
                             int held = heldCount(entry);
                             if (held > 0) {
-                                sell(entry, hasShiftDown() ? held : 1);
+                                sell(entry, event.hasShiftDown() ? held : 1);
                                 click();
                             }
                         }
@@ -1635,7 +1638,7 @@ public class QuestScreen extends Screen {
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

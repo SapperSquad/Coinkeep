@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +42,7 @@ public class VaultBlock extends BaseEntityBlock {
     public static final MapCodec<VaultBlock> CODEC = simpleCodec(VaultBlock::new);
 
     /** So the door faces the player who placed it, not always north. */
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     public VaultBlock(Properties properties) {
         super(properties);
@@ -92,7 +92,7 @@ public class VaultBlock extends BaseEntityBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state,
                             @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (level.isClientSide || !(level.getBlockEntity(pos) instanceof VaultBlockEntity vault)) {
+        if (level.isClientSide() || !(level.getBlockEntity(pos) instanceof VaultBlockEntity vault)) {
             return;
         }
         VaultContents carried = stack.getOrDefault(ModDataComponents.VAULT_CONTENTS.get(), VaultContents.EMPTY);
@@ -110,7 +110,7 @@ public class VaultBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hit) {
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof VaultBlockEntity vault) {
 
             if (!vault.canOpen(player)) {
@@ -124,7 +124,7 @@ public class VaultBlock extends BaseEntityBlock {
             }
             serverPlayer.openMenu(vault, buf -> buf.writeBlockPos(pos));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     /**
@@ -146,7 +146,7 @@ public class VaultBlock extends BaseEntityBlock {
      */
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof VaultBlockEntity vault
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof VaultBlockEntity vault
                 && vault.canOpen(player)) {
 
             long stored = vault.getStored();

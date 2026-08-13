@@ -40,8 +40,8 @@ public class ShopRegistry {
     private static List<String> danglingCategories = List.of();
 
     private static void ensure(RegistryAccess access) {
-        Registry<ShopEntry> registry = access.registryOrThrow(ModRegistries.SHOP_ENTRY);
-        Registry<ShopCategory> categoryRegistry = access.registryOrThrow(ModRegistries.SHOP_CATEGORY);
+        Registry<ShopEntry> registry = access.lookupOrThrow(ModRegistries.SHOP_ENTRY);
+        Registry<ShopCategory> categoryRegistry = access.lookupOrThrow(ModRegistries.SHOP_CATEGORY);
         if (registry == cachedRegistry && categoryRegistry == cachedCategoryRegistry) {
             return;
         }

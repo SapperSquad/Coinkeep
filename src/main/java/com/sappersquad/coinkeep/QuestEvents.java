@@ -3,7 +3,7 @@ package com.sappersquad.coinkeep;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +27,7 @@ public class QuestEvents {
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         Player player = event.getPlayer();
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             return;
         }
         advance(player, TriggerType.BLOCK_BREAK, blockId(event.getState()), 1);
@@ -35,7 +35,7 @@ public class QuestEvents {
 
     @SubscribeEvent
     public static void onMobKill(LivingDeathEvent event) {
-        if (event.getEntity().level().isClientSide) {
+        if (event.getEntity().level().isClientSide()) {
             return;
         }
         if (!(event.getSource().getEntity() instanceof Player player)) {
@@ -48,7 +48,7 @@ public class QuestEvents {
     @SubscribeEvent
     public static void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
         Player player = event.getEntity();
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             return;
         }
         advance(player, TriggerType.ITEM_CRAFT, itemId(event.getCrafting()), event.getCrafting().getCount());
@@ -56,7 +56,7 @@ public class QuestEvents {
 
     @SubscribeEvent
     public static void onAdvancementEarned(AdvancementEvent.AdvancementEarnEvent event) {
-        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide) {
+        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide()) {
             return;
         }
         // Advancements are one-shot, so jump straight to the required count.
@@ -153,12 +153,12 @@ public class QuestEvents {
     }
 
     private static String blockId(BlockState state) {
-        ResourceLocation key = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+        Identifier key = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         return key == null ? "" : key.toString();
     }
 
     private static String itemId(ItemStack stack) {
-        ResourceLocation key = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        Identifier key = BuiltInRegistries.ITEM.getKey(stack.getItem());
         return key == null ? "" : key.toString();
     }
 }
