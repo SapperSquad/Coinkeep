@@ -3,9 +3,9 @@
   "category": "misc",
   "pattern": [ "IGI", "GDG", "IGI" ],
   "key": {
-    "I": { "item": "minecraft:iron_block" },
-    "G": { "item": "minecraft:gold_block" },
-    "D": { "item": "minecraft:diamond_block" }
+    "I": "minecraft:iron_block",
+    "G": "minecraft:gold_block",
+    "D": "minecraft:diamond_block"
   },
   "result": { "count": 1, "id": "coinkeep:vault" }
 }
