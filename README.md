@@ -27,6 +27,15 @@ once**, not just the open one, and it matches a quest's name, its description, *
 block or item it is about* — so `deepslate`, or a modded id like `create:andesite`, finds
 the quest about that block. Clicking a chapter clears the search and goes back to browsing.
 
+**The Shop has a grid view** — toggle it on the mode strip. Tiles show icon, name and
+price, fitting roughly 20 items on screen instead of 8, and the choice sticks. Hovering
+shows a tooltip only for items that carry more than the tile says: enchanted gear lists its
+enchantments, limited items show how many you have left, plain items stay quiet.
+
+**Quests only count what you do yourself.** Machines mining through fake players and mob
+farms where the environment lands the kill do not advance quest tiers — automation earns
+its money by *selling* what it produces. If you land the killing blow, it counts.
+
 ---
 
 ## Quests
@@ -129,7 +138,8 @@ the bare word "command":
 ```
 
 **Shop entries** take `category`, `item`, `count`, `price`, and optionally `sell_price`
-(defaults to 40% of the per-unit buy price), `saturation`, `name`, and an `enchantments`
+(defaults to 40% of the per-unit buy price), `saturation`, `buy_limit` (how many times
+each player may ever buy it; `0` = unlimited), `name`, and an `enchantments`
 list for pre-enchanted gear. Items from any other mod work by id.
 
 ### Your own shop category (1.1.0)
@@ -197,6 +207,9 @@ which mod contributed what.
 | `vaultOwnerOnly` | `true` | Only the placer can open a vault |
 | `allowVaultCracking` | `true` | Set false to make vaulted money completely untakeable |
 | `giveBookOnFirstJoin` | `true` | Hand every new player a Ledger |
+| `buyTaxPercent` | `0` | Surcharge on every shop purchase; the money is destroyed, not collected. `0` = off |
+| `sellTaxPercent` | `0` | Cut taken from every sale — the stronger anti-inflation lever. `0` = off |
+| `sellPriceFloorPercent` | `15` | How far saturation can push a sell price down. `0` lets a heavily-farmed item become worthless until demand recovers |
 
 ---
 

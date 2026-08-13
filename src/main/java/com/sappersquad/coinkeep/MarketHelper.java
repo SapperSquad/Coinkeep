@@ -25,9 +25,17 @@ import java.util.Map;
  */
 public class MarketHelper {
 
-    /** Sell price never falls below this fraction of base - selling always
-     *  pays something, so an item can't become literally worthless. */
-    public static final double PRICE_FLOOR = 0.15;
+    /**
+     * Sell price never falls below this fraction of base.
+     *
+     * Server-configurable, because it is the lever on renewable-resource
+     * inflation: above zero, a cobblestone farm earns forever at the floor
+     * rate; at zero, a saturated item becomes worthless until demand recovers.
+     * Defaults to 0.15, which is the behaviour every existing world has.
+     */
+    public static double priceFloor() {
+        return CoinkeepConfig.SELL_PRICE_FLOOR_PERCENT.get() / 100.0;
+    }
 
     /** Saturation recovered per in-game day. */
     public static final int RECOVERY_PER_DAY = 48;
@@ -51,7 +59,7 @@ public class MarketHelper {
         int sold = data(player).soldOf(entry.id());
         int saturation = entry.effectiveSaturation();
         double factor = (double) saturation / (saturation + sold);
-        return Math.max(PRICE_FLOOR, factor);
+        return Math.max(priceFloor(), factor);
     }
 
     /** Current per-unit sell price, after saturation. Always at least $1. */
@@ -70,10 +78,33 @@ public class MarketHelper {
         long base = entry.baseSellPrice();
         long total = 0L;
         for (int i = 0; i < quantity; i++) {
-            double factor = Math.max(PRICE_FLOOR, (double) saturation / (saturation + sold + i));
+            double factor = Math.max(priceFloor(), (double) saturation / (saturation + sold + i));
             total += Math.max(1L, Math.round(base * factor));
         }
         return total;
+    }
+
+    /** How many of a limited entry this player has already bought. */
+    public static int boughtCount(Player player, ShopEntry entry) {
+        return data(player).boughtOf(entry.id());
+    }
+
+    /** How many more they may buy, or -1 when the entry is unlimited. */
+    public static int remainingPurchases(Player player, ShopEntry entry) {
+        if (!entry.hasBuyLimit()) {
+            return -1;
+        }
+        return Math.max(0, entry.buyLimit() - boughtCount(player, entry));
+    }
+
+    /** Records a completed purchase against a limited entry. Server-side only. */
+    public static void recordPurchase(Player player, ShopEntry entry) {
+        if (!entry.hasBuyLimit()) {
+            return;   // nothing to track, so nothing to persist
+        }
+        MarketData data = data(player);
+        data.addBought(entry.id(), 1);
+        save(player, data);
     }
 
     /** Records a completed sale. Server-side only. */

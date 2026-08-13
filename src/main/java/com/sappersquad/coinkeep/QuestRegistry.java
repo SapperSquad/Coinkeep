@@ -29,6 +29,18 @@ public class QuestRegistry {
     private static Map<String, List<Quest>> byLine = Map.of();
     private static List<QuestLine> sortedLines = List.of();
 
+    /**
+     * Quests indexed by what fires them: trigger type, then target id.
+     *
+     * Every block break, mob kill, craft and advancement used to scan the ENTIRE
+     * quest list looking for matches. That is fine for the ~180 quests Coinkeep
+     * ships, and quietly awful for a modpack that adds a thousand: a thousand
+     * string comparisons per broken block, per player. This turns it into one
+     * hash lookup, without changing the "just play, nothing to accept" design a
+     * manual turn-in step would have cost.
+     */
+    private static Map<TriggerType, Map<String, List<Quest>>> byTrigger = Map.of();
+
     private static void ensure(RegistryAccess access) {
         Registry<Quest> registry = access.registryOrThrow(ModRegistries.QUEST);
         if (registry == cachedQuestRegistry) {
@@ -37,6 +49,7 @@ public class QuestRegistry {
 
         Map<String, Quest> ids = new LinkedHashMap<>();
         Map<String, List<Quest>> lines = new LinkedHashMap<>();
+        Map<TriggerType, Map<String, List<Quest>>> triggers = new java.util.EnumMap<>(TriggerType.class);
 
         List<QuestLine> orderedLines = access.registryOrThrow(ModRegistries.QUEST_LINE).stream()
                 .sorted(Comparator.comparingInt(QuestLine::sortOrder).thenComparing(QuestLine::id))
@@ -50,11 +63,15 @@ public class QuestRegistry {
         registry.stream().sorted(Comparator.comparing(Quest::id)).forEach(quest -> {
             ids.put(quest.id(), quest);
             lines.computeIfAbsent(quest.lineId(), key -> new ArrayList<>()).add(quest);
+            triggers.computeIfAbsent(quest.triggerType(), key -> new LinkedHashMap<>())
+                    .computeIfAbsent(quest.triggerTarget(), key -> new ArrayList<>())
+                    .add(quest);
         });
 
         cachedQuestRegistry = registry;
         byId = ids;
         byLine = lines;
+        byTrigger = triggers;
         sortedLines = orderedLines;
     }
 
@@ -66,6 +83,19 @@ public class QuestRegistry {
     public static Collection<Quest> all(RegistryAccess access) {
         ensure(access);
         return byId.values();
+    }
+
+    /**
+     * Every quest fired by this trigger and target, or an empty list. One hash
+     * lookup instead of a scan over the whole book - see {@code byTrigger}.
+     */
+    public static List<Quest> triggeredBy(RegistryAccess access, TriggerType type, String target) {
+        ensure(access);
+        Map<String, List<Quest>> forType = byTrigger.get(type);
+        if (forType == null) {
+            return List.of();
+        }
+        return forType.getOrDefault(target, List.of());
     }
 
     public static Quest byId(RegistryAccess access, String id) {

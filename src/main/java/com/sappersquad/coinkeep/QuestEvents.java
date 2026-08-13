@@ -67,11 +67,19 @@ public class QuestEvents {
         if (!(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
+        // Machines mine and kill through FakePlayers, which ARE ServerPlayers
+        // and would sail through this method - progress and rewards would land
+        // on the machine's phantom profile, and one-shot ITEM rewards go to a
+        // fake "inventory" some machine mods collect from. Quests pay for
+        // playing; automation gets paid at the market by selling what it digs.
+        if (serverPlayer instanceof net.neoforged.neoforge.common.util.FakePlayer) {
+            return;
+        }
         net.minecraft.core.RegistryAccess access = player.level().registryAccess();
-        for (Quest quest : QuestRegistry.all(access)) {
-            if (quest.triggerType() != type || !quest.triggerTarget().equals(targetId)) {
-                continue;
-            }
+        // Indexed lookup, not a scan of the whole book: this runs on every
+        // block break, mob kill and craft, so its cost has to be independent
+        // of how many quests a modpack has added.
+        for (Quest quest : QuestRegistry.triggeredBy(access, type, targetId)) {
             int cleared = QuestHelper.getTier(player, quest.id());
             if (quest.isMaxed(cleared) || !QuestHelper.isUnlocked(player, quest)) {
                 continue;

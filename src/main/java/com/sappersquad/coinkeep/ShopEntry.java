@@ -39,8 +39,68 @@ public record ShopEntry(
         long sellPrice,
         int saturation,
         String customName,
-        List<EnchantmentSpec> enchantments
+        List<EnchantmentSpec> enchantments,
+        int buyLimit
 ) {
+    /** True when this entry can only be bought a fixed number of times. */
+    public boolean hasBuyLimit() {
+        return buyLimit > 0;
+    }
+
+    /**
+     * Builds the exact stack a purchase hands over - custom name, and
+     * enchantments on the right component (books carry theirs as cargo under
+     * STORED_ENCHANTMENTS; gear carries active ENCHANTMENTS).
+     *
+     * Shared by the server's /buy and the client's shop tooltip, so what the
+     * tooltip shows is by construction what the purchase delivers. Signature
+     * gear's enchantment list used to be invisible before buying - a $210,000
+     * item you could not inspect.
+     */
+    public net.minecraft.world.item.ItemStack createStack(net.minecraft.core.RegistryAccess access) {
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(item, count);
+
+        if (customName != null && !customName.isBlank()) {
+            stack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,
+                    net.minecraft.network.chat.Component.literal(customName)
+                            .withStyle(net.minecraft.ChatFormatting.GOLD));
+        }
+
+        var lookup = access.lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+        var component = isGear()
+                ? net.minecraft.core.component.DataComponents.ENCHANTMENTS
+                : net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS;
+        var mutable = new net.minecraft.world.item.enchantment.ItemEnchantments.Mutable(
+                stack.getOrDefault(component, net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY));
+        boolean any = false;
+
+        // Legacy single-enchantment form (the enchanted books).
+        if (enchantmentId != null) {
+            any |= applyEnchant(lookup, mutable, enchantmentId, enchantmentLevel);
+        }
+        for (EnchantmentSpec spec : enchantments) {
+            any |= applyEnchant(lookup, mutable, spec.id(), spec.level());
+        }
+
+        if (any) {
+            stack.set(component, mutable.toImmutable());
+        }
+        return stack;
+    }
+
+    /** @return true if the enchantment resolved and was applied. */
+    private static boolean applyEnchant(
+            net.minecraft.core.HolderLookup.RegistryLookup<net.minecraft.world.item.enchantment.Enchantment> lookup,
+            net.minecraft.world.item.enchantment.ItemEnchantments.Mutable target, String id, int level) {
+        net.minecraft.resources.ResourceLocation location = net.minecraft.resources.ResourceLocation.tryParse(id);
+        if (location == null || level <= 0) {
+            return false;
+        }
+        var holder = lookup.get(net.minecraft.resources.ResourceKey.create(
+                net.minecraft.core.registries.Registries.ENCHANTMENT, location));
+        holder.ifPresent(h -> target.set(h, level));
+        return holder.isPresent();
+    }
     /** Sell price defaults to this fraction of the buy price. The gap is a
      *  deliberate spread - without it, buying and re-selling the same item
      *  would be an infinite money loop. */
@@ -111,10 +171,14 @@ public record ShopEntry(
             Codec.STRING.optionalFieldOf("name")
                     .forGetter(entry -> Optional.ofNullable(entry.customName())),
             EnchantmentSpec.CODEC.listOf().optionalFieldOf("enchantments", List.of())
-                    .forGetter(ShopEntry::enchantments)
-    ).apply(instance, (id, category, item, count, price, enchantment, level, sell, saturation, name, enchants) ->
+                    .forGetter(ShopEntry::enchantments),
+            // 0 = unlimited (the default). Otherwise, how many times each
+            // player may ever buy this entry - for one-off unlocks and for
+            // rationing anything that would unbalance a server in bulk.
+            Codec.INT.optionalFieldOf("buy_limit", 0).forGetter(ShopEntry::buyLimit)
+    ).apply(instance, (id, category, item, count, price, enchantment, level, sell, saturation, name, enchants, buyLimit) ->
             new ShopEntry(id, category, item, count, price, enchantment.orElse(null), level,
-                    sell, saturation, name.orElse(null), enchants)));
+                    sell, saturation, name.orElse(null), enchants, buyLimit)));
 
     private static final String[] ROMAN = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
 

@@ -22,6 +22,9 @@ public class CoinkeepConfig {
     public static final ModConfigSpec.BooleanValue VAULT_OWNER_ONLY;
     public static final ModConfigSpec.BooleanValue ALLOW_VAULT_CRACKING;
     public static final ModConfigSpec.BooleanValue GIVE_BOOK_ON_FIRST_JOIN;
+    public static final ModConfigSpec.IntValue BUY_TAX_PERCENT;
+    public static final ModConfigSpec.IntValue SELL_TAX_PERCENT;
+    public static final ModConfigSpec.IntValue SELL_PRICE_FLOOR_PERCENT;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -68,6 +71,38 @@ public class CoinkeepConfig {
                         "Set false to make vaulted money completely untakeable - a thief can",
                         "never break a vault, so cracking is the only route in.")
                 .define("allowVaultCracking", true);
+
+        builder.pop();
+
+        builder.comment(
+                "Levers for controlling the money supply on a busy server.",
+                "All three default to Coinkeep's existing behaviour, so leaving this",
+                "section alone changes nothing.").push("economy");
+
+        BUY_TAX_PERCENT = builder
+                .comment(
+                        "A surcharge added to every system-shop purchase, as a percentage.",
+                        "20 means an item priced $100 costs $120. The difference is removed",
+                        "from circulation, not paid to anyone.")
+                .defineInRange("buyTaxPercent", 0, 0, 100);
+
+        SELL_TAX_PERCENT = builder
+                .comment(
+                        "A cut taken from every system-shop sale, as a percentage.",
+                        "20 means a $100 sale pays out $80. This is the stronger of the two",
+                        "levers against inflation, because selling is where new money is",
+                        "created.")
+                .defineInRange("sellTaxPercent", 0, 0, 100);
+
+        SELL_PRICE_FLOOR_PERCENT = builder
+                .comment(
+                        "How far a sell price can fall as you saturate demand for an item,",
+                        "as a percentage of its base price. Default 15.",
+                        "This is the knob for renewable-resource inflation: at 15, a",
+                        "cobblestone farm still earns forever, just slowly. Set it to 0 and",
+                        "a heavily-farmed item can become genuinely worthless until demand",
+                        "recovers, which caps that income entirely.")
+                .defineInRange("sellPriceFloorPercent", 15, 0, 100);
 
         builder.pop();
 
