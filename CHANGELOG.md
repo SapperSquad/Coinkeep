@@ -45,6 +45,9 @@ modpack-sized quest books.
   players sailed through the player check; progress and rewards landed on the machine's
   phantom profile, and one-shot item rewards went to a fake inventory some machine mods
   can collect from. Quests now pay only real players; automation earns by selling.
+- **The vault-crack victim is actually told now.** Cracking clears the vault's claim, and
+  the "your vault was cracked" notification checked the owner *after* it was cleared — so
+  the message never sent, ever. The owner is remembered before the claim is wiped.
 
 ### Changed — nothing a server or datapack has to do
 - All new config keys default to existing behaviour; all new JSON fields are optional.
