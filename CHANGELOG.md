@@ -3,6 +3,46 @@
 All notable changes to Coinkeep. Bump this in the same pass as `PUBLISHING.md` and
 `README.md` — never one alone.
 
+## 1.2.0 — A bigger book, and search (2026-08-09)
+
+The first release driven by player feedback rather than a plan: with a modpack's worth of
+quests, the book was too small and offered no way to find anything in it.
+
+### Added
+- **The book is responsive.** It grows with the window instead of sitting at a fixed
+  420x282, clamped to 360-640 wide by 200-400 tall so it still fits at GUI scale 4 on a
+  1080p screen and never sprawls on an ultrawide. At scale 2 that is over twice the area
+  and about ten visible quest rows instead of six.
+- **Search on the Quests and Shop tabs.** On Quests it deliberately searches **every
+  chapter**, not just the open one — with hundreds of quests, "which chapter is this in?"
+  *is* the problem, so a search scoped to the current chapter would not have solved it.
+- **Search matches the trigger target**, not just names and descriptions. Typing
+  `deepslate`, or a modded id like `create:andesite`, finds the quest by the block it is
+  about. This is the case players actually hit with custom blocks.
+- **Live match count** beside the field, so an empty list reads as "no matches" rather
+  than looking broken. Clicking a chapter clears the search and returns to browsing.
+- **Three vault GameTests** (9 total). They assert the invariant the network imposes —
+  every synced slot must survive a signed-short round trip — and were verified to *fail*
+  against the old code before passing against the fix.
+
+### Fixed
+- **Vault balances were corrupted for remote players on a server.** The balance was
+  carried across two 32-bit `ContainerData` slots, but vanilla's
+  `ClientboundContainerSetDataPacket` serializes each slot with `writeShort` — 16 bits.
+  Anything above 32,767 was mangled in transit: a $210,000 vault displayed as $13,392, and
+  a $100,000 vault as $4,294,936,224. It is now carried across four 16-bit slots.
+
+  This survived two releases because **every environment it could be tested in bypasses
+  the codec**: single-player, the LAN *host* (an in-memory connection passes packet objects
+  without serializing), and GameTests. It only ever appeared for a genuine remote guest.
+
+  **Saved data was never affected** — the balance lives in NBT and only the synced display
+  was wrong — so no world migration is required. Servers should still update.
+
+### Changed — nothing a server or datapack has to do
+- No content, registry, config or save-format changes. A 1.1.0 world, datapack and addon
+  all load unchanged.
+
 ## 1.1.0 — Shop categories are data (2026-08-09)
 
 Shop categories were a hardcoded Java enum, so a companion mod could not add one — every

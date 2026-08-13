@@ -1,4 +1,4 @@
-# Coinkeep — publishing kit (v1.1.0)
+# Coinkeep — publishing kit (v1.2.0)
 
 Store copy for the Modrinth / CurseForge project pages, plus the upload plan.
 Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one alone.
@@ -11,6 +11,15 @@ Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one 
 > upload. **1.1.0 is an update on a live listing**, and it was built as one:
 > the migration tests in `gametest/ShopCategoryGameTests` pin that a 1.0.0
 > world and any 1.0.0 datapack load unchanged.
+
+> **1.2.0 carries a multiplayer data-correctness fix.** The vault balance was
+> synced across two 32-bit menu slots, but vanilla serializes each slot as a
+> **16-bit short** — so on a real server a remote player saw a corrupted vault
+> balance (a $210,000 vault read as $13,392). It was invisible in single-player,
+> to a LAN host, and to GameTests, which is why it survived two releases.
+> **Saved data was never affected** — the balance is stored in NBT and only the
+> display was wrong — so no world migration is needed. Anyone running a
+> multiplayer server should still update.
 
 ## 1.1.0 upload — order matters
 
@@ -27,11 +36,28 @@ launch checklist).
 |---|---|---|---|
 | `1.0.0+mc1.21.1` | `build/libs/coinkeep-1.0.0.jar` | 1.21.1 | neoforge |
 | `1.1.0+mc1.21.1` | `build/libs/coinkeep-1.1.0.jar` | 1.21.1 | neoforge |
+| `1.2.0+mc1.21.1` | `build/libs/coinkeep-1.2.0.jar` | 1.21.1 | neoforge |
 
 > **Redeploy note.** Highroller requires Coinkeep **1.1.0+** from its 2.0.0 build onward,
 > so Alex's server and BOTH players' clients need the new Coinkeep jar in the same pass as
 > the new Highroller jar. A 1.1.0 client against a 1.0.0 server (or vice versa) will not
 > agree on the shop-category registry.
+
+## 1.2.0 release state (verified 2026-08-09)
+
+- **Build green**, jar `build/libs/coinkeep-1.2.0.jar`; **9/9 GameTests green**
+  (`./gradlew runGameTestServer`) — the six category-migration tests plus three
+  new vault-sync tests.
+- **The vault tests were proved, not assumed.** They were run against the old
+  two-slot code and *failed* (`$1 reached a remote client as $65536`) before
+  being run against the fix and passing. A regression test that passes on the
+  broken code would have been worthless here, because the in-memory path the
+  test runs on is exactly what hid the bug.
+- **Docs in step**: CHANGELOG, README (bigger book + search) and this file all
+  speak 1.2.0.
+- **Still unverified by a human**: the new panel size and the search UX. The
+  sizing cap (640x400) is a judgement call from one piece of player feedback,
+  not a measurement.
 
 ## 1.1.0 release state (verified 2026-08-09)
 
@@ -162,6 +188,33 @@ every release.** Images cannot be grepped, so they go stale invisibly. Regenerat
 `scratchpad/gen-coinkeep-promo.ps1`.
 
 ---
+
+## Changelog for the 1.2.0 upload
+
+Paste into the **changelog field on the version upload**.
+
+> **1.2.0 — A bigger book, and search.**
+>
+> Straight from player feedback: with a modpack's worth of quests, the book was
+> too small and there was no way to find anything.
+>
+> - **The book scales with your window** instead of sitting at a fixed size —
+>   up to 640x400, which is over twice the area and roughly ten visible quest
+>   rows instead of six. Long modded item names finally have somewhere to go.
+> - **Search, on both Quests and Shop.** On Quests it searches **every chapter
+>   at once**, not just the one you have open — "which chapter is this in?" was
+>   the actual problem. It matches a quest's name, its description, *and the
+>   block or item it is about*, so typing `deepslate` or a modded id like
+>   `create:andesite` finds it. A live match count sits beside the field, and
+>   clicking a chapter clears the search and returns you to browsing.
+> - **Fixed: vault balances were wrong for other players on a server.** The
+>   balance was synced across two 32-bit slots, but Minecraft sends each slot as
+>   a 16-bit value — so a $210,000 vault showed as $13,392 to anyone but the
+>   owner's own client. Your saved money was never affected, only what remote
+>   players saw. **If you run a server, update.**
+>
+> Nine automated tests now run on every build, including three that pin the
+> vault against exactly this class of bug.
 
 ## Changelog for the 1.1.0 upload
 

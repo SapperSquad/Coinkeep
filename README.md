@@ -18,6 +18,15 @@ or **K** to open it straight on the Shop tab.
 
 Four tabs: **Quests**, **Shop**, **Cash**, **Guide**.
 
+The book **scales with your window** rather than sitting at a fixed size, so a large
+display gets a large book — useful once a modpack has added a few hundred quests with long
+modded item names.
+
+**Quests and Shop each have a search field.** On Quests it searches **every chapter at
+once**, not just the open one, and it matches a quest's name, its description, *and the
+block or item it is about* — so `deepslate`, or a modded id like `create:andesite`, finds
+the quest about that block. Clicking a chapter clears the search and goes back to browsing.
+
 ---
 
 ## Quests
