@@ -114,9 +114,9 @@ public class VaultBlock extends BaseEntityBlock {
                 && level.getBlockEntity(pos) instanceof VaultBlockEntity vault) {
 
             if (!vault.canOpen(player)) {
-                serverPlayer.displayClientMessage(Component.literal(
+                serverPlayer.sendOverlayMessage(Component.literal(
                         "This vault belongs to someone else."
-                ).withStyle(ChatFormatting.RED), true);
+                ).withStyle(ChatFormatting.RED));
                 return InteractionResult.FAIL;
             }
             if (vault.getOwner() == null) {
@@ -159,9 +159,9 @@ public class VaultBlock extends BaseEntityBlock {
                 Block.popResource(level, pos, drop);
 
                 if (stored > 0 && player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.displayClientMessage(Component.literal(
+                    serverPlayer.sendOverlayMessage(Component.literal(
                             "Vault picked up with $" + CurrencyItem.formatValue(stored) + " still inside."
-                    ).withStyle(ChatFormatting.GOLD), true);
+                    ).withStyle(ChatFormatting.GOLD));
                 }
                 // Stop the loot table adding a second, empty vault.
                 level.removeBlockEntity(pos);

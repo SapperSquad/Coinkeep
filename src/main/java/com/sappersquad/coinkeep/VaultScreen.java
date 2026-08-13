@@ -1,7 +1,7 @@
 package com.sappersquad.coinkeep;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -26,17 +26,13 @@ public class VaultScreen extends AbstractContainerScreen<VaultMenu> {
     private final Map<Integer, int[]> buttons = new LinkedHashMap<>();
 
     public VaultScreen(VaultMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
+        // 26.x made imageWidth/imageHeight final ctor parameters.
+        super(menu, inventory, title, PANEL_W, PANEL_H);
     }
 
     @Override
     protected void init() {
-        this.imageWidth = PANEL_W;
-        this.imageHeight = PANEL_H;
         super.init();
-        // No inventory shown, so park both vanilla labels off-screen.
-        this.inventoryLabelY = this.imageHeight + 4000;
-        this.titleLabelY = this.imageHeight + 4000;
 
         buttons.clear();
         for (int row = 0; row < 2; row++) {
@@ -51,30 +47,30 @@ public class VaultScreen extends AbstractContainerScreen<VaultMenu> {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        // Skip vanilla's blur, but still call renderBg ourselves - it is only
-        // ever invoked from here (see AbstractContainerScreen).
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        // Skip vanilla's blur; draw the whole panel here in absolute
+        // coordinates (extractBackground runs before extractRenderState,
+        // exactly like renderBackground/renderBg used to).
         g.fill(0, 0, this.width, this.height, MoneyUI.BACKDROP);
-        this.renderBg(g, partialTick, mouseX, mouseY);
+        this.drawPanel(g, mouseX, mouseY);
     }
 
-    @Override
-    protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
+    private void drawPanel(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         MoneyUI.panel(g, leftPos, topPos, PANEL_W, PANEL_H);
         MoneyUI.headerBar(g, leftPos, topPos, PANEL_W, HEADER_H);
-        g.drawString(this.font, this.title, leftPos + PAD, topPos + 8, MoneyUI.TEXT, false);
+        g.text(this.font, this.title, leftPos + PAD, topPos + 8, MoneyUI.TEXT, false);
 
         long stored = menu.getStored();
         Minecraft mc = Minecraft.getInstance();
         long balance = mc.player == null ? 0L : BalanceHelper.getBalance(mc.player);
 
         String storedText = MoneyUI.money(stored);
-        g.drawString(this.font, storedText,
+        g.text(this.font, storedText,
                 leftPos + PANEL_W - PAD - this.font.width(storedText), topPos + 8, MoneyUI.GOLD, false);
 
-        g.drawString(this.font, "Deposit  (wallet: " + MoneyUI.money(balance) + ")",
+        g.text(this.font, "Deposit  (wallet: " + MoneyUI.money(balance) + ")",
                 leftPos + PAD, topPos + HEADER_H + 14, MoneyUI.TEXT_DIM, false);
-        g.drawString(this.font, "Withdraw  (vaulted: " + storedText + ")",
+        g.text(this.font, "Withdraw  (vaulted: " + storedText + ")",
                 leftPos + PAD, topPos + HEADER_H + 60, MoneyUI.TEXT_DIM, false);
 
         for (Map.Entry<Integer, int[]> entry : buttons.entrySet()) {
@@ -86,7 +82,7 @@ public class VaultScreen extends AbstractContainerScreen<VaultMenu> {
         }
 
         String note = "Vaulted money is never lost when you die.";
-        g.drawString(this.font, note, leftPos + PAD, topPos + PANEL_H - 18, MoneyUI.TEXT_FAINT, false);
+        g.text(this.font, note, leftPos + PAD, topPos + PANEL_H - 18, MoneyUI.TEXT_FAINT, false);
     }
 
     @Override
@@ -112,7 +108,8 @@ public class VaultScreen extends AbstractContainerScreen<VaultMenu> {
     }
 
     @Override
-    protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
-        // Everything is drawn in renderBg() in absolute coordinates.
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        // Everything is drawn in drawPanel() in absolute coordinates, and
+        // there is no inventory to label.
     }
 }

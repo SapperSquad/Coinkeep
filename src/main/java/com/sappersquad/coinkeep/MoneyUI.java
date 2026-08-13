@@ -1,7 +1,7 @@
 package com.sappersquad.coinkeep;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * Shared look-and-feel for the Ledger and Vault screens so they read
@@ -44,7 +44,7 @@ public final class MoneyUI {
     }
 
     /** Panel with a dark outline plus a lighter top/left edge for depth. */
-    public static void panel(GuiGraphics g, int x, int y, int w, int h) {
+    public static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
         g.fill(x - 1, y - 1, x + w + 1, y + h + 1, PANEL_BORDER);
         g.fill(x, y, x + w, y + h, PANEL_BG);
         g.fill(x, y, x + w, y + 1, PANEL_EDGE);
@@ -53,24 +53,24 @@ public final class MoneyUI {
         g.fill(x + w - 1, y, x + w, y + h, PANEL_BORDER);
     }
 
-    public static void headerBar(GuiGraphics g, int x, int y, int w, int h) {
+    public static void headerBar(GuiGraphicsExtractor g, int x, int y, int w, int h) {
         g.fill(x + 1, y + 1, x + w - 1, y + h, HEADER_BG);
         g.fill(x + 1, y + h - 1, x + w - 1, y + h, DIVIDER);
     }
 
     /** A tab whose active state is marked by a gold underline. */
-    public static void tab(GuiGraphics g, Font font, int x, int y, int w, int h,
+    public static void tab(GuiGraphicsExtractor g, Font font, int x, int y, int w, int h,
                            String label, boolean active, boolean hovered) {
         int bg = active ? TAB_ACTIVE : (hovered ? TAB_HOVER : TAB_IDLE);
         g.fill(x, y, x + w, y + h, bg);
         if (active) {
             g.fill(x, y + h - 2, x + w, y + h, GOLD);
         }
-        g.drawString(font, label, x + (w - font.width(label)) / 2, y + (h - 8) / 2,
+        g.text(font, label, x + (w - font.width(label)) / 2, y + (h - 8) / 2,
                 active ? TEXT : TEXT_DIM, false);
     }
 
-    public static void progressBar(GuiGraphics g, int x, int y, int w, int h, float pct, int fill) {
+    public static void progressBar(GuiGraphicsExtractor g, int x, int y, int w, int h, float pct, int fill) {
         g.fill(x, y, x + w, y + h, 0xFF15171B);
         int filled = Math.max(0, Math.min(w, Math.round(w * pct)));
         if (filled > 0) {
@@ -78,7 +78,7 @@ public final class MoneyUI {
         }
     }
 
-    public static void scrollbar(GuiGraphics g, int x, int y, int h, int contentH, int viewH, int scroll) {
+    public static void scrollbar(GuiGraphicsExtractor g, int x, int y, int h, int contentH, int viewH, int scroll) {
         if (contentH <= viewH) {
             return;
         }

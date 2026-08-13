@@ -36,7 +36,7 @@ displayName="${mod_name}" #mandatory
 displayURL="https://github.com/SapperSquad/Coinkeep" #optional
 
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="coinkeep_icon.png" #optional
+iconFile="coinkeep_icon.png" # square 256x256; 26.x deprecated logoFile
 
 # A text field displayed in the mod UI
 #credits="" #optional

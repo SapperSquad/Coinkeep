@@ -47,6 +47,22 @@ launch checklist).
 > the new Highroller jar. A 1.1.0 client against a 1.0.0 server (or vice versa) will not
 > agree on the shop-category registry.
 
+## 1.3.0+26.2 release state (verified 2026-08-13, branch `mc/26.2`)
+
+- **Port of 1.3.0 to Minecraft 26.2 / NeoForge 26.2.0.59.** Same features and content;
+  jar `build/libs/coinkeep-1.3.0+26.2.jar` built from the `mc/26.2` branch (Java 25
+  toolchain — Minecraft 26.x requires Java 25 at runtime, worth a line on the version).
+- **13/13 GameTests green** on 26.2; client smoke-tested live (world upgraded from the
+  1.21.11 dev world, book renders on the new extract-based GUI pipeline, clicks select,
+  content validator clean, zero coinkeep log errors).
+- **Bonus fix that ships here first**: the vault-crack victim notification actually sends
+  now (owner was cleared before the check). Same fix should land in the next 1.21.1 and
+  1.21.11 uploads.
+- **Store upload**: new version `1.3.0+26.2`, game version **26.2**, loader NeoForge,
+  changelog = the "1.3.0+26.2" section of CHANGELOG.md. This is the growth market
+  (26.2 economy catalog +60% in 3 weeks, only ~95 NeoForge competitors) — worth
+  mentioning 26.2 support in the project summary line once live.
+
 ## 1.3.0+1.21.11 release state (verified 2026-08-13, branch `mc/1.21.11`)
 
 - **Port of 1.3.0 to Minecraft 1.21.11 / NeoForge 21.11.45.** Same features and content;

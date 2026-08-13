@@ -64,8 +64,8 @@ public class MarketEvents {
         if (!player.getInventory().add(book)) {
             player.drop(book, false);
         }
-        player.displayClientMessage(Component.literal(
+        player.sendSystemMessage(Component.literal(
                 "Coinkeep: press J to open your book - quests, shop and cash are all inside."
-        ).withStyle(ChatFormatting.GOLD), false);
+        ).withStyle(ChatFormatting.GOLD));
     }
 }
