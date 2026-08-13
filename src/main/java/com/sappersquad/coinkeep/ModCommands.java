@@ -126,19 +126,38 @@ public class ModCommands {
                                 return 0;
                             }
 
-                            if (BalanceHelper.removeBalance(player, entry.price())) {
+                            // Enforced here, not just greyed out in the GUI -
+                            // /buy is a command anyone can type.
+                            int remaining = MarketHelper.remainingPurchases(player, entry);
+                            if (remaining == 0) {
+                                ctx.getSource().sendFailure(Component.literal(
+                                        "You have already bought your limit of " + entry.displayName()
+                                                + " (" + entry.buyLimit() + ")"));
+                                return 0;
+                            }
+
+                            long cost = TaxHelper.buyCost(entry);
+                            if (BalanceHelper.removeBalance(player, cost)) {
                                 ItemStack stack = buildPurchasedStack(player, entry);
                                 if (!player.getInventory().add(stack)) {
                                     player.drop(stack, false);
                                 }
+                                MarketHelper.recordPurchase(player, entry);
+
+                                long tax = TaxHelper.buyTax(entry);
+                                String taxNote = tax > 0
+                                        ? " (incl. $" + CurrencyItem.formatValue(tax) + " tax)" : "";
+                                String limitNote = entry.hasBuyLimit()
+                                        ? "  [" + MarketHelper.remainingPurchases(player, entry) + " left]" : "";
                                 ctx.getSource().sendSuccess(() -> Component.literal(
                                         "Bought " + entry.count() + "x " + entry.displayName()
-                                                + " for $" + CurrencyItem.formatValue(entry.price())
+                                                + " for $" + CurrencyItem.formatValue(cost) + taxNote
                                                 + " (balance: $" + CurrencyItem.formatValue(BalanceHelper.getBalance(player)) + ")"
+                                                + limitNote
                                 ).withStyle(ChatFormatting.GREEN), false);
                             } else {
                                 ctx.getSource().sendFailure(Component.literal(
-                                        "Not enough money - need $" + CurrencyItem.formatValue(entry.price())
+                                        "Not enough money - need $" + CurrencyItem.formatValue(cost)
                                                 + ", you have $" + CurrencyItem.formatValue(BalanceHelper.getBalance(player))
                                 ));
                             }
@@ -312,7 +331,8 @@ public class ModCommands {
         }
 
         int selling = Math.min(quantity, held);
-        long payout = MarketHelper.quoteBulk(player, entry, selling);
+        long gross = MarketHelper.quoteBulk(player, entry, selling);
+        long payout = TaxHelper.sellPayout(gross);
 
         // Remove the items first; only pay for what was actually taken.
         int remaining = selling;
@@ -331,9 +351,11 @@ public class ModCommands {
         MarketHelper.recordSale(player, entry, selling);
 
         int demandPercent = (int) Math.round(MarketHelper.demand(player, entry) * 100);
+        long tax = gross - payout;
+        String taxNote = tax > 0 ? " after $" + CurrencyItem.formatValue(tax) + " tax" : "";
         source.sendSuccess(() -> Component.literal(
                 "Sold " + selling + "x " + entry.displayName()
-                        + " for $" + CurrencyItem.formatValue(payout)
+                        + " for $" + CurrencyItem.formatValue(payout) + taxNote
                         + "  (demand now " + demandPercent + "%, balance $"
                         + CurrencyItem.formatValue(BalanceHelper.getBalance(player)) + ")"
         ).withStyle(ChatFormatting.GREEN), false);
@@ -348,43 +370,9 @@ public class ModCommands {
      * pickaxe that looks enchanted in the tooltip but does nothing.
      */
     private static ItemStack buildPurchasedStack(ServerPlayer player, ShopEntry entry) {
-        ItemStack stack = new ItemStack(entry.item(), entry.count());
-
-        if (entry.customName() != null && !entry.customName().isBlank()) {
-            stack.set(DataComponents.CUSTOM_NAME,
-                    Component.literal(entry.customName()).withStyle(ChatFormatting.GOLD));
-        }
-
-        var lookup = player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-        var component = entry.isGear() ? DataComponents.ENCHANTMENTS : DataComponents.STORED_ENCHANTMENTS;
-        ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(
-                stack.getOrDefault(component, ItemEnchantments.EMPTY));
-        boolean any = false;
-
-        // Legacy single-enchantment form (the enchanted books).
-        if (entry.enchantmentId() != null) {
-            any |= applyEnchant(lookup, mutable, entry.enchantmentId(), entry.enchantmentLevel());
-        }
-        for (EnchantmentSpec spec : entry.enchantments()) {
-            any |= applyEnchant(lookup, mutable, spec.id(), spec.level());
-        }
-
-        if (any) {
-            stack.set(component, mutable.toImmutable());
-        }
-        return stack;
+        // Delegated to the entry so the client tooltip and this purchase can
+        // never disagree about what the item actually is.
+        return entry.createStack(player.level().registryAccess());
     }
 
-    /** @return true if the enchantment resolved and was applied. */
-    private static boolean applyEnchant(net.minecraft.core.HolderLookup.RegistryLookup<Enchantment> lookup,
-                                        ItemEnchantments.Mutable target, String id, int level) {
-        ResourceLocation location = ResourceLocation.tryParse(id);
-        if (location == null || level <= 0) {
-            return false;
-        }
-        Optional<Holder.Reference<Enchantment>> holder =
-                lookup.get(ResourceKey.create(Registries.ENCHANTMENT, location));
-        holder.ifPresent(h -> target.set(h, level));
-        return holder.isPresent();
-    }
 }

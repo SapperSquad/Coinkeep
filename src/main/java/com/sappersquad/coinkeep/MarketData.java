@@ -25,18 +25,31 @@ import java.util.Map;
  * @param sold        item id -> how many sales the buyers have absorbed
  * @param lastDecayed game time (ticks) that recovery was last applied
  */
-public record MarketData(Map<String, Integer> sold, long lastDecayed) {
+public record MarketData(Map<String, Integer> sold, long lastDecayed, Map<String, Integer> bought) {
 
     public static final Codec<MarketData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("sold").forGetter(MarketData::sold),
-            Codec.LONG.optionalFieldOf("last_decayed", 0L).forGetter(MarketData::lastDecayed)
-    ).apply(instance, (sold, last) -> new MarketData(new HashMap<>(sold), last)));
+            Codec.LONG.optionalFieldOf("last_decayed", 0L).forGetter(MarketData::lastDecayed),
+            // optionalFieldOf so worlds saved before buy limits existed still load.
+            Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("bought", Map.of())
+                    .forGetter(MarketData::bought)
+    ).apply(instance, (sold, last, bought) ->
+            new MarketData(new HashMap<>(sold), last, new HashMap<>(bought))));
 
     public static final StreamCodec<ByteBuf, MarketData> STREAM_CODEC =
             ByteBufCodecs.fromCodec(CODEC);
 
     public static MarketData empty() {
-        return new MarketData(new HashMap<>(), 0L);
+        return new MarketData(new HashMap<>(), 0L, new HashMap<>());
+    }
+
+    /** How many times this player has bought a limited entry. */
+    public int boughtOf(String entryId) {
+        return bought.getOrDefault(entryId, 0);
+    }
+
+    public void addBought(String entryId, int amount) {
+        bought.merge(entryId, amount, Integer::sum);
     }
 
     public int soldOf(String entryId) {
@@ -47,8 +60,8 @@ public record MarketData(Map<String, Integer> sold, long lastDecayed) {
         sold.merge(entryId, amount, Integer::sum);
     }
 
-    /** Records are shallow-immutable; the map is mutated in place. */
+    /** Records are shallow-immutable; the maps are mutated in place. */
     public MarketData withLastDecayed(long time) {
-        return new MarketData(sold, time);
+        return new MarketData(sold, time, bought);
     }
 }

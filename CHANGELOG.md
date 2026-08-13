@@ -3,6 +3,53 @@
 All notable changes to Coinkeep. Bump this in the same pass as `PUBLISHING.md` and
 `README.md` — never one alone.
 
+## 1.3.0 — Economy levers, grid view, and a faster quest engine (2026-08-09)
+
+Round two of player feedback: server owners asked for inflation controls, purchase limits
+and a denser shop layout; a profiling pass found the quest engine scaling badly with
+modpack-sized quest books.
+
+### Added
+- **Grid view for the Shop** — a toggle on the mode strip. Tiles show icon, name and price
+  (the requested format), fitting ~20 items on screen instead of ~8. Search filters the
+  grid too, sell mode shows held counts in tile corners, and the preference persists.
+- **Selective tooltips.** Hovering a shop entry shows a tooltip only when it says more than
+  the tile already does: enchantments, modded stat lines, purchase limits, or a name the
+  tile had to shorten. Plain items get no box — their row already shows name, price and
+  affordability. The "Click to buy" hint line is gone for the same reason.
+- **Signature gear shows its enchantments.** The tooltip renders the exact stack a purchase
+  builds (one shared `createStack`), so what you see is what `/buy` delivers, and modded
+  items bring their own tooltip lines along.
+- **Purchase limits**: shop entries take `buy_limit` — how many times each player may ever
+  buy that entry. Tracked per player, enforced in the command (not just the GUI), shown on
+  the row and in the tooltip.
+- **Transaction taxes** (`buyTaxPercent`, `sellTaxPercent`, both default `0` = off). The
+  tax is destroyed rather than collected — the point is removing money from circulation.
+  Quoted in the GUI exactly as the server will charge it.
+- **Configurable sell-price floor** (`sellPriceFloorPercent`, default `15` = old behaviour).
+  At `0`, a heavily-farmed renewable becomes worthless until demand recovers — the lever
+  against cobblestone-farm inflation.
+- **Sidebars size themselves to their labels** (clamped), so "Vaults & Robbery" in the
+  Guide and long modded chapter names stop truncating.
+- **Breathing room** between the header, tab strip, search field and lists.
+- **Four quest-index GameTests** (13 total) proving the new trigger index returns exactly
+  what the old full scan did.
+
+### Changed
+- **Quest triggers are indexed.** Every block break, mob kill and craft used to scan the
+  entire quest book per event, per player — fine at 180 quests, painful at a modpack's
+  1,000+. It is now a single hash lookup whose cost does not grow with quest count.
+
+### Fixed
+- **Machines can no longer earn quest rewards.** Automated miners acting through fake
+  players sailed through the player check; progress and rewards landed on the machine's
+  phantom profile, and one-shot item rewards went to a fake inventory some machine mods
+  can collect from. Quests now pay only real players; automation earns by selling.
+
+### Changed — nothing a server or datapack has to do
+- All new config keys default to existing behaviour; all new JSON fields are optional.
+  A 1.1.0/1.2.0 world, datapack and addon load unchanged.
+
 ## 1.2.0 — A bigger book, and search (2026-08-09)
 
 The first release driven by player feedback rather than a plan: with a modpack's worth of

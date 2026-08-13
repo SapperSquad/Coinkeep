@@ -1,4 +1,4 @@
-# Coinkeep — publishing kit (v1.2.0)
+# Coinkeep — publishing kit (v1.3.0)
 
 Store copy for the Modrinth / CurseForge project pages, plus the upload plan.
 Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one alone.
@@ -36,14 +36,29 @@ launch checklist).
 |---|---|---|---|
 | `1.0.0+mc1.21.1` | `build/libs/coinkeep-1.0.0.jar` | 1.21.1 | neoforge |
 | `1.1.0+mc1.21.1` | `build/libs/coinkeep-1.1.0.jar` | 1.21.1 | neoforge |
-| `1.2.0+mc1.21.1` | `build/libs/coinkeep-1.2.0.jar` | 1.21.1 | neoforge |
+| `1.3.0+mc1.21.1` | `build/libs/coinkeep-1.3.0.jar` | 1.21.1 | neoforge |
+
+> **1.2.0 was never uploaded** — it was committed locally and folded into 1.3.0 before any
+> store saw it. Do not upload a 1.2.0 jar; players jump 1.1.0 → 1.3.0, and the 1.3.0 store
+> changelog below covers both.
 
 > **Redeploy note.** Highroller requires Coinkeep **1.1.0+** from its 2.0.0 build onward,
 > so Alex's server and BOTH players' clients need the new Coinkeep jar in the same pass as
 > the new Highroller jar. A 1.1.0 client against a 1.0.0 server (or vice versa) will not
 > agree on the shop-category registry.
 
-## 1.2.0 release state (verified 2026-08-09)
+## 1.3.0 release state (verified 2026-08-09)
+
+- **Build green**, jar `build/libs/coinkeep-1.3.0.jar`; **13/13 GameTests green** —
+  category migration (6), vault sync (3), quest trigger index (4).
+- **Everything ships together**: the 1.2.0 work (responsive book, cross-chapter search,
+  the vault 16-bit wire fix) plus the feedback batch (grid view, selective tooltips,
+  taxes, purchase limits, configurable price floor, measured sidebars, quest index,
+  FakePlayer guard).
+- **Alex signed off the visuals in-game** (grid tiles, spacing, sidebar widths).
+- **Docs in step**: CHANGELOG, README and this file all speak 1.3.0.
+
+## 1.2.0 release state (verified 2026-08-09 — never uploaded, folded into 1.3.0)
 
 - **Build green**, jar `build/libs/coinkeep-1.2.0.jar`; **9/9 GameTests green**
   (`./gradlew runGameTestServer`) — the six category-migration tests plus three
@@ -188,6 +203,44 @@ every release.** Images cannot be grepped, so they go stale invisibly. Regenerat
 `scratchpad/gen-coinkeep-promo.ps1`.
 
 ---
+
+## Changelog for the 1.3.0 upload
+
+Paste into the **changelog field on the version upload**. Covers everything since 1.1.0
+(1.2.0 was never uploaded).
+
+> **1.3.0 — The feedback release.** Almost everything here came from player requests.
+>
+> **The book**
+> - **Scales with your window** instead of a fixed size — over twice the area, with room
+>   for long modded item names.
+> - **Search on Quests and Shop.** Quest search covers **every chapter at once** and also
+>   matches the block or item a quest is about — typing `deepslate` or `create:andesite`
+>   finds it. Live match count, and clicking a chapter returns to browsing.
+> - **Grid view for the Shop** — toggle on the mode strip. Icon on top, name and price
+>   below, ~20 items on screen. Your choice sticks.
+> - **Cleaner tooltips**: they now appear only for items with something extra to say —
+>   enchanted gear finally **lists its enchantments** before you spend $210,000 on it.
+> - Sidebars size to their labels, so nothing truncates; more breathing room throughout.
+>
+> **For server owners**
+> - **Transaction taxes** (`buyTaxPercent` / `sellTaxPercent`, default off) — destroyed,
+>   not collected, to pull money out of circulation.
+> - **Configurable sell-price floor** — set it to 0 and heavily-farmed renewables become
+>   temporarily worthless instead of printing money forever.
+> - **Purchase limits**: any shop entry can take `"buy_limit": N` — each player may buy it
+>   that many times, ever.
+> - **Machines no longer count.** Automated miners and passive mob farms cannot advance
+>   quest tiers or collect quest rewards — quests pay for playing; automation earns by
+>   selling. (If you land the killing blow yourself, it counts.)
+>
+> **Fixes & internals**
+> - **Vault balances displayed wrong for other players on servers** (a $210,000 vault
+>   could read as $13,392 to a guest). Saved money was never affected. Fixed — update if
+>   you run a server.
+> - Quest triggers are **indexed**: block-break/kill/craft cost no longer grows with the
+>   size of a modpack's quest book.
+> - 13 automated tests now run on every build.
 
 ## Changelog for the 1.2.0 upload
 

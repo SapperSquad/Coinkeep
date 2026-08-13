@@ -48,11 +48,15 @@ public class QuestScreen extends Screen {
     private static final int MIN_PANEL_W = 360;
     private static final int MAX_PANEL_H = 400;
     private static final int MIN_PANEL_H = 200;
+    /** Gap between the header, tab strip, search field and list. */
+    private static final int TAB_GAP = 3;
+    private static final int ROW_GAP = 5;
     /** Height of the search row above the list. */
-    private static final int SEARCH_H = 18;
+    private static final int SEARCH_H = 20;
     private static final int HEADER_H = 24;
     private static final int TOPTAB_H = 18;
-    private static final int SIDEBAR_W = 112;
+    /** Floor for the sidebar; the real width is measured from its labels. */
+    private static final int MIN_SIDEBAR_W = 112;
     // Taller than it looks like it needs: the detail strip carries the tier
     // ladder AND the chapter ladder, not just a description.
     private static final int DETAIL_H = 88;
@@ -139,6 +143,36 @@ public class QuestScreen extends Screen {
     // fresh ShopCategory objects and an identity-held reference would go
     // stale (or, worse, quietly compare unequal to its own replacement).
     private String selectedCategory;
+
+    /**
+     * Grid layout for the shop: icon on top, name and price beneath, several
+     * entries per row - straight from player feedback that a modpack's worth
+     * of custom items is easier to scan as tiles than as a list. Static so
+     * the choice survives closing the book; it is a preference, not per-visit
+     * state.
+     */
+    private static boolean shopGrid;
+
+    private static final int GRID_CELL_W = 86;
+    private static final int GRID_CELL_H = 46;
+    private static final int GRID_GAP = 4;
+
+    /** Hit box for the Grid toggle; null except on the Shop tab. */
+    @Nullable
+    private int[] gridToggleBounds;
+
+    /** Measured per tab in layout() - see the note there. */
+    private int sidebarW = MIN_SIDEBAR_W;
+
+    /** The labels the active tab's sidebar will actually draw. */
+    private List<String> sidebarLabels() {
+        return switch (activeTab) {
+            case QUESTS -> lines().stream().map(QuestLine::name).toList();
+            case SHOP -> shopCategories().stream().map(ShopCategory::getLabel).toList();
+            case GUIDE -> GuideTopic.ALL.stream().map(GuideTopic::title).toList();
+            case CASH -> List.of();
+        };
+    }
     private int shopScroll;
     private int shopSidebarScroll;
 
@@ -242,20 +276,31 @@ public class QuestScreen extends Screen {
         panelLeft = (this.width - panelW) / 2;
         panelTop = (this.height - panelH) / 2;
 
-        // Search sits above the list on the tabs that have one, so the list
-        // starts lower there.
-        searchTop = panelTop + HEADER_H + TOPTAB_H;
-        contentTop = searchTop + (tabHasSearch() ? SEARCH_H : 0);
+        // Deliberate breathing room. The header bar, the tab strip, the search
+        // field and the list were previously butted straight together with no
+        // gap at all, which read as cramped.
+        int tabsBottom = panelTop + HEADER_H + TAB_GAP + TOPTAB_H;
+        searchTop = tabsBottom + ROW_GAP;
+        contentTop = (tabHasSearch() ? searchTop + SEARCH_H : tabsBottom) + ROW_GAP;
         contentBottom = panelTop + panelH - (activeTab == Tab.QUESTS ? DETAIL_H : PAD);
         // Cash has no categories, so it uses the full panel width rather than
         // leaving an empty sidebar column. Guide keeps the sidebar for its
         // topic list.
-        listLeft = activeTab == Tab.CASH ? panelLeft + 1 : panelLeft + SIDEBAR_W;
+        // The sidebar sizes itself to its widest label instead of truncating.
+        // "Vaults & Robbery" did not fit the old fixed 112px, and a modpack's
+        // chapter names can be anything. Clamped to 40% of the panel so a
+        // pathological name squeezes itself (ellipsis) rather than the list.
+        sidebarW = MIN_SIDEBAR_W;
+        for (String label : sidebarLabels()) {
+            sidebarW = Math.max(sidebarW, this.font.width(label) + 28 + 10);
+        }
+        sidebarW = Math.min(sidebarW, panelW * 2 / 5);
+        listLeft = activeTab == Tab.CASH ? panelLeft + 1 : panelLeft + sidebarW;
         listRight = panelLeft + panelW - 1;
 
         topTabBounds.clear();
         int x = panelLeft + PAD;
-        int y = panelTop + HEADER_H;
+        int y = panelTop + HEADER_H + TAB_GAP;
         for (Tab tab : Tab.values()) {
             int w = this.font.width(tab.label) + 24;
             topTabBounds.put(tab, new int[]{x, y, w, TOPTAB_H});
@@ -263,8 +308,9 @@ public class QuestScreen extends Screen {
         }
 
         // Buy/Sell sits on the same strip, right-aligned, and only exists
-        // while the Shop tab is open.
+        // while the Shop tab is open. The Grid toggle sits just left of it.
         modeBounds.clear();
+        gridToggleBounds = null;
         if (activeTab == Tab.SHOP) {
             int modeW = 44;
             int modeX = panelLeft + panelW - PAD - modeW * ShopMode.values().length - 2;
@@ -272,6 +318,10 @@ public class QuestScreen extends Screen {
                 modeBounds.put(mode, new int[]{modeX, y, modeW, TOPTAB_H});
                 modeX += modeW + 2;
             }
+            int toggleW = this.font.width("Grid") + 16;
+            gridToggleBounds = new int[]{
+                    panelLeft + panelW - PAD - modeW * ShopMode.values().length - 2 - toggleW - 8,
+                    y, toggleW, TOPTAB_H};
         }
         clampAll();
     }
@@ -449,8 +499,8 @@ public class QuestScreen extends Screen {
         sidebarScroll = clamp(sidebarScroll, lines().size() * LINE_ROW_H - viewH);
         // Shop and Cash share shopScroll, so clamp against whichever list is
         // actually showing or Cash would scroll past its end.
-        int shopRows = activeTab == Tab.CASH ? cashRowCount() : entries().size();
-        shopScroll = clamp(shopScroll, shopRows * SHOP_ROW_H - viewH);
+        int shopContent = activeTab == Tab.CASH ? cashRowCount() * SHOP_ROW_H : shopContentHeight();
+        shopScroll = clamp(shopScroll, shopContent - viewH);
         if (activeTab == Tab.GUIDE) {
             // Wrapping depends on panel width, so a resize changes the guide's
             // height - re-clamp or it can be left scrolled past the end.
@@ -476,6 +526,52 @@ public class QuestScreen extends Screen {
     private int hoveredIndex(int mouseY, int scrollValue, int rowHeight, int size) {
         int index = (mouseY - contentTop + scrollValue) / rowHeight;
         return index >= 0 && index < size ? index : -1;
+    }
+
+    // ==================== shop layout (list vs grid) ====================
+
+    private int gridColumns() {
+        return Math.max(1, (rowWidth() - GRID_GAP) / (GRID_CELL_W + GRID_GAP));
+    }
+
+    /** Pixel height of the shop's content in whichever layout is active. */
+    private int shopContentHeight() {
+        int n = entries().size();
+        if (!shopGrid) {
+            return n * SHOP_ROW_H;
+        }
+        int rows = (n + gridColumns() - 1) / gridColumns();
+        return rows * (GRID_CELL_H + GRID_GAP) + GRID_GAP;
+    }
+
+    /**
+     * The entry under the cursor, list or grid - the single source for
+     * clicks and tooltips, so the two layouts can never disagree about what
+     * was clicked.
+     */
+    private int hoveredShopIndex(int mouseX, int mouseY) {
+        if (!inList(mouseX, mouseY)) {
+            return -1;
+        }
+        if (!shopGrid) {
+            return hoveredIndex(mouseY, shopScroll, SHOP_ROW_H, entries().size());
+        }
+        int cols = gridColumns();
+        int localX = mouseX - listLeft - GRID_GAP;
+        int localY = mouseY - contentTop + shopScroll - GRID_GAP;
+        if (localX < 0 || localY < 0) {
+            return -1;
+        }
+        int col = localX / (GRID_CELL_W + GRID_GAP);
+        int row = localY / (GRID_CELL_H + GRID_GAP);
+        // Clicks in the gap between cells, or right of the last column,
+        // belong to nothing.
+        if (col >= cols || localX % (GRID_CELL_W + GRID_GAP) >= GRID_CELL_W
+                || localY % (GRID_CELL_H + GRID_GAP) >= GRID_CELL_H) {
+            return -1;
+        }
+        int index = row * cols + col;
+        return index < entries().size() ? index : -1;
     }
 
     /**
@@ -532,6 +628,12 @@ public class QuestScreen extends Screen {
             MoneyUI.tab(g, this.font, b[0], b[1], b[2], b[3], mode.getKey().label,
                     mode.getKey() == shopMode, hovered);
         }
+        if (gridToggleBounds != null) {
+            int[] b = gridToggleBounds;
+            boolean hovered = mouseX >= b[0] && mouseX < b[0] + b[2] && mouseY >= b[1] && mouseY < b[1] + b[3];
+            // Lit while the grid is active, exactly like the mode tabs.
+            MoneyUI.tab(g, this.font, b[0], b[1], b[2], b[3], "Grid", shopGrid, hovered);
+        }
 
         if (tabHasSearch()) {
             drawSearchRow(g);
@@ -564,18 +666,57 @@ public class QuestScreen extends Screen {
         }
 
         if (activeTab == Tab.SHOP && inList(mouseX, mouseY)) {
-            int index = hoveredIndex(mouseY, shopScroll, SHOP_ROW_H, entries().size());
+            int index = hoveredShopIndex(mouseX, mouseY);
             if (index >= 0) {
                 ShopEntry entry = entries().get(index);
                 if (shopMode == ShopMode.BUY) {
-                    boolean afford = balance >= entry.price();
-                    g.renderComponentTooltip(this.font, List.of(
-                            Component.literal(entry.displayName()).withStyle(ChatFormatting.WHITE),
-                            Component.literal(MoneyUI.money(entry.price()))
-                                    .withStyle(afford ? ChatFormatting.GREEN : ChatFormatting.RED),
-                            Component.literal(afford ? "Click to buy" : "Not enough money")
-                                    .withStyle(ChatFormatting.GRAY)
-                    ), mouseX, mouseY);
+                    LocalPlayer buyer = player();
+                    long cost = TaxHelper.buyCost(entry);
+                    long tax = TaxHelper.buyTax(entry);
+                    int remaining = buyer == null ? -1 : MarketHelper.remainingPurchases(buyer, entry);
+                    boolean soldOut = remaining == 0;
+                    boolean afford = !soldOut && balance >= cost;
+
+                    // The vanilla tooltip of the EXACT stack a purchase builds -
+                    // so signature gear lists its enchantments, books list what
+                    // they store, and this can never drift from what /buy hands
+                    // over, because both come from the same createStack().
+                    List<Component> vanilla =
+                            getTooltipFromItem(Minecraft.getInstance(), entry.createStack(access));
+
+                    // Deliberately selective: a tooltip only appears when it
+                    // adds something the row/tile does not already show -
+                    // enchantments or modded stat lines (vanilla tooltip beyond
+                    // the bare name), a purchase limit, or a name the grid tile
+                    // had to ellipsize. Plain items get no box at all; their
+                    // row already says name, price and affordability.
+                    boolean nameTruncated = shopGrid
+                            && this.font.width(entry.displayName()) > GRID_CELL_W - 8;
+                    boolean worthShowing = vanilla.size() > 1
+                            || entry.hasBuyLimit()
+                            || nameTruncated;
+
+                    if (worthShowing) {
+                        List<Component> lines = new ArrayList<>(vanilla);
+                        lines.add(Component.literal(MoneyUI.money(cost))
+                                .withStyle(afford ? ChatFormatting.GREEN : ChatFormatting.RED));
+                        // Broken out so a taxed price does not just look like a
+                        // higher price with no explanation.
+                        if (tax > 0) {
+                            lines.add(Component.literal("  " + MoneyUI.money(entry.price()) + " + "
+                                            + MoneyUI.money(tax) + " tax")
+                                    .withStyle(ChatFormatting.DARK_GRAY));
+                        }
+                        if (entry.hasBuyLimit()) {
+                            lines.add(Component.literal(remaining + " of " + entry.buyLimit() + " remaining")
+                                    .withStyle(soldOut ? ChatFormatting.RED : ChatFormatting.GOLD));
+                        }
+                        if (soldOut) {
+                            lines.add(Component.literal("You have bought your limit")
+                                    .withStyle(ChatFormatting.RED));
+                        }
+                        g.renderComponentTooltip(this.font, lines, mouseX, mouseY);
+                    }
                 } else {
                     LocalPlayer player = player();
                     int held = heldCount(entry);
@@ -625,7 +766,7 @@ public class QuestScreen extends Screen {
 
                 int total = questsIn(line.id()).size();
                 int done = player == null ? 0 : QuestHelper.completedIn(player, line.id());
-                g.drawString(this.font, MoneyUI.fit(this.font, line.name(), SIDEBAR_W - 34),
+                g.drawString(this.font, MoneyUI.fit(this.font, line.name(), sidebarW - 34),
                         panelLeft + 28, y + 4, active ? MoneyUI.TEXT : MoneyUI.TEXT_DIM, false);
                 g.drawString(this.font, done + "/" + total, panelLeft + 28, y + 14,
                         total > 0 && done >= total ? MoneyUI.GOLD : MoneyUI.TEXT_FAINT, false);
@@ -996,7 +1137,7 @@ public class QuestScreen extends Screen {
                     ShopEntry first = inCategory.get(0);
                     g.renderItem(new ItemStack(first.item()), panelLeft + 8, y + 5);
                 }
-                g.drawString(this.font, MoneyUI.fit(this.font, category.getLabel(), SIDEBAR_W - 34),
+                g.drawString(this.font, MoneyUI.fit(this.font, category.getLabel(), sidebarW - 34),
                         panelLeft + 28, y + 4, active ? MoneyUI.TEXT : MoneyUI.TEXT_DIM, false);
                 g.drawString(this.font, inCategory.size() + " items", panelLeft + 28, y + 14,
                         MoneyUI.TEXT_FAINT, false);
@@ -1012,23 +1153,85 @@ public class QuestScreen extends Screen {
     private void drawShopList(GuiGraphics g, int mouseX, int mouseY, long balance) {
         List<ShopEntry> entries = entries();
         int viewH = contentBottom - contentTop;
-        int hovered = inList(mouseX, mouseY)
-                ? hoveredIndex(mouseY, shopScroll, SHOP_ROW_H, entries.size()) : -1;
+        int hovered = hoveredShopIndex(mouseX, mouseY);
 
         g.enableScissor(listLeft, contentTop, listRight, contentBottom);
-        for (int i = 0; i < entries.size(); i++) {
-            int rowY = contentTop - shopScroll + i * SHOP_ROW_H;
-            if (rowY + SHOP_ROW_H >= contentTop && rowY <= contentBottom) {
-                if (shopMode == ShopMode.BUY) {
-                    drawShopRow(g, entries.get(i), rowY, i == hovered, balance);
-                } else {
-                    drawSellRow(g, entries.get(i), rowY, i == hovered);
+        if (shopGrid) {
+            int cols = gridColumns();
+            for (int i = 0; i < entries.size(); i++) {
+                int cellX = listLeft + GRID_GAP + (i % cols) * (GRID_CELL_W + GRID_GAP);
+                int cellY = contentTop + GRID_GAP - shopScroll + (i / cols) * (GRID_CELL_H + GRID_GAP);
+                if (cellY + GRID_CELL_H >= contentTop && cellY <= contentBottom) {
+                    drawShopCell(g, entries.get(i), cellX, cellY, i == hovered, balance);
+                }
+            }
+        } else {
+            for (int i = 0; i < entries.size(); i++) {
+                int rowY = contentTop - shopScroll + i * SHOP_ROW_H;
+                if (rowY + SHOP_ROW_H >= contentTop && rowY <= contentBottom) {
+                    if (shopMode == ShopMode.BUY) {
+                        drawShopRow(g, entries.get(i), rowY, i == hovered, balance);
+                    } else {
+                        drawSellRow(g, entries.get(i), rowY, i == hovered);
+                    }
                 }
             }
         }
         g.disableScissor();
 
-        MoneyUI.scrollbar(g, listRight - 5, contentTop, viewH, entries.size() * SHOP_ROW_H, viewH, shopScroll);
+        MoneyUI.scrollbar(g, listRight - 5, contentTop, viewH, shopContentHeight(), viewH, shopScroll);
+    }
+
+    /**
+     * One grid tile: icon on top, name and price beneath - the format the
+     * feedback asked for. A tile carries less than a row, deliberately; the
+     * tooltip is the detail surface, the tile is for scanning.
+     */
+    private void drawShopCell(GuiGraphics g, ShopEntry entry, int x, int y, boolean hovered, long balance) {
+        LocalPlayer player = player();
+        boolean selling = shopMode == ShopMode.SELL;
+
+        long price;
+        boolean actionable;
+        if (selling) {
+            int held = heldCount(entry);
+            price = player == null ? entry.baseSellPrice() : MarketHelper.sellPrice(player, entry);
+            actionable = held > 0;
+        } else {
+            price = TaxHelper.buyCost(entry);
+            int remaining = player == null ? -1 : MarketHelper.remainingPurchases(player, entry);
+            actionable = remaining != 0 && balance >= price;
+        }
+
+        g.fill(x, y, x + GRID_CELL_W, y + GRID_CELL_H, hovered ? MoneyUI.ROW_HOVER : MoneyUI.TAB_IDLE);
+        if (hovered) {
+            // A 1px outline reads better than a fill change alone at tile size.
+            g.fill(x, y, x + GRID_CELL_W, y + 1, MoneyUI.GOLD);
+            g.fill(x, y + GRID_CELL_H - 1, x + GRID_CELL_W, y + GRID_CELL_H, MoneyUI.GOLD);
+            g.fill(x, y, x + 1, y + GRID_CELL_H, MoneyUI.GOLD);
+            g.fill(x + GRID_CELL_W - 1, y, x + GRID_CELL_W, y + GRID_CELL_H, MoneyUI.GOLD);
+        }
+
+        // In sell mode the stack renders your held count in the corner, which
+        // is the one number that matters there.
+        ItemStack stack = new ItemStack(entry.item(),
+                selling ? Math.max(1, heldCount(entry)) : Math.max(1, entry.count()));
+        int iconX = x + (GRID_CELL_W - 16) / 2;
+        g.renderItem(stack, iconX, y + 4);
+        if (selling) {
+            g.renderItemDecorations(this.font, stack, iconX, y + 4);
+        }
+
+        String name = MoneyUI.fit(this.font, entry.displayName(), GRID_CELL_W - 8);
+        g.drawString(this.font, name, x + (GRID_CELL_W - this.font.width(name)) / 2, y + 24,
+                actionable ? MoneyUI.TEXT : MoneyUI.TEXT_FAINT, false);
+
+        String priceText = MoneyUI.fit(this.font, MoneyUI.money(price), GRID_CELL_W - 8);
+        int priceColor = selling
+                ? (actionable ? MoneyUI.GREEN : MoneyUI.TEXT_FAINT)
+                : (actionable ? MoneyUI.GREEN : MoneyUI.RED);
+        g.drawString(this.font, priceText, x + (GRID_CELL_W - this.font.width(priceText)) / 2, y + 35,
+                priceColor, false);
     }
 
     private void drawShopRow(GuiGraphics g, ShopEntry entry, int y, boolean hovered, long balance) {
@@ -1041,16 +1244,29 @@ public class QuestScreen extends Screen {
         g.renderItem(stack, listLeft + 6, y + 4);
         g.renderItemDecorations(this.font, stack, listLeft + 6, y + 4);
 
-        boolean afford = balance >= entry.price();
-        String price = MoneyUI.money(entry.price());
+        // The tax-inclusive figure, so the row quotes what /buy will charge.
+        long cost = TaxHelper.buyCost(entry);
+        LocalPlayer player = player();
+        int remaining = player == null ? -1 : MarketHelper.remainingPurchases(player, entry);
+        boolean soldOut = remaining == 0;
+        boolean afford = !soldOut && balance >= cost;
+
+        String price = soldOut ? "Limit reached" : MoneyUI.money(cost);
         int priceW = this.font.width(price);
         int nameX = listLeft + 30;
 
-        g.drawString(this.font, MoneyUI.fit(this.font, entry.displayName(),
+        // A limited entry says so on the row; without it "Limit reached" would
+        // be the first a player heard of the restriction.
+        String name = entry.displayName();
+        if (remaining > 0) {
+            name = name + "  (" + remaining + " left)";
+        }
+
+        g.drawString(this.font, MoneyUI.fit(this.font, name,
                         (listLeft + w - PAD - priceW - 10) - nameX),
                 nameX, y + 8, afford ? MoneyUI.TEXT : MoneyUI.TEXT_FAINT, false);
         g.drawString(this.font, price, listLeft + w - PAD - priceW, y + 8,
-                afford ? MoneyUI.GREEN : MoneyUI.RED, false);
+                soldOut ? MoneyUI.TEXT_FAINT : (afford ? MoneyUI.GREEN : MoneyUI.RED), false);
     }
 
     /**
@@ -1115,7 +1331,7 @@ public class QuestScreen extends Screen {
                     g.fill(panelLeft + 1, y, listLeft - 1, y + LINE_ROW_H, MoneyUI.TAB_HOVER);
                 }
                 g.renderItem(new ItemStack(topics.get(i).icon()), panelLeft + 8, y + 5);
-                g.drawString(this.font, MoneyUI.fit(this.font, topics.get(i).title(), SIDEBAR_W - 34),
+                g.drawString(this.font, MoneyUI.fit(this.font, topics.get(i).title(), sidebarW - 34),
                         panelLeft + 28, y + 9, active ? MoneyUI.TEXT : MoneyUI.TEXT_DIM, false);
             }
             y += LINE_ROW_H;
@@ -1316,6 +1532,16 @@ public class QuestScreen extends Screen {
                     return true;
                 }
             }
+            if (gridToggleBounds != null
+                    && mouseX >= gridToggleBounds[0] && mouseX < gridToggleBounds[0] + gridToggleBounds[2]
+                    && mouseY >= gridToggleBounds[1] && mouseY < gridToggleBounds[1] + gridToggleBounds[3]) {
+                shopGrid = !shopGrid;
+                // The two layouts measure scroll differently, so a carried-over
+                // offset would land somewhere arbitrary.
+                shopScroll = 0;
+                click();
+                return true;
+            }
 
             if (activeTab == Tab.QUESTS) {
                 if (inSidebar(mouseX, mouseY)) {
@@ -1389,7 +1615,7 @@ public class QuestScreen extends Screen {
                     return true;
                 }
                 if (inList(mouseX, mouseY)) {
-                    int index = hoveredIndex((int) mouseY, shopScroll, SHOP_ROW_H, entries().size());
+                    int index = hoveredShopIndex((int) mouseX, (int) mouseY);
                     if (index >= 0) {
                         ShopEntry entry = entries().get(index);
                         if (shopMode == ShopMode.BUY) {
@@ -1444,7 +1670,8 @@ public class QuestScreen extends Screen {
             }
         } else {
             if (inList(mouseX, mouseY)) {
-                shopScroll = clamp(shopScroll - (int) (scrollY * SHOP_ROW_H), entries().size() * SHOP_ROW_H - viewH);
+                int step = shopGrid ? GRID_CELL_H + GRID_GAP : SHOP_ROW_H;
+                shopScroll = clamp(shopScroll - (int) (scrollY * step), shopContentHeight() - viewH);
                 return true;
             }
             if (inSidebar(mouseX, mouseY)) {
