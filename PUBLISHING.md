@@ -330,11 +330,22 @@ short, per-upload note — `CHANGELOG.md` in the repo is the long-form history. 
 
 ## Platform facts
 
-- Modrinth project: **live** (1.0.0 uploaded) — *record the URL/project id here on the next
-  store visit*
-- CurseForge project: **live** (1.0.0 uploaded) — *record the URL/project id here on the next
-  store visit*
-- Minecraft **1.21.1** · NeoForge **21.1.235**
+- Modrinth project: **https://modrinth.com/mod/coinkeep** (project id `O0a6NLTz`)
+- CurseForge project: authors dashboard project id **1608278**
+- **Store state as of 2026-08-13 (uploaded via browser, both stores):**
+  - Modrinth versions: `1.0.0`, `1.1.0`, `1.3.0` (1.21.1), `1.3.0+1.21.11` (1.21.11),
+    `1.3.0+26.2` (26.2) — all live.
+  - CurseForge files: `coinkeep-1.0.0.jar`, `coinkeep-1.1.0.jar` (approved),
+    "Coinkeep 1.3.0 — The feedback release" (1.21.1, approved),
+    "Coinkeep 1.3.0 for Minecraft 1.21.11" (1.21.11/Java 21) and
+    "Coinkeep 1.3.0 for Minecraft 26.2" (26.2/Java 25) — the last two auto-publish
+    once CF review finishes.
+  - Each upload carries its changelog from this file (1.3.0 changelog + the
+    vault-crack-notification fix line; ports carry the attachment upgrade note).
+- **Known follow-up:** the Modrinth project *description* still ends "Built for
+  NeoForge 1.21.1" and predates the 1.1.0 shop-category paragraph — refresh it from
+  this file's body copy on the next store visit.
+- Minecraft **1.21.1 / 1.21.11 / 26.2** · NeoForge **21.1.235 / 21.11.45 / 26.2.0.59**
 - Environment: **client and server required**
 - Categories: `economy`, `adventure`, `game-mechanics`, `utility`
 - Tags: economy, quests, money, shop, market, vault, currency, multiplayer
