@@ -176,8 +176,12 @@ Highroller tab of their own.
 | `/addbalance` | operator payouts |
 | *keys* | **J** Ledger · **K** straight to the Shop (both rebindable) |
 
-Built for **NeoForge 1.21.1**. Balances, quest progress and market demand are stored per player
-as data attachments — nothing to migrate, nothing to corrupt, and no custom packets.
+## Versions
+
+Available for **Minecraft 1.21.1, 1.21.11 and 26.2** — NeoForge on all three, same features
+everywhere (the 26.2 build runs on Java 25, as all of Minecraft 26.x does). Balances, quest
+progress and market demand are stored per player as data attachments, with no custom packets
+anywhere.
 
 ---
 
@@ -342,9 +346,16 @@ short, per-upload note — `CHANGELOG.md` in the repo is the long-form history. 
     once CF review finishes.
   - Each upload carries its changelog from this file (1.3.0 changelog + the
     vault-crack-notification fix line; ports carry the attachment upgrade note).
-- **Known follow-up:** the Modrinth project *description* still ends "Built for
-  NeoForge 1.21.1" and predates the 1.1.0 shop-category paragraph — refresh it from
-  this file's body copy on the next store visit.
+- **Descriptions synced 2026-08-13:** BOTH store descriptions now carry this file's
+  current body (shop-category paragraph, Highroller example, "## Versions" section for
+  1.21.1/1.21.11/26.2). The old CurseForge description had been stored with escaped
+  markdown (literal `\*\*` / `\#` — pasted into the WYSIWYG once upon a time), so it was
+  rendering raw asterisks; replaced via the editor's **Markdown mode**.
+- **STANDING RULE (SapperSquad, 2026-08-30): whatever changes on Modrinth changes on
+  CurseForge in the same pass** — descriptions, files, changelogs, gallery. Never one store.
+- **CF editor note:** its Markdown textarea chokes on long synthetic typing (renderer
+  freeze) and ignores programmatic sets — put the text on the OS clipboard
+  (`Set-Clipboard`) and paste with Ctrl+V, one event.
 - Minecraft **1.21.1 / 1.21.11 / 26.2** · NeoForge **21.1.235 / 21.11.45 / 26.2.0.59**
 - Environment: **client and server required**
 - Categories: `economy`, `adventure`, `game-mechanics`, `utility`
