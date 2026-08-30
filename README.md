@@ -240,3 +240,11 @@ screen proves nothing. To boot straight into a world for testing:
   progress rather than corrupting a save.
 - **A vault's money and owner live on the item** via a data component, which is what lets a
   broken vault be carried, dropped on death, and still need cracking by whoever finds it.
+
+## License
+
+The source code in this repository is MIT-licensed - see [LICENSE](LICENSE).
+The brand assets in [promo/](promo/) (banner, icon, gallery art) and the
+store-page copy in [PUBLISHING.md](PUBLISHING.md) are (c) SapperSquad, all
+rights reserved - see [promo/LICENSE](promo/LICENSE). Store listings on
+Modrinth/CurseForge are published All Rights Reserved by policy.
