@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,13 @@ import java.util.Optional;
  *                   and JSON files load in arbitrary order: an entry must
  *                   be allowed to name a category that has not been read
  *                   yet. Resolution happens once, in {@link ShopRegistry}.
+ * @param enabled    false hides the entry completely. This exists because a
+ *                   datapack cannot DELETE a registry entry, only override
+ *                   one - so "remove the diamond from the shop" is expressed
+ *                   as an override of the shipped entry with
+ *                   {@code "enabled": false}. {@link ShopRegistry} drops
+ *                   disabled entries before anything else sees them, so they
+ *                   vanish from the tabs and from /buy alike.
  */
 public record ShopEntry(
         String id,
@@ -40,7 +48,8 @@ public record ShopEntry(
         int saturation,
         String customName,
         List<EnchantmentSpec> enchantments,
-        int buyLimit
+        int buyLimit,
+        boolean enabled
 ) {
     /** True when this entry can only be bought a fixed number of times. */
     public boolean hasBuyLimit() {
@@ -129,6 +138,60 @@ public record ShopEntry(
         return saturation > 0 ? saturation : DEFAULT_SATURATION;
     }
 
+    /** What one single item costs to buy, which is what a sale is priced against. */
+    public double perUnitBuyPrice() {
+        return (double) price / Math.max(1, count);
+    }
+
+    /**
+     * True when this entry could be bought and immediately re-sold at a
+     * profit - the one edit that breaks the economy outright.
+     *
+     * The shipped catalog cannot hit this because sell prices are DERIVED at
+     * 40% of the per-unit buy price. Hand-editing both numbers can, and a
+     * single looping entry is worth infinite money to anyone who finds it, so
+     * the editing commands refuse rather than warn. Saturation only ever
+     * pushes the sell price DOWN, so comparing the un-saturated base price is
+     * the strict (safe) test.
+     */
+    public boolean createsMoneyLoop() {
+        return baseSellPrice() >= perUnitBuyPrice();
+    }
+
+    // Small copies used by the /coinkeep shop commands. A record is the right
+    // shape for this: an edit produces a new entry, which is then serialised
+    // whole, so there is no way to half-apply a change.
+    public ShopEntry withPrice(long newPrice) {
+        return new ShopEntry(id, category, item, count, newPrice, enchantmentId, enchantmentLevel,
+                sellPrice, saturation, customName, enchantments, buyLimit, enabled);
+    }
+
+    public ShopEntry withSellPrice(long newSellPrice) {
+        return new ShopEntry(id, category, item, count, price, enchantmentId, enchantmentLevel,
+                newSellPrice, saturation, customName, enchantments, buyLimit, enabled);
+    }
+
+    public ShopEntry withCount(int newCount) {
+        return new ShopEntry(id, category, item, newCount, price, enchantmentId, enchantmentLevel,
+                sellPrice, saturation, customName, enchantments, buyLimit, enabled);
+    }
+
+    public ShopEntry withBuyLimit(int newBuyLimit) {
+        return new ShopEntry(id, category, item, count, price, enchantmentId, enchantmentLevel,
+                sellPrice, saturation, customName, enchantments, newBuyLimit, enabled);
+    }
+
+    public ShopEntry withCategory(String newCategory) {
+        return new ShopEntry(id, ShopCategory.normaliseId(newCategory), item, count, price,
+                enchantmentId, enchantmentLevel, sellPrice, saturation, customName,
+                enchantments, buyLimit, enabled);
+    }
+
+    public ShopEntry withEnabled(boolean nowEnabled) {
+        return new ShopEntry(id, category, item, count, price, enchantmentId, enchantmentLevel,
+                sellPrice, saturation, customName, enchantments, buyLimit, nowEnabled);
+    }
+
     /**
      * Nothing enchanted is sellable. A sell matches on the ITEM only, so an
      * enchanted entry would let any plain copy of that item be sold at the
@@ -139,9 +202,56 @@ public record ShopEntry(
         return enchantmentId == null && enchantments.isEmpty();
     }
 
-    /** True for pre-enchanted gear, which goes on ENCHANTMENTS not STORED_. */
+    /**
+     * True for pre-enchanted gear, which goes on ENCHANTMENTS not STORED_.
+     *
+     * An enchanted book is never gear however many enchantments it lists: its
+     * enchantments are cargo to be applied at an anvil, so they belong on
+     * STORED_ENCHANTMENTS. The shipped books all use the legacy single
+     * {@code enchantment} field (and so never reached this test), but
+     * {@code /coinkeep shop add} captures a held book's enchantments into the
+     * list form, which would otherwise hand over a book that is itself
+     * magical and transfers nothing.
+     */
     public boolean isGear() {
-        return !enchantments.isEmpty();
+        return !enchantments.isEmpty() && item != net.minecraft.world.item.Items.ENCHANTED_BOOK;
+    }
+
+    /**
+     * Builds an entry from a held stack: item, stack size, custom name and
+     * enchantments all captured as they are. The inverse of
+     * {@link #createStack}, so buying back what you just listed returns the
+     * same thing you were holding.
+     */
+    public static ShopEntry fromStack(String id, String category,
+                                      net.minecraft.world.item.ItemStack stack, long price) {
+        String name = null;
+        var custom = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_NAME);
+        if (custom != null) {
+            name = custom.getString();
+        }
+
+        // Gear carries live ENCHANTMENTS; a book carries the same data as
+        // cargo under STORED_ENCHANTMENTS. Read whichever is populated - the
+        // entry stores them the same way either way, and isGear() decides
+        // which component they are written back to.
+        var active = stack.getOrDefault(net.minecraft.core.component.DataComponents.ENCHANTMENTS,
+                net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY);
+        var stored = stack.getOrDefault(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS,
+                net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY);
+        var source = active.isEmpty() ? stored : active;
+
+        List<EnchantmentSpec> specs = new java.util.ArrayList<>();
+        for (var holder : source.keySet()) {
+            holder.unwrapKey().ifPresent(key ->
+                    specs.add(new EnchantmentSpec(key.location().toString(), source.getLevel(holder))));
+        }
+        // Deterministic file output: registry iteration order is not stable.
+        specs.sort(Comparator.comparing(EnchantmentSpec::id));
+
+        return new ShopEntry(id, ShopCategory.normaliseId(category), stack.getItem(),
+                Math.max(1, stack.getCount()), price, null, 0, 0L, 0, name,
+                List.copyOf(specs), 0, true);
     }
 
     /**
@@ -175,10 +285,12 @@ public record ShopEntry(
             // 0 = unlimited (the default). Otherwise, how many times each
             // player may ever buy this entry - for one-off unlocks and for
             // rationing anything that would unbalance a server in bulk.
-            Codec.INT.optionalFieldOf("buy_limit", 0).forGetter(ShopEntry::buyLimit)
-    ).apply(instance, (id, category, item, count, price, enchantment, level, sell, saturation, name, enchants, buyLimit) ->
+            Codec.INT.optionalFieldOf("buy_limit", 0).forGetter(ShopEntry::buyLimit),
+            // Absent = true, so every pre-1.4.0 JSON file reads unchanged.
+            Codec.BOOL.optionalFieldOf("enabled", true).forGetter(ShopEntry::enabled)
+    ).apply(instance, (id, category, item, count, price, enchantment, level, sell, saturation, name, enchants, buyLimit, enabled) ->
             new ShopEntry(id, category, item, count, price, enchantment.orElse(null), level,
-                    sell, saturation, name.orElse(null), enchants, buyLimit)));
+                    sell, saturation, name.orElse(null), enchants, buyLimit, enabled)));
 
     private static final String[] ROMAN = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
 

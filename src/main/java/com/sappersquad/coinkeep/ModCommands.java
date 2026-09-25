@@ -39,6 +39,9 @@ public class ModCommands {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
+        // /coinkeep shop ... - the operator-only catalog editor.
+        ShopCommands.register(dispatcher);
+
         dispatcher.register(Commands.literal("balance")
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();

@@ -1,4 +1,4 @@
-# Coinkeep — publishing kit (v1.3.0)
+# Coinkeep — publishing kit (v1.3.0 live; v1.4.0 in progress)
 
 Store copy for the Modrinth / CurseForge project pages, plus the upload plan.
 Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one alone.
@@ -46,6 +46,31 @@ launch checklist).
 > so SapperSquad's server and BOTH players' clients need the new Coinkeep jar in the same pass as
 > the new Highroller jar. A 1.1.0 client against a 1.0.0 server (or vice versa) will not
 > agree on the shop-category registry.
+
+## 1.4.0 release state (IN PROGRESS 2026-09-25, branch `main`)
+
+- **In-game shop editing** (`/coinkeep shop`), from player feedback asking how to add and
+  remove items and set prices. Built on `main` (1.21.1) first; **still to port to
+  `mc/1.21.11` and `mc/26.2`** before any upload, so all three versions stay in step.
+- **20/20 GameTests green**, including a real write-to-disk round trip through the world
+  folder and an assertion that no shipped entry can be bought and re-sold at a profit.
+- **NOT yet verified in a live client** — see the note below. Do that before releasing.
+- **Store copy to write when it ships**: lead with the player-facing framing ("change the
+  shop from chat, no datapack needed"), not the implementation. Also worth fixing the framing
+  that caused this feedback in the first place — the customisation section on both store
+  pages is headed *"Built for modpacks"*, which reads as "not for you" to a solo player.
+- **Version number**: 1.4.0. Adds a field (`enabled`) and a command surface, changes no
+  existing behaviour, and every old datapack still loads.
+
+### Live-client check still owed
+The write path is covered by a GameTest against a real world folder, and the reload path is
+vanilla's own `discoverNewPacks` + `reloadResources` (copied from `ReloadCommand`). What has
+**not** been watched happen in a running client is the end-to-end loop: run the command, see
+the item appear in / vanish from the Shop tab. Two things blocked it on 2026-09-25 — the dev
+world had been upgraded to 26.2 during the port testing (a 1.21.1 client refuses to open it),
+and a fullscreen game held the OS foreground so synthetic clicks never reached Minecraft.
+To do it: make a fresh 1.21.1 world, `/coinkeep shop add 500` holding something, check the
+Shop tab, then `/coinkeep shop remove <id>` and check it is gone.
 
 ## 1.3.0 release state (verified 2026-08-09)
 

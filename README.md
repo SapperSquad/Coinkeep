@@ -96,6 +96,38 @@ Husbandry), so the book covers the whole base game.
 
 ---
 
+## Editing the shop in game
+
+You do not need to write a datapack to change what the shop sells. Operators can do it from
+chat, and the changes apply for everyone immediately:
+
+| Command | What it does |
+|---|---|
+| `/coinkeep shop add <price> [tab]` | Lists the item you are **holding** — stack size, custom name and enchantments included |
+| `/coinkeep shop price <id> <amount>` | Sets what it costs |
+| `/coinkeep shop sellprice <id> <amount>` | Sets what it pays when sold; `0` restores the automatic 40% |
+| `/coinkeep shop count <id> <n>` | How many come in one purchase |
+| `/coinkeep shop limit <id> <n>` | How many times each player may ever buy it; `0` = unlimited |
+| `/coinkeep shop category <id> <tab>` | Moves it to another tab |
+| `/coinkeep shop remove <id>` | Takes it out of the shop |
+| `/coinkeep shop restore <id>` · `restoreall` | Puts it back exactly as shipped |
+| `/coinkeep shop list [tab]` · `where` | Shows the tabs, their ids, and where your edits are saved |
+
+Ids tab-complete, so you rarely have to type one.
+
+**One rule is enforced:** a sell price may not meet or exceed the per-item buy price. That
+would let anyone buy something and sell it straight back for free money, and a single entry
+like that ends a server's economy. Edits that would do it are refused with an explanation.
+
+**Your edits are a datapack.** They are written to
+`<world>/datapacks/coinkeep_shop/` as ordinary `shop_entry` JSON — `/coinkeep shop where`
+prints the path. Copy that folder to another world, send it to someone, or open the files and
+hand-edit them; editing in game and editing files are the same thing, not two systems.
+Removing an item writes `"enabled": false` rather than deleting anything, which is why
+`restore` can always put it back.
+
+---
+
 ## Adding your own content
 
 Every quest, chapter, shop category and shop entry is a JSON file in a datapack registry, so
@@ -139,8 +171,10 @@ the bare word "command":
 
 **Shop entries** take `category`, `item`, `count`, `price`, and optionally `sell_price`
 (defaults to 40% of the per-unit buy price), `saturation`, `buy_limit` (how many times
-each player may ever buy it; `0` = unlimited), `name`, and an `enchantments`
-list for pre-enchanted gear. Items from any other mod work by id.
+each player may ever buy it; `0` = unlimited), `name`, an `enchantments`
+list for pre-enchanted gear, and `enabled` (defaults `true`; set `false` to hide an entry
+another pack defined — a datapack can override a registry entry but cannot delete one).
+Items from any other mod work by id.
 
 ### Your own shop category (1.1.0)
 
@@ -194,6 +228,7 @@ which mod contributed what.
 | `/withdraw <denom> [qty]` | Turn balance into banknotes |
 | `/depositall` | Bank every note you are carrying |
 | `/addbalance <player> <amount>` | Op-only; for other mods' reward systems |
+| `/coinkeep shop …` | Op-only; add, remove and reprice the catalog (see above) |
 
 ## Server config
 

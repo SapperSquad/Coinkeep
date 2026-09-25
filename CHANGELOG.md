@@ -3,6 +3,44 @@
 All notable changes to Coinkeep. Bump this in the same pass as `PUBLISHING.md` and
 `README.md` — never one alone.
 
+## 1.4.0 — Edit the shop without writing a datapack (unreleased)
+
+Straight from a player: *"I'm just wondering if there was a way to customise the shop so I
+can add and remove items and set prices."* The answer was technically yes — shop entries have
+been datapack JSON since 1.0.0 — but only if you were willing to author a datapack, and
+nothing inside the game ever said so. Both halves of that are fixed here.
+
+### Added
+- **`/coinkeep shop` — the catalog is editable from chat.** Operator-only, because the shop
+  is shared by everyone on the server.
+  - `add <price> [tab]` lists **the item you are holding**, capturing its stack size, custom
+    name and enchantments — so a named, enchanted sword is sold as that exact sword.
+  - `price`, `sellprice`, `count`, `limit` and `category` adjust an existing entry.
+  - `remove` takes something out; `restore` and `restoreall` put it back exactly as shipped.
+  - `list` and `where` show the tabs, their ids, and where edits are stored.
+  - Entry ids tab-complete.
+- **Edits are saved as a real datapack** at `<world>/datapacks/coinkeep_shop/`, in exactly
+  the `shop_entry` format a modpack uses. Copy it to another world, hand it to someone, or
+  open the files and edit them — in-game editing and datapack editing are the same feature,
+  and a modpack's own entries remain the baseline that edits override.
+- **A "Make It Your Own" page in the in-game Guide**, because the previous answer to this
+  question was documented only on the mod's store page, under a heading about modpacks.
+- **`enabled` on shop entries** (defaults `true`). A datapack can override a registry entry
+  but cannot delete one, so removing an item writes `"enabled": false` — which is also why
+  nothing is ever destroyed and `restore` always works.
+- **Seven new tests** (20 total), including one that writes an edit to disk and reads it back
+  through the real world folder, and one asserting **no shipped entry can be bought and
+  re-sold at a profit**.
+
+### Changed
+- An edit that would let an item be bought and immediately re-sold for more than it cost is
+  refused outright rather than warned about. One entry like that is worth infinite money to
+  whoever finds it.
+
+### Changed — nothing a server or datapack has to do
+- `enabled` is optional and defaults to true, so every existing `shop_entry` JSON — including
+  every 1.0.0 datapack — loads exactly as before.
+
 ## 1.3.0 — Economy levers, grid view, and a faster quest engine (2026-08-09)
 
 Round two of player feedback: server owners asked for inflation controls, purchase limits
