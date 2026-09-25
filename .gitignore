@@ -38,3 +38,6 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+# NeoForge installer logs dropped in the project root by the toolchain
+*-installer.jar.log
