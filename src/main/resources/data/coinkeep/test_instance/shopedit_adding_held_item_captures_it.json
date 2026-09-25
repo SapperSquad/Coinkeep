@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "coinkeep:shopedit_adding_held_item_captures_it",
+  "environment": "minecraft:default",
+  "structure": "minecraft:empty",
+  "max_ticks": 200
+}

@@ -57,6 +57,12 @@ public class ShopRegistry {
         Map<String, List<ShopEntry>> grouped = new TreeMap<>();
         List<String> dangling = new ArrayList<>();
         registry.stream().forEach(entry -> {
+            // Dropped here, once, rather than at each call site - so a
+            // removed item is gone from the sidebar, the tabs, the search AND
+            // from /buy, with no way for one of those to be forgotten.
+            if (!entry.enabled()) {
+                return;
+            }
             ids.put(entry.id(), entry);
             String key = ShopCategory.normaliseId(entry.category());
             if (!defined.containsKey(key)) {

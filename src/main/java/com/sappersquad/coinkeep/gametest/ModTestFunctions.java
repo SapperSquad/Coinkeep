@@ -56,6 +56,22 @@ public final class ModTestFunctions {
                 () -> ShopCategoryGameTests::anAddonCategoryJsonRoundTrips);
         TEST_FUNCTIONS.register("shop_content_still_validates",
                 () -> ShopCategoryGameTests::contentStillValidates);
+
+        // In-game shop editing (ShopEditGameTests)
+        TEST_FUNCTIONS.register("shopedit_no_shipped_entry_resold_at_profit",
+                () -> ShopEditGameTests::noShippedEntryCanBeBoughtAndResoldAtProfit);
+        TEST_FUNCTIONS.register("shopedit_money_loop_guard_catches_a_bad_edit",
+                () -> ShopEditGameTests::theMoneyLoopGuardCatchesABadEdit);
+        TEST_FUNCTIONS.register("shopedit_entry_survives_write_and_read_back",
+                () -> ShopEditGameTests::anEditedEntrySurvivesBeingWrittenAndReadBack);
+        TEST_FUNCTIONS.register("shopedit_old_json_without_enabled_stays_visible",
+                () -> ShopEditGameTests::oldJsonWithoutTheEnabledFlagStaysVisible);
+        TEST_FUNCTIONS.register("shopedit_adding_held_item_captures_it",
+                () -> ShopEditGameTests::addingAHeldItemCapturesWhatYouAreHolding);
+        TEST_FUNCTIONS.register("shopedit_edit_written_as_datapack",
+                () -> ShopEditGameTests::anEditIsWrittenAsADatapackAndReadsBack);
+        TEST_FUNCTIONS.register("shopedit_editing_one_field_leaves_rest",
+                () -> ShopEditGameTests::editingOneFieldLeavesTheRestUntouched);
     }
 
     private ModTestFunctions() {
