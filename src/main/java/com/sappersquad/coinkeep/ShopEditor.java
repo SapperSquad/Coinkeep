@@ -137,15 +137,18 @@ public final class ShopEditor {
         return removed;
     }
 
+    /**
+     * Creates (or refreshes) the datapack wrapper.
+     *
+     * Deliberately rewritten every time rather than skipped when it already
+     * exists: a world edited on one Minecraft version and then upgraded would
+     * otherwise keep a pack_format from the old version, which the new game
+     * rejects - silently disabling every edit the player had made.
+     */
     private static void ensurePack(MinecraftServer server) throws IOException {
         Path root = packRoot(server);
         Path mcmeta = root.resolve("pack.mcmeta");
-        if (Files.exists(mcmeta)) {
-            return;
-        }
         Files.createDirectories(root);
-        // Read the format from the running game rather than hardcoding it, so
-        // this stays correct on every Minecraft version Coinkeep ships for.
         // 1.21.11 split pack formats into major/minor and wants an
         // explicit supported range. Read it from the running game so this
         // stays right on every Minecraft version Coinkeep ships for.
