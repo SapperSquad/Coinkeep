@@ -23,6 +23,10 @@ nothing inside the game ever said so. Both halves of that are fixed here.
   the `shop_entry` format a modpack uses. Copy it to another world, hand it to someone, or
   open the files and edit them — in-game editing and datapack editing are the same feature,
   and a modpack's own entries remain the baseline that edits override.
+- **Edits take effect the next time the world loads** — restart the server, or quit to the
+  title screen and come back. Every command says so. This is a Minecraft constraint, not a
+  shortcut: datapack *registries* are built once as the world opens, and `/reload` rebuilds
+  recipes, loot and tags while handing the existing registries straight back.
 - **A "Make It Your Own" page in the in-game Guide**, because the previous answer to this
   question was documented only on the mod's store page, under a heading about modpacks.
 - **`enabled` on shop entries** (defaults `true`). A datapack can override a registry entry
@@ -33,6 +37,11 @@ nothing inside the game ever said so. Both halves of that are fixed here.
   re-sold at a profit**.
 
 ### Changed
+- **Corrected a claim that has been wrong since 1.0.0.** The README and both store pages said
+  `/reload` applies datapack changes live. It does not, and never did, for quests, chapters,
+  shop categories or shop entries — those are datapack registries, which Minecraft builds
+  once when the world loads. Modpack authors iterating on Coinkeep content need a world
+  reload, not `/reload`. The docs now say that.
 - An edit that would let an item be bought and immediately re-sold for more than it cost is
   refused outright rather than warned about. One entry like that is worth infinite money to
   whoever finds it.

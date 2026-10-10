@@ -266,7 +266,7 @@ public final class ShopCommands {
         }
         source.sendSuccess(() -> Component.literal("Restored '" + id + "' to its original settings.")
                 .withStyle(ChatFormatting.GREEN), true);
-        applyChanges(source, server);
+        sayWhenItApplies(source);
         return 1;
     }
 
@@ -286,7 +286,7 @@ public final class ShopCommands {
         source.sendSuccess(() -> Component.literal("Undid " + count + " shop edit" + (count == 1 ? "" : "s")
                 + " - the catalog is back to what the mod and datapacks ship.")
                 .withStyle(ChatFormatting.GREEN), true);
-        applyChanges(source, server);
+        sayWhenItApplies(source);
         return 1;
     }
 
@@ -300,24 +300,26 @@ public final class ShopCommands {
             return false;
         }
         source.sendSuccess(() -> Component.literal(message).withStyle(ChatFormatting.GREEN), true);
-        applyChanges(source, server);
+        sayWhenItApplies(source);
         return true;
     }
 
     /**
-     * Reloads so the edit takes effect for everyone immediately.
+     * Says when the edit will actually be visible.
      *
-     * The success message has already been sent, because the file on disk is
-     * the durable part - it survives even if the reload fails, and will apply
-     * on the next one. Only a failure needs reporting here.
+     * Datapack registries are built once, when the world loads -
+     * reloadResources() rebuilds recipes, loot and tags but takes the
+     * existing registries as input, so /reload genuinely cannot change the
+     * shop. Verified in game: an override is ignored until the world is
+     * loaded again, at which point Minecraft discovers and enables the
+     * pack on its own. Saying so is the honest option; quietly reloading
+     * and claiming success was not.
      */
-    private static void applyChanges(CommandSourceStack source, MinecraftServer server) {
-        ShopEditor.reload(server).exceptionally(error -> {
-            LOGGER.warn("Coinkeep shop edit saved but the reload failed", error);
-            source.sendFailure(Component.literal(
-                    "Saved, but reloading failed - run /reload to apply it."));
-            return null;
-        });
+    private static void sayWhenItApplies(CommandSourceStack source) {
+        source.sendSuccess(() -> Component.literal(
+                "  Saved. It applies the next time the world loads - restart the server,"
+                        + " or quit to the title screen and come back.")
+                .withStyle(ChatFormatting.DARK_AQUA), false);
     }
 
     private static int ioFailure(CommandSourceStack source, IOException e) {
