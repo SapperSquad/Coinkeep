@@ -16,7 +16,7 @@ victim** — the owner was being cleared before the notification check, so it ne
 
 The 1.21.11 upgrade note below applies the same way when carrying an old world forward.
 =======
-## 1.4.0 — Edit the shop without writing a datapack (unreleased)
+## 1.4.0 — Edit the shop without writing a datapack (2026-10-09)
 
 Straight from a player: *"I'm just wondering if there was a way to customise the shop so I
 can add and remove items and set prices."* The answer was technically yes — shop entries have
