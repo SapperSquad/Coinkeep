@@ -55,7 +55,8 @@ launch checklist).
   2026-10-09** — all three branches now carry it.
 - **21/21 GameTests green on this branch** (20 on `main`), including a real write-to-disk round trip through the world
   folder and an assertion that no shipped entry can be bought and re-sold at a profit.
-- **Verified in a live client 2026-10-09** — see the note below; it found and fixed a real defect.
+- **Verified in a live client** — see the note below. It found a real defect (edits did not
+  actually apply), which was then designed out rather than documented around.
 - **Store copy to write when it ships**: lead with the player-facing framing ("change the
   shop from chat, no datapack needed"), not the implementation. Also worth fixing the framing
   that caused this feedback in the first place — the customisation section on both store
@@ -63,28 +64,34 @@ launch checklist).
 - **Version number**: 1.4.0. Adds a field (`enabled`) and a command surface, changes no
   existing behaviour, and every old datapack still loads.
 
-### Live-client check DONE 2026-10-09 - and it found a real defect
-Driven headlessly via PostMessage to the client window (works while another app holds the
-OS foreground, unlike synthetic clicks). Verified working: the whole command surface -
-`list`, `remove`, `restore`, `where` - the datapack written to the world folder, the
-override applied, and the file deleted on restore.
+### Live-client check DONE - it found a real defect, which is now designed out
+Driven headlessly by **PostMessage straight to the client window**, which works while another
+app owns the OS foreground (synthetic clicks do not). Recipe: VK 0x54 (T) to open chat, one
+Backspace to kill the echoed "t", WM_CHAR the command, Enter. Read results from
+`run/client/logs/latest.log`, not screenshots.
 
-**The defect:** edits did NOT apply immediately, though the command claimed they did.
-`MinecraftServer.reloadResources` rebuilds the RELOADABLE layer (recipes, loot,
+**What it caught (2026-10-09):** edits did not apply, though the command claimed they did.
+`MinecraftServer.reloadResources` rebuilds only the RELOADABLE layer (recipes, loot,
 advancements, tags) and takes the existing registry access as an INPUT - it never rebuilds
-datapack registries. So `/reload` cannot change the shop. Confirmed both in the vanilla
-source and in game: with an override present the catalog only dropped the entry after a
-world load (66 entries / ores 7 -> 65 / ores 6).
+datapack registries, so `/reload` genuinely cannot change the shop.
 
-Fixed by telling the truth rather than pretending: the reload call is gone (it cost a
-full resource reload per edit and achieved nothing) and every command now says the edit
-applies on the next world load. **This also means a claim in the README and on BOTH store
-pages has been wrong since 1.0.0** - "/reload applies changes live" was never true for
-quests or the shop. Corrected in the README; the store pages still need it.
+**How it was fixed (2026-10-10):** the edits now ride a live override layer that
+`ShopRegistry` merges on read, synced to clients through a player data attachment - so still
+no custom packets. **Verified live:** `/coinkeep shop remove diamond` dropped Ores from 7 to
+6 entries in the very next command, with no reload and no restart.
 
-One side effect worth knowing: a world that has shop edits now carries a datapack, so
-Minecraft shows its one-time "Worlds using Experimental Settings are not supported"
-warning the next time that world is opened.
+**The load-bearing detail:** the files live in `<world>/coinkeep_shop/`, NOT
+`<world>/datapacks/`. They are still laid out as a complete datapack (copy the folder into any
+world's `datapacks/` to reuse it), but Minecraft does not load them - which is what keeps the
+registry PRISTINE so `restore` has an original to return to. Had they stayed in `datapacks/`,
+the first restart would bake every edit into the registry permanently. It also means a world
+with shop edits no longer trips the "experimental settings" warning that the earlier version
+caused.
+
+**Still true and still owed:** the claim "/reload applies changes live" has been wrong on the
+README and BOTH store pages since 1.0.0 - for quests, chapters, shop categories and shop
+entries alike. Corrected in the README; **the store pages still need it** when these jars go
+up.
 
 ## 1.3.0+26.2 release state (verified 2026-08-13, branch `mc/26.2`)
 
