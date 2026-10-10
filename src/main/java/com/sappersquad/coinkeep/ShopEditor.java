@@ -8,7 +8,6 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.level.storage.LevelResource;
 import org.slf4j.Logger;
 
@@ -17,27 +16,34 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Writes shop edits into a real datapack inside the world folder, then
- * reloads.
+ * Writes shop edits into a real datapack inside the world folder.
  *
  * <p><b>Why a datapack rather than saved world data.</b> The shop is a synced
  * datapack registry, and Coinkeep deliberately ships no custom network
  * packets. An override layer stored in level data would have needed its own
  * sync path, a second source of truth, and a merge rule at every read site.
- * Writing the edits as datapack JSON instead means the existing pipeline does
- * all of it for free: the registry reload syncs to every client exactly as a
- * modpack's own datapack does, {@link ShopRegistry}'s registry-identity cache
- * invalidates on its own, and the content validator checks the result.
+ * Writing the edits as datapack JSON instead reuses the pipeline that already
+ * exists: Minecraft discovers and enables the pack by itself, the registry is
+ * built from it like any modpack's, it syncs to clients the same way, and the
+ * content validator checks the result.
  *
  * <p>The side effect is the best part: what comes out is an ordinary datapack
  * at {@code <world>/datapacks/coinkeep_shop}. A server owner can zip it, hand
  * it to someone else, commit it, or open the files and hand-edit them. In-game
  * editing and datapack editing are the same feature, not two.
+ *
+ * <p><b>Edits apply at world load, not instantly, and that is not fixable
+ * here.</b> {@code MinecraftServer.reloadResources} rebuilds the RELOADABLE
+ * layer - recipes, loot, advancements, tags - and takes the existing registry
+ * access as an <i>input</i>; it never rebuilds the datapack registries. So
+ * {@code /reload} cannot change the shop, and an earlier version of this class
+ * that called it was reporting success while nothing happened. Verified in
+ * game: with an override present, the catalog only drops the entry once the
+ * world is loaded again. The commands say so rather than pretending.
  *
  * <p>Removing a shipped item works the same way. A datapack cannot delete a
  * registry entry, so "remove" writes an override of that entry with
@@ -165,26 +171,4 @@ public final class ShopEditor {
                 """.formatted(format, format), StandardCharsets.UTF_8);
     }
 
-    /**
-     * Applies what was just written.
-     *
-     * <p>Deliberately the same two steps vanilla's {@code /reload} takes:
-     * rescan the pack folder, then reload with the new pack included. A pack
-     * that has just appeared is not in the selected list yet, so simply
-     * reloading the current selection would write the file and change
-     * nothing - the bug this method exists to avoid.
-     */
-    public static java.util.concurrent.CompletableFuture<Void> reload(MinecraftServer server) {
-        PackRepository repository = server.getPackRepository();
-        repository.reload();
-
-        Collection<String> selected = new ArrayList<>(repository.getSelectedIds());
-        Collection<String> disabled = server.getWorldData().getDataConfiguration().dataPacks().getDisabled();
-        for (String id : repository.getAvailableIds()) {
-            if (!disabled.contains(id) && !selected.contains(id)) {
-                selected.add(id);
-            }
-        }
-        return server.reloadResources(selected);
-    }
 }
