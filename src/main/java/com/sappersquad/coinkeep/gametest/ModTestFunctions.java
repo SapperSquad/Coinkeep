@@ -72,6 +72,8 @@ public final class ModTestFunctions {
                 () -> ShopEditGameTests::anEditIsWrittenAsADatapackAndReadsBack);
         TEST_FUNCTIONS.register("shopedit_editing_one_field_leaves_rest",
                 () -> ShopEditGameTests::editingOneFieldLeavesTheRestUntouched);
+        TEST_FUNCTIONS.register("shopedit_edit_visible_without_any_reload",
+                () -> ShopEditGameTests::anEditIsVisibleWithoutAnyReload);
     }
 
     private ModTestFunctions() {

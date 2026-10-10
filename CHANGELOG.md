@@ -3,19 +3,6 @@
 All notable changes to Coinkeep. Bump this in the same pass as `PUBLISHING.md` and
 `README.md` — never one alone.
 
-<<<<<<< HEAD
-## 1.3.0+26.2 — The same 1.3.0, for Minecraft 26.2 (2026-08-13)
-
-A straight port of 1.3.0 to **Minecraft 26.2 / NeoForge 26.2.0.59** — same features, same
-content. Requires **Java 25** (as all of Minecraft 26.x does). Verified: all 13 GameTests
-pass, and the book, shop and click handling were smoke-tested in a live 26.2 client.
-
-Also fixed here first: the **"your vault was cracked" message now actually reaches the
-victim** — the owner was being cleared before the notification check, so it never sent.
-(Fix lands on the other versions too.)
-
-The 1.21.11 upgrade note below applies the same way when carrying an old world forward.
-=======
 ## 1.4.0 — Edit the shop without writing a datapack (2026-10-09)
 
 Straight from a player: *"I'm just wondering if there was a way to customise the shop so I
@@ -32,20 +19,21 @@ nothing inside the game ever said so. Both halves of that are fixed here.
   - `remove` takes something out; `restore` and `restoreall` put it back exactly as shipped.
   - `list` and `where` show the tabs, their ids, and where edits are stored.
   - Entry ids tab-complete.
-- **Edits are saved as a real datapack** at `<world>/datapacks/coinkeep_shop/`, in exactly
-  the `shop_entry` format a modpack uses. Copy it to another world, hand it to someone, or
+- **Edits are saved as files you own** at `<world>/coinkeep_shop/`, laid out as a complete
+  datapack, in exactly the `shop_entry` format a modpack uses. Copy it to another world, hand it to someone, or
   open the files and edit them — in-game editing and datapack editing are the same feature,
   and a modpack's own entries remain the baseline that edits override.
-- **Edits take effect the next time the world loads** — restart the server, or quit to the
-  title screen and come back. Every command says so. This is a Minecraft constraint, not a
-  shortcut: datapack *registries* are built once as the world opens, and `/reload` rebuilds
-  recipes, loot and tags while handing the existing registries straight back.
+- **Edits apply at once, for everyone** — no restart and no `/reload`. Shop entries live in a
+  datapack registry, which Minecraft builds only at world load, so the edits ride a live layer
+  over the shipped catalog that is synced to every player. Removing, repricing and restoring
+  are all visible the moment the command returns.
 - **A "Make It Your Own" page in the in-game Guide**, because the previous answer to this
   question was documented only on the mod's store page, under a heading about modpacks.
 - **`enabled` on shop entries** (defaults `true`). A datapack can override a registry entry
   but cannot delete one, so removing an item writes `"enabled": false` — which is also why
   nothing is ever destroyed and `restore` always works.
-- **Seven new tests** (20 total), including one that writes an edit to disk and reads it back
+- **Eight new tests** (21 total), including one proving an edit is visible with no reload at
+  all (and that `restore` returns the *original* price), one that writes an edit to disk and reads it back
   through the real world folder, and one asserting **no shipped entry can be bought and
   re-sold at a profit**.
 
@@ -62,7 +50,18 @@ nothing inside the game ever said so. Both halves of that are fixed here.
 ### Changed — nothing a server or datapack has to do
 - `enabled` is optional and defaults to true, so every existing `shop_entry` JSON — including
   every 1.0.0 datapack — loads exactly as before.
->>>>>>> 166a0eb (Add /coinkeep shop - edit the catalog without writing a datapack)
+
+## 1.3.0+26.2 — The same 1.3.0, for Minecraft 26.2 (2026-08-13)
+
+A straight port of 1.3.0 to **Minecraft 26.2 / NeoForge 26.2.0.59** — same features, same
+content. Requires **Java 25** (as all of Minecraft 26.x does). Verified: all 13 GameTests
+pass, and the book, shop and click handling were smoke-tested in a live 26.2 client.
+
+Also fixed here first: the **"your vault was cracked" message now actually reaches the
+victim** — the owner was being cleared before the notification check, so it never sent.
+(Fix lands on the other versions too.)
+
+The 1.21.11 upgrade note below applies the same way when carrying an old world forward.
 
 ## 1.3.0+1.21.11 — The same 1.3.0, for Minecraft 1.21.11 (2026-08-13)
 
