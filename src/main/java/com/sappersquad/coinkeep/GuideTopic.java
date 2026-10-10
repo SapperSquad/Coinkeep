@@ -129,6 +129,7 @@ public record GuideTopic(String id, String title, Item icon, List<String> lines)
             new GuideTopic("custom", "Make It Your Own", Items.ANVIL, List.of(
                     "#The shop is yours to change",
                     "Nothing in the shop is fixed. You can add any item, remove anything you do not want sold, and set your own prices - for your own world or your server.",
+                    "Changes are saved straight away, and take effect the next time the world loads: restart the server, or quit to the title screen and come back.",
                     "These commands need operator permission, because the shop is shared by everyone playing.",
                     "",
                     "#Adding something",

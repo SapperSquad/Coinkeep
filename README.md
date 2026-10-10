@@ -100,7 +100,7 @@ Husbandry), so the book covers the whole base game.
 ## Editing the shop in game
 
 You do not need to write a datapack to change what the shop sells. Operators can do it from
-chat, and the changes apply for everyone immediately:
+chat — no datapack authoring required:
 
 | Command | What it does |
 |---|---|
@@ -120,6 +120,10 @@ Ids tab-complete, so you rarely have to type one.
 would let anyone buy something and sell it straight back for free money, and a single entry
 like that ends a server's economy. Edits that would do it are refused with an explanation.
 
+**Edits apply the next time the world loads** — restart the server, or quit to the title
+screen and come back. (Minecraft builds datapack registries once, as the world opens, so
+`/reload` cannot apply them; the command tells you this every time.)
+
 **Your edits are a datapack.** They are written to
 `<world>/datapacks/coinkeep_shop/` as ordinary `shop_entry` JSON — `/coinkeep shop where`
 prints the path. Copy that folder to another world, send it to someone, or open the files and
@@ -132,8 +136,12 @@ Removing an item writes `"enabled": false` rather than deleting anything, which 
 ## Adding your own content
 
 Every quest, chapter, shop category and shop entry is a JSON file in a datapack registry, so
-a modpack can add, retune or override anything without touching the jar. `/reload` applies
-changes live.
+a modpack can add, retune or override anything without touching the jar.
+
+**Changes apply when the world loads, not on `/reload`.** Datapack *registries* are built
+once as the world opens — `/reload` rebuilds recipes, loot tables, advancements and tags,
+but hands the existing registries straight back, so it cannot change quests or the shop.
+To see an edit, restart the server (or quit to the title screen and re-enter the world).
 
 ```
 data/<namespace>/coinkeep/quest_line/<id>.json

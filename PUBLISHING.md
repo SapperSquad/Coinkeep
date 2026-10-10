@@ -55,7 +55,7 @@ launch checklist).
   2026-10-09** — all three branches now carry it.
 - **21/21 GameTests green on this branch** (20 on `main`), including a real write-to-disk round trip through the world
   folder and an assertion that no shipped entry can be bought and re-sold at a profit.
-- **NOT yet verified in a live client** — see the note below. Do that before releasing.
+- **Verified in a live client 2026-10-09** — see the note below; it found and fixed a real defect.
 - **Store copy to write when it ships**: lead with the player-facing framing ("change the
   shop from chat, no datapack needed"), not the implementation. Also worth fixing the framing
   that caused this feedback in the first place — the customisation section on both store
@@ -63,15 +63,28 @@ launch checklist).
 - **Version number**: 1.4.0. Adds a field (`enabled`) and a command surface, changes no
   existing behaviour, and every old datapack still loads.
 
-### Live-client check still owed
-The write path is covered by a GameTest against a real world folder, and the reload path is
-vanilla's own `discoverNewPacks` + `reloadResources` (copied from `ReloadCommand`). What has
-**not** been watched happen in a running client is the end-to-end loop: run the command, see
-the item appear in / vanish from the Shop tab. Two things blocked it on 2026-09-25 — the dev
-world had been upgraded to 26.2 during the port testing (a 1.21.1 client refuses to open it),
-and a fullscreen game held the OS foreground so synthetic clicks never reached Minecraft.
-To do it: make a fresh 1.21.1 world, `/coinkeep shop add 500` holding something, check the
-Shop tab, then `/coinkeep shop remove <id>` and check it is gone.
+### Live-client check DONE 2026-10-09 - and it found a real defect
+Driven headlessly via PostMessage to the client window (works while another app holds the
+OS foreground, unlike synthetic clicks). Verified working: the whole command surface -
+`list`, `remove`, `restore`, `where` - the datapack written to the world folder, the
+override applied, and the file deleted on restore.
+
+**The defect:** edits did NOT apply immediately, though the command claimed they did.
+`MinecraftServer.reloadResources` rebuilds the RELOADABLE layer (recipes, loot,
+advancements, tags) and takes the existing registry access as an INPUT - it never rebuilds
+datapack registries. So `/reload` cannot change the shop. Confirmed both in the vanilla
+source and in game: with an override present the catalog only dropped the entry after a
+world load (66 entries / ores 7 -> 65 / ores 6).
+
+Fixed by telling the truth rather than pretending: the reload call is gone (it cost a
+full resource reload per edit and achieved nothing) and every command now says the edit
+applies on the next world load. **This also means a claim in the README and on BOTH store
+pages has been wrong since 1.0.0** - "/reload applies changes live" was never true for
+quests or the shop. Corrected in the README; the store pages still need it.
+
+One side effect worth knowing: a world that has shop edits now carries a datapack, so
+Minecraft shows its one-time "Worlds using Experimental Settings are not supported"
+warning the next time that world is opened.
 
 ## 1.3.0+26.2 release state (verified 2026-08-13, branch `mc/26.2`)
 
