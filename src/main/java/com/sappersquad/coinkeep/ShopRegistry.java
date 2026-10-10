@@ -38,11 +38,14 @@ public class ShopRegistry {
     private static Map<String, ShopCategory> categoriesById = Map.of();
     private static List<ShopCategory> categories = List.of();
     private static List<String> danglingCategories = List.of();
+    /** Which ShopOverrides generation the cache above was built from. */
+    private static int cachedOverrideGeneration = -1;
 
     private static void ensure(RegistryAccess access) {
         Registry<ShopEntry> registry = access.lookupOrThrow(ModRegistries.SHOP_ENTRY);
         Registry<ShopCategory> categoryRegistry = access.lookupOrThrow(ModRegistries.SHOP_CATEGORY);
-        if (registry == cachedRegistry && categoryRegistry == cachedCategoryRegistry) {
+        if (registry == cachedRegistry && categoryRegistry == cachedCategoryRegistry
+                && ShopOverrides.generation() == cachedOverrideGeneration) {
             return;
         }
 
@@ -56,7 +59,19 @@ public class ShopRegistry {
         Map<String, ShopEntry> ids = new LinkedHashMap<>();
         Map<String, List<ShopEntry>> grouped = new TreeMap<>();
         List<String> dangling = new ArrayList<>();
-        registry.stream().forEach(entry -> {
+        // Shipped catalog first, then the live edits on top. An override
+        // either replaces an entry of the same id or adds a new one, so this
+        // single merge covers add, edit and (via enabled=false) remove.
+        List<ShopEntry> merged = new ArrayList<>();
+        Map<String, ShopEntry> overrides = ShopOverrides.active();
+        registry.stream().forEach(shipped -> {
+            if (!overrides.containsKey(shipped.id())) {
+                merged.add(shipped);
+            }
+        });
+        merged.addAll(overrides.values());
+
+        merged.forEach(entry -> {
             // Dropped here, once, rather than at each call site - so a
             // removed item is gone from the sidebar, the tabs, the search AND
             // from /buy, with no way for one of those to be forgotten.
@@ -88,6 +103,7 @@ public class ShopRegistry {
         present.sort(Comparator.comparingInt(ShopCategory::sortOrder).thenComparing(ShopCategory::id));
 
         cachedRegistry = registry;
+        cachedOverrideGeneration = ShopOverrides.generation();
         cachedCategoryRegistry = categoryRegistry;
         byId = ids;
         byCategory = grouped;

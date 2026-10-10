@@ -129,7 +129,7 @@ public record GuideTopic(String id, String title, Item icon, List<String> lines)
             new GuideTopic("custom", "Make It Your Own", Items.ANVIL, List.of(
                     "#The shop is yours to change",
                     "Nothing in the shop is fixed. You can add any item, remove anything you do not want sold, and set your own prices - for your own world or your server.",
-                    "Changes are saved straight away, and take effect the next time the world loads: restart the server, or quit to the title screen and come back.",
+                    "Changes take effect at once, for everyone - no restart, no reload.",
                     "These commands need operator permission, because the shop is shared by everyone playing.",
                     "",
                     "#Adding something",
@@ -152,8 +152,8 @@ public record GuideTopic(String id, String title, Item icon, List<String> lines)
                     "If a price is refused, this is why.",
                     "",
                     "#It becomes a datapack",
-                    "Your changes are saved as an ordinary datapack inside your world folder. Type /coinkeep shop where to see exactly where.",
-                    "That means you can copy it to another world, send it to a friend, or open the files and edit them by hand. Editing in game and editing files are the same thing.",
+                    "Your changes are saved as files in your world folder. Type /coinkeep shop where to see exactly where.",
+                    "They are laid out as a datapack, so you can drop a copy into another world's datapacks folder to reuse them, send them to a friend, or edit them by hand. Editing in game and editing files are the same thing.",
                     "",
                     "#Bigger changes",
                     "Quests, chapters and shop tabs are all plain JSON files too, so a datapack can rewrite as much of Coinkeep as you like. The guide for that is on the mod's page."

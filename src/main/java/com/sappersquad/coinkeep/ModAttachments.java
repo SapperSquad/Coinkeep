@@ -47,6 +47,17 @@ public class ModAttachments {
                     .sync(MarketData.STREAM_CODEC)
                     .build());
 
+    // The live shop edits. Global data, but attachments are the mod's only
+    // sync channel and they hang off a player, so every player carries a copy
+    // and both sides read it from ShopOverrides. Deliberately NOT serialized:
+    // the folder on disk is the durable copy, and persisting a stale duplicate
+    // per player is how the two would drift.
+    public static final Supplier<AttachmentType<java.util.Map<String, ShopEntry>>> SHOP_OVERRIDES =
+            ATTACHMENT_TYPES.register("shop_overrides",
+                    () -> AttachmentType.<java.util.Map<String, ShopEntry>>builder(java.util.Map::of)
+                            .sync(ShopOverrides.STREAM_CODEC)
+                            .build());
+
     // Synced so the quest book can render live progress, lock states and
     // per-chapter completion counts without a menu or any custom packet.
     public static final Supplier<AttachmentType<QuestProgressData>> QUEST_PROGRESS = ATTACHMENT_TYPES.register("quest_progress",

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "coinkeep:shopedit_edit_visible_without_any_reload",
+  "environment": "minecraft:default",
+  "structure": "minecraft:empty",
+  "max_ticks": 200
+}

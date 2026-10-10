@@ -3,6 +3,7 @@ package com.sappersquad.coinkeep;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.SharedConstants;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -54,7 +56,7 @@ public final class ShopEditor {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    /** Folder name under {@code <world>/datapacks/}. */
+    /** Folder name directly under the world folder - NOT under datapacks/. */
     public static final String PACK_ID = "coinkeep_shop";
 
     /**
@@ -67,7 +69,7 @@ public final class ShopEditor {
     }
 
     private static Path packRoot(MinecraftServer server) {
-        return server.getWorldPath(LevelResource.DATAPACK_DIR).resolve(PACK_ID);
+        return server.getWorldPath(LevelResource.ROOT).resolve(PACK_ID);
     }
 
     private static Path entryFile(MinecraftServer server, String id) {
@@ -125,6 +127,38 @@ public final class ShopEditor {
         Path file = entryFile(server, entry.id());
         Files.createDirectories(file.getParent());
         Files.writeString(file, GSON.toJson(json) + "\n", StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Reads every override file back into memory.
+     *
+     * Called at server start and after each edit, because this folder - not
+     * the registry - is the durable record of what has been changed.
+     * A file that fails to parse is skipped and logged rather than taking
+     * the whole shop down with it, since these files are hand-editable.
+     */
+    public static Map<String, ShopEntry> loadAll(MinecraftServer server) {
+        Path dir = packRoot(server).resolve(ENTRY_DIR);
+        if (!Files.isDirectory(dir)) {
+            return Map.of();
+        }
+        Map<String, ShopEntry> loaded = new java.util.HashMap<>();
+        try (Stream<Path> files = Files.list(dir)) {
+            files.filter(path -> path.getFileName().toString().endsWith(".json")).forEach(path -> {
+                try {
+                    JsonElement json = JsonParser.parseString(Files.readString(path));
+                    ShopEntry.CODEC.parse(JsonOps.INSTANCE, json).result().ifPresentOrElse(
+                            entry -> loaded.put(entry.id(), entry),
+                            () -> LOGGER.warn("Ignoring unreadable Coinkeep shop edit {}", path));
+                } catch (IOException e) {
+                    LOGGER.warn("Could not read Coinkeep shop edit {}", path, e);
+                }
+            });
+        } catch (IOException e) {
+            LOGGER.warn("Could not list Coinkeep shop edits", e);
+            return Map.of();
+        }
+        return Map.copyOf(loaded);
     }
 
     /** Drops an override, returning the entry to whatever the mod/modpack ships. */
