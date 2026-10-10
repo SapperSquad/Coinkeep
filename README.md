@@ -119,16 +119,24 @@ Ids tab-complete, so you rarely have to type one.
 would let anyone buy something and sell it straight back for free money, and a single entry
 like that ends a server's economy. Edits that would do it are refused with an explanation.
 
-**Edits apply the next time the world loads** — restart the server, or quit to the title
-screen and come back. (Minecraft builds datapack registries once, as the world opens, so
-`/reload` cannot apply them; the command tells you this every time.)
+**Edits apply at once, for everyone** — no restart, no `/reload`. Shop entries live in a
+datapack registry, which Minecraft builds only when a world loads, so Coinkeep keeps the
+edits in a live layer on top of the shipped catalog and syncs it to every player.
 
-**Your edits are a datapack.** They are written to
-`<world>/datapacks/coinkeep_shop/` as ordinary `shop_entry` JSON — `/coinkeep shop where`
-prints the path. Copy that folder to another world, send it to someone, or open the files and
-hand-edit them; editing in game and editing files are the same thing, not two systems.
-Removing an item writes `"enabled": false` rather than deleting anything, which is why
-`restore` can always put it back.
+**Your edits are files you own.** They are written to `<world>/coinkeep_shop/` as ordinary
+`shop_entry` JSON — `/coinkeep shop where` prints the path. The folder is laid out as a
+complete datapack, so you can drop a copy into any world's `datapacks/` folder to reuse it,
+send it to someone, or hand-edit the files; editing in game and editing files are the same
+thing, not two systems.
+
+It deliberately sits *beside* `datapacks/` rather than inside it. If Minecraft loaded these
+files itself, a restart would bake them into the registry and there would be nothing left for
+`restore` to restore *to* — the shipped entry would be gone. Keeping them out of the load path
+is what lets any edit be undone. (It also means a world with shop edits never trips
+Minecraft's "experimental settings" warning.)
+
+Removing an item writes `"enabled": false` rather than deleting anything, which is the other
+half of why `restore` can always put it back.
 
 ---
 

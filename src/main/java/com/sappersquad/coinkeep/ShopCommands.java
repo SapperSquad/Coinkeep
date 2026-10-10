@@ -266,7 +266,7 @@ public final class ShopCommands {
         }
         source.sendSuccess(() -> Component.literal("Restored '" + id + "' to its original settings.")
                 .withStyle(ChatFormatting.GREEN), true);
-        sayWhenItApplies(source);
+        ShopOverrides.refreshFromDisk(server);
         return 1;
     }
 
@@ -286,7 +286,7 @@ public final class ShopCommands {
         source.sendSuccess(() -> Component.literal("Undid " + count + " shop edit" + (count == 1 ? "" : "s")
                 + " - the catalog is back to what the mod and datapacks ship.")
                 .withStyle(ChatFormatting.GREEN), true);
-        sayWhenItApplies(source);
+        ShopOverrides.refreshFromDisk(server);
         return 1;
     }
 
@@ -300,27 +300,10 @@ public final class ShopCommands {
             return false;
         }
         source.sendSuccess(() -> Component.literal(message).withStyle(ChatFormatting.GREEN), true);
-        sayWhenItApplies(source);
+        ShopOverrides.refreshFromDisk(server);
         return true;
     }
 
-    /**
-     * Says when the edit will actually be visible.
-     *
-     * Datapack registries are built once, when the world loads -
-     * reloadResources() rebuilds recipes, loot and tags but takes the
-     * existing registries as input, so /reload genuinely cannot change the
-     * shop. Verified in game: an override is ignored until the world is
-     * loaded again, at which point Minecraft discovers and enables the
-     * pack on its own. Saying so is the honest option; quietly reloading
-     * and claiming success was not.
-     */
-    private static void sayWhenItApplies(CommandSourceStack source) {
-        source.sendSuccess(() -> Component.literal(
-                "  Saved. It applies the next time the world loads - restart the server,"
-                        + " or quit to the title screen and come back.")
-                .withStyle(ChatFormatting.DARK_AQUA), false);
-    }
 
     private static int ioFailure(CommandSourceStack source, IOException e) {
         LOGGER.warn("Coinkeep could not write the shop datapack", e);
@@ -387,7 +370,7 @@ public final class ShopCommands {
         source.sendSuccess(() -> Component.literal("  " + ShopEditor.packLocation(server))
                 .withStyle(ChatFormatting.GRAY), false);
         source.sendSuccess(() -> Component.literal(
-                "That folder is an ordinary datapack - copy it to another world, or edit the files by hand.")
+                "It is laid out as a datapack: drop a copy into another world's datapacks folder to reuse it, or edit the files here by hand.")
                 .withStyle(ChatFormatting.DARK_AQUA), false);
         return ids.size();
     }

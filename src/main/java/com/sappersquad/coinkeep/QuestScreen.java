@@ -208,6 +208,12 @@ public class QuestScreen extends Screen {
     @Override
     protected void init() {
         Minecraft mc = Minecraft.getInstance();
+        // Pick up any shop edits the server has synced. The client reads
+        // them from its own player attachment; doing it here means the book
+        // always opens showing the catalog as it is right now.
+        if (mc.player != null) {
+            ShopOverrides.set(mc.player.getData(ModAttachments.SHOP_OVERRIDES.get()));
+        }
         access = mc.level == null ? null : mc.level.registryAccess();
 
         if (selectedLine == null) {

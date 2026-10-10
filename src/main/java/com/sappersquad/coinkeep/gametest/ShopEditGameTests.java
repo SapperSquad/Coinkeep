@@ -5,6 +5,7 @@ import com.mojang.serialization.JsonOps;
 import com.sappersquad.coinkeep.Coinkeep;
 import com.sappersquad.coinkeep.ShopEditor;
 import com.sappersquad.coinkeep.ShopEntry;
+import com.sappersquad.coinkeep.ShopOverrides;
 import com.sappersquad.coinkeep.ShopRegistry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
@@ -247,6 +248,73 @@ public class ShopEditGameTests {
             } catch (IOException ignored) {
                 // Nothing useful to do; the assertions above already reported.
             }
+        }
+    }
+
+    /**
+     * The whole point of the override layer: an edit is visible with no
+     * reload and no restart.
+     *
+     * Shop entries are a datapack registry, which Minecraft builds once at
+     * world load - so this cannot work by changing the registry, and an
+     * earlier version of the feature could only ask players to restart. The
+     * whole body runs synchronously on the server thread, so no other test
+     * can observe the catalog while it is temporarily modified.
+     */
+    @GameTest(template = "empty")
+    public static void anEditIsVisibleWithoutAnyReload(GameTestHelper helper) {
+        MinecraftServer server = helper.getLevel().getServer();
+        RegistryAccess access = helper.getLevel().registryAccess();
+
+        ShopEntry victim = ShopRegistry.all(access).stream()
+                .filter(ShopEntry::sellable).findFirst().orElse(null);
+        if (victim == null) {
+            helper.fail("no shipped entries loaded, so this proved nothing");
+            return;
+        }
+        String id = victim.id();
+        int before = ShopRegistry.all(access).size();
+        long originalPrice = victim.price();
+
+        try {
+            // Reprice: visible immediately, same id, nothing else disturbed.
+            ShopEditor.save(server, victim.withPrice(originalPrice + 7777L));
+            ShopOverrides.set(ShopEditor.loadAll(server));
+            ShopEntry edited = ShopRegistry.byId(access, id);
+            helper.assertTrue(edited != null, "the entry must still exist after a reprice");
+            helper.assertTrue(edited.price() == originalPrice + 7777L,
+                    "the new price must be visible with no reload, but read $" + edited.price());
+            helper.assertTrue(ShopRegistry.all(access).size() == before,
+                    "repricing must not change how many entries exist");
+
+            // Remove: gone from the catalog, and from /buy, at once.
+            ShopEditor.save(server, victim.withEnabled(false));
+            ShopOverrides.set(ShopEditor.loadAll(server));
+            helper.assertTrue(ShopRegistry.byId(access, id) == null,
+                    "a removed entry must disappear immediately");
+            helper.assertTrue(ShopRegistry.all(access).size() == before - 1,
+                    "the catalog must shrink by exactly one");
+
+            // Restore: the SHIPPED entry comes back, which is only possible
+            // because the edits are not themselves a loaded datapack.
+            ShopEditor.delete(server, id);
+            ShopOverrides.set(ShopEditor.loadAll(server));
+            ShopEntry restored = ShopRegistry.byId(access, id);
+            helper.assertTrue(restored != null, "restore must bring the entry back");
+            helper.assertTrue(restored.price() == originalPrice,
+                    "restore must return the ORIGINAL price, got $" + restored.price());
+            helper.assertTrue(ShopRegistry.all(access).size() == before,
+                    "the catalog must be exactly as it started");
+            helper.succeed();
+        } catch (IOException e) {
+            helper.fail("could not write the shop edit: " + e);
+        } finally {
+            try {
+                ShopEditor.delete(server, id);
+            } catch (IOException ignored) {
+                // reported above if it mattered
+            }
+            ShopOverrides.set(ShopEditor.loadAll(server));
         }
     }
 

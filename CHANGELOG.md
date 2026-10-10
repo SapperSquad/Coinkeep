@@ -19,20 +19,21 @@ nothing inside the game ever said so. Both halves of that are fixed here.
   - `remove` takes something out; `restore` and `restoreall` put it back exactly as shipped.
   - `list` and `where` show the tabs, their ids, and where edits are stored.
   - Entry ids tab-complete.
-- **Edits are saved as a real datapack** at `<world>/datapacks/coinkeep_shop/`, in exactly
-  the `shop_entry` format a modpack uses. Copy it to another world, hand it to someone, or
+- **Edits are saved as files you own** at `<world>/coinkeep_shop/`, laid out as a complete
+  datapack, in exactly the `shop_entry` format a modpack uses. Copy it to another world, hand it to someone, or
   open the files and edit them — in-game editing and datapack editing are the same feature,
   and a modpack's own entries remain the baseline that edits override.
-- **Edits take effect the next time the world loads** — restart the server, or quit to the
-  title screen and come back. Every command says so. This is a Minecraft constraint, not a
-  shortcut: datapack *registries* are built once as the world opens, and `/reload` rebuilds
-  recipes, loot and tags while handing the existing registries straight back.
+- **Edits apply at once, for everyone** — no restart and no `/reload`. Shop entries live in a
+  datapack registry, which Minecraft builds only at world load, so the edits ride a live layer
+  over the shipped catalog that is synced to every player. Removing, repricing and restoring
+  are all visible the moment the command returns.
 - **A "Make It Your Own" page in the in-game Guide**, because the previous answer to this
   question was documented only on the mod's store page, under a heading about modpacks.
 - **`enabled` on shop entries** (defaults `true`). A datapack can override a registry entry
   but cannot delete one, so removing an item writes `"enabled": false` — which is also why
   nothing is ever destroyed and `restore` always works.
-- **Seven new tests** (20 total), including one that writes an edit to disk and reads it back
+- **Eight new tests** (21 total), including one proving an edit is visible with no reload at
+  all (and that `restore` returns the *original* price), one that writes an edit to disk and reads it back
   through the real world folder, and one asserting **no shipped entry can be bought and
   re-sold at a profit**.
 
