@@ -3,6 +3,33 @@
 All notable changes to Coinkeep. Bump this in the same pass as `PUBLISHING.md` and
 `README.md` — never one alone.
 
+## 1.4.1 — Deepslate ore counts (2026-10-29)
+
+From player feedback that mining deepslate "wasn't actually tracking". It wasn't — and not
+only deepslate.
+
+### Fixed
+- **Every ore quest now counts its deepslate form.** Since 1.17 an ore below y=0 generates as
+  a different block — `minecraft:deepslate_diamond_ore`, not `minecraft:diamond_ore` — and
+  Coinkeep only ever listened for the stone one. All eight ore quests were affected (coal,
+  copper, iron, gold, lapis, redstone, diamond, emerald), and **diamond and redstone were the
+  worst of it**: both generate almost entirely inside the deepslate layer, so those two were
+  close to uncompletable by normal play. Both forms now feed one lifetime total, so a player
+  who mined four of each is seven eighths of the way to eight, not half-done twice.
+- Progress already earned is unaffected — totals are lifetime and nothing is reset.
+
+### Added
+- **`extra_targets`** on a quest: further ids that advance the same quest. The primary
+  `target` still drives the name and icon, so the book still reads "Mine 8x Diamond Ore".
+  Optional and empty by default, so every existing quest JSON loads unchanged.
+- **The content validator now checks block targets.** A `block_break` quest naming a block no
+  mod registers used to look exactly like one nobody had got round to — it rendered, it
+  indexed, it just never moved. It is now an error in the server log on load, which is the
+  check that would have caught this in 1.0.0.
+- **Five GameTests (26 total).** The load-bearing one derives the deepslate variant of every
+  ore quest's target from the block registry rather than a hand-written list, so a ninth
+  variant added by Mojang or a modpack fails here instead of in someone's save.
+
 ## 1.4.0 — Edit the shop without writing a datapack (2026-10-09)
 
 Straight from a player: *"I'm just wondering if there was a way to customise the shop so I

@@ -3,6 +3,9 @@
     "line":  "mining",
     "trigger":  "block_break",
     "target":  "minecraft:gold_ore",
+    "extra_targets":  [
+                          "minecraft:deepslate_gold_ore"
+                      ],
     "count":  16,
     "rewards":  [
                     {

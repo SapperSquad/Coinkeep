@@ -1,4 +1,4 @@
-# Coinkeep — publishing kit (v1.3.0 live; v1.4.0 in progress)
+# Coinkeep — publishing kit (v1.4.0 live; v1.4.1 in progress)
 
 Store copy for the Modrinth / CurseForge project pages, plus the upload plan.
 Bump this file in the same pass as `CHANGELOG.md` and `README.md` — never one alone.
@@ -47,7 +47,27 @@ launch checklist).
 > the new Highroller jar. A 1.1.0 client against a 1.0.0 server (or vice versa) will not
 > agree on the shop-category registry.
 
-## 1.4.0 release state (IN PROGRESS 2026-09-25, branch `main`)
+## 1.4.1 release state (2026-10-29, all three branches)
+
+- **Bug fix release, from player feedback that mining deepslate "wasn't actually tracking".**
+  It wasn't, and not only deepslate: since 1.17 an ore below y=0 is a *different block*
+  (`minecraft:deepslate_diamond_ore`), and all eight ore quests only ever listened for the
+  stone id. Diamond and redstone generate almost entirely inside the deepslate layer, so
+  those two were close to uncompletable by normal play. Shipped broken since 1.0.0.
+- **26/26 GameTests green on all three branches.** The regression test derives each deepslate
+  variant from the block registry rather than a hand-written list, so a future variant fails
+  the build instead of a player's save.
+- **No store-copy change needed.** The body never described ore tracking, and every number in
+  it still audits clean against the jar (180 quests / 10 chapters / 66 entries / 8 categories
+  / 10 dependencies / 18 denominations, $1-$100,000,000). Summary unchanged.
+- **Gallery:** two shots were already stale before this release and still are - the Shop shot
+  reads "Rare 11 items" (it is 12) and the Guide shot shows six topics with truncated labels,
+  from before 1.3.0 fixed the truncation and 1.4.0 added "Make It Your Own" (seven now).
+  Refreshing them needs a live dev client, which needs the machine free.
+- **Version number**: 1.4.1. Adds one optional field (`extra_targets`); every existing
+  datapack and world loads unchanged, and quest totals are lifetime so nothing resets.
+
+## 1.4.0 release state (SHIPPED 2026-10-10, all three versions live)
 
 - **In-game shop editing** (`/coinkeep shop`), from player feedback asking how to add and
   remove items and set prices. Built on `main` (1.21.1) first, then ported to `mc/1.21.11`
@@ -88,10 +108,9 @@ the first restart would bake every edit into the registry permanently. It also m
 with shop edits no longer trips the "experimental settings" warning that the earlier version
 caused.
 
-**Still true and still owed:** the claim "/reload applies changes live" has been wrong on the
-README and BOTH store pages since 1.0.0 - for quests, chapters, shop categories and shop
-entries alike. Corrected in the README; **the store pages still need it** when these jars go
-up.
+**DONE 2026-10-10.** The claim "/reload applies changes live" had been wrong on the README
+and BOTH store pages since 1.0.0 - for quests, chapters, shop categories and shop entries
+alike. Corrected in the README and on both live store pages in the 1.4.0 upload pass.
 
 ## 1.3.0+26.2 release state (verified 2026-08-13, branch `mc/26.2`)
 
@@ -173,78 +192,76 @@ up.
 
 ## Summary (the short-description field)
 
-> Earn it. Bank it. Defend it. 180 quests, a market that reacts to what you sell, banknotes you
-> can hold, and vaults other players can crack open.
-
-**Modrinth summary (max 256 chars):**
+Both stores carry the SAME summary as of 1.4.0 — verified live 2026-10-10.
 
 > A full economy for Minecraft: 180 quests to earn from, a supply-and-demand market, banknotes
-> you can actually hold, and vaults other players can crack open. Every quest and price is JSON,
-> so modpacks can retune anything.
+> you can actually hold, and vaults other players can crack open. Edit the shop from chat -
+> add items and set prices in game, no datapack needed.
+
+(236 chars. Modrinth's limit is 256, CurseForge's is 255.)
 
 ---
 
 ## Project description (paste into the body)
 
+This block is the EXACT copy live on both stores, pulled back from the Modrinth API rather
+than retyped. Re-paste it whole rather than hand-patching either page, and update it here in
+the same pass as `CHANGELOG.md` — it went three releases out of step before 1.4.1, still
+carrying the `/reload` claim that was never true.
+
 # Coinkeep
 
 **Earn it. Bank it. Defend it.**
 
-Most economy mods give you a number in a chat command. Coinkeep gives you **work that pays**, a
-market that **reacts to what you sell**, cash you can **hold in your hand**, and a vault someone
-can **crack open** — a full loop, not a balance field.
+Most economy mods give you a number in a chat command. Coinkeep gives you **work that pays**, a market that **reacts to what you sell**, cash you can **hold in your hand**, and a vault someone can **crack open** — a full loop, not a balance field.
 
 ## Quests — always something paying
 
-**180 quests across 10 chapters**: Mining, Combat, Tools & Armor, Building, Farming, plus one
-chapter per vanilla advancement tab.
+**180 quests across 10 chapters**: Mining, Combat, Tools & Armor, Building, Farming, plus one chapter per vanilla advancement tab.
 
 - Nothing to accept and no NPC to find. Play, and progress tracks itself.
-- **Gathering quests repeat forever** on escalating tiers. Progress is a lifetime total that is
-  never reset — mine 40 iron and all 40 count toward the next threshold.
-- **Almost nothing is gated.** Only 10 dependencies exist in the entire book, and each is a real
-  requirement.
+- **Gathering quests repeat forever** on escalating tiers. Progress is a lifetime total that is never reset — mine 40 iron and all 40 count toward the next threshold.
+- **Almost nothing is gated.** Only 10 dependencies exist in the entire book, and each is a real requirement.
 - Two ladders show progression: within a quest's tiers, and across its whole chapter.
 
 ## The Market — supply and demand
 
-- **Buy** from a categorised catalog, including **Rare** finds (Elytra, Totem, Nether Star) and
-  **Signature** gear — named, pre-enchanted endgame pieces like *The Prospector*.
-- **Sell** your haul. Each sale saturates that item's demand, so it pays a little less than the
-  last, and demand recovers over time. Grinding one block forever stops being worth it, without
-  anything ever being locked.
+- **Buy** from a categorised catalog, including **Rare** finds (Elytra, Totem, Nether Star) and **Signature** gear — named, pre-enchanted endgame pieces like *The Prospector*.
+- **Sell** your haul. Each sale saturates that item's demand, so it pays a little less than the last, and demand recovers over time. Grinding one block forever stops being worth it, without anything ever being locked.
 - Demand is **per player**, so nobody can crash the market for everyone else.
 
 ## Cash you can actually carry
 
-Eighteen denominations, **$1 to $100,000,000**. Real items you can stack in a chest, hand to
-another player, or lose in lava. Your banked balance survives death — **the cash in your pockets
-does not.**
+Eighteen denominations, **$1 to $100,000,000**. Real items you can stack in a chest, hand to another player, or lose in lava. Your banked balance survives death — **the cash in your pockets does not.**
 
 ## Vaults & robbery
 
 - Money in a vault is **never lost on death**.
-- **Only the owner can open it — and only the owner can break it.** A thief can never destroy
-  someone's savings.
-- Break your own and you get **the whole vault back as an item, money still inside.** Place it
-  anywhere and it is all still there.
-- **Carrying a loaded vault is the risk.** It is an ordinary item, so dying drops it — and
-  whoever loots it gets a *locked* vault they will have to crack.
-- A **Vault Cracker** is the only way to rob one. You cannot see how much is inside before you
-  commit. Cracking clears the claim, so the emptied vault is then free to take.
+- **Only the owner can open it — and only the owner can break it.** A thief can never destroy someone's savings.
+- Break your own and you get **the whole vault back as an item, money still inside.** Place it anywhere and it is all still there.
+- **Carrying a loaded vault is the risk.** It is an ordinary item, so dying drops it — and whoever loots it gets a *locked* vault they will have to crack.
+- A **Vault Cracker** is the only way to rob one. You cannot see how much is inside before you commit. Cracking clears the claim, so the emptied vault is then free to take.
 
-## Built for modpacks
+## Change the shop from chat
 
-Every quest, chapter, **shop category** and shop entry is a JSON file in a datapack registry.
-Add, retune or override anything without touching the jar. Items from any other mod work by id.
-`/reload` applies changes live, and content is validated on load so a typo cannot silently
-strand a quest.
+Don't like a price? Change it. Operators can edit the catalog from in game — no datapack to write, nothing to restart:
 
-Companion mods get their **own Shop tab** rather than being dumped into Materials: drop a
-`shop_category` JSON with an id, a name and a sort order, point your entries at it, and the tab
-appears exactly when your mod is installed and disappears with it. **Highroller** (our casino
-mod) is the worked example — its 90 machines, tables and decor blocks all sell from a
-Highroller tab of their own.
+- `/coinkeep shop add <price>` lists **the item you are holding**, keeping its stack size, custom name and enchantments — so a named, enchanted sword sells as that exact sword.
+- `/coinkeep shop price`, `sellprice`, `count`, `limit` and `category` adjust anything already in the catalog.
+- `/coinkeep shop remove` takes an item out; `restore` and `restoreall` put things back exactly as they shipped.
+- Ids tab-complete, and `/coinkeep shop list` shows every tab and id.
+
+**Changes apply instantly, for everyone** — no reload, no restart. Your edits are saved as ordinary JSON in your world folder, laid out as a datapack, so you can copy them into another world, send them to someone, or open and hand-edit them. Nothing is ever destroyed: removing an item hides it, which is why restore always works.
+
+One rule is enforced. Nothing may sell for at least what it costs to buy, because that would let anyone buy an item and sell it straight back forever. Edits that would do it are refused with an explanation.
+
+## Built for modpacks — and for your own world
+
+Every quest, chapter, **shop category** and shop entry is a JSON file in a datapack registry. Add, retune or override anything without touching the jar. Items from any other mod work by id, and content is validated on load so a typo cannot silently strand a quest.
+
+Datapack edits are picked up when a world loads. (Minecraft builds datapack registries once, as the world opens, so `/reload` rebuilds recipes and loot but cannot rebuild these — the in-game commands above are the instant route.)
+
+Companion mods get their **own Shop tab** rather than being dumped into Materials: drop a `shop_category` JSON with an id, a name and a sort order, point your entries at it, and the tab appears exactly when your mod is installed and disappears with it. **Highroller** (our casino mod) is the worked example — its 90 machines, tables and decor blocks all sell from a Highroller tab of their own.
 
 ## Commands
 
@@ -255,10 +272,12 @@ Highroller tab of their own.
 | `/pay` | send money to another player |
 | `/withdraw` · `/depositall` | convert balance to and from banknotes |
 | `/addbalance` | operator payouts |
+| `/coinkeep shop` | operator; add, remove and reprice the catalog |
 | *keys* | **J** Ledger · **K** straight to the Shop (both rebindable) |
 
-Built for **NeoForge 1.21.1**. Balances, quest progress and market demand are stored per player
-as data attachments — nothing to migrate, nothing to corrupt, and no custom packets.
+## Versions
+
+Available for **Minecraft 1.21.1, 1.21.11 and 26.2** — NeoForge on all three, same features everywhere (the 26.2 build runs on Java 25, as all of Minecraft 26.x does). Balances, quest progress and market demand are stored per player as data attachments, with no custom packets anywhere.
 
 ---
 
@@ -282,6 +301,26 @@ with demand bars visible, a chest full of mixed denominations, and a vault being
 **Any art stating a count (180 quests, 66 shop entries, 18 denominations) must be re-checked
 every release.** Images cannot be grepped, so they go stale invisibly. Regenerate with
 `scratchpad/gen-coinkeep-promo.ps1`.
+
+---
+
+## Changelog for the 1.4.1 upload
+
+Paste as-is into the version's changelog field on both stores.
+
+**1.4.1 — Deepslate ore counts.**
+
+Straight from a player: *"deepslate wasn't actually tracking properly."* It wasn't — and not just deepslate.
+
+Since Minecraft 1.17, an ore below y=0 is a **different block**: `deepslate_diamond_ore`, not `diamond_ore`. Coinkeep only ever listened for the stone one, so **all eight ore quests were blind to the deepslate half** — coal, copper, iron, gold, lapis, redstone, diamond and emerald.
+
+Diamond and redstone are the worst of it. Both generate almost entirely inside the deepslate layer, so those two quests were close to uncompletable by normal play. That has been true since 1.0.0.
+
+**Both forms now feed one lifetime total**, so four stone and three deepslate iron is seven eighths of the way to eight, not half-done twice. Progress you have already earned is untouched — totals are lifetime and nothing is reset.
+
+**Also fixed:** a quest naming a block that does not exist used to be completely silent — it rendered, it indexed, it just never moved. That is now an error in the server log when the world loads, which is the check that would have caught this three months ago.
+
+**For modpacks:** quests gained an optional `extra_targets` list — more ids that advance the same quest and share its total. The primary `target` still drives the name and icon. Every existing quest JSON loads unchanged.
 
 ---
 

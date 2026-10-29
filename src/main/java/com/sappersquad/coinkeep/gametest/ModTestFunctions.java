@@ -74,6 +74,18 @@ public final class ModTestFunctions {
                 () -> ShopEditGameTests::editingOneFieldLeavesTheRestUntouched);
         TEST_FUNCTIONS.register("shopedit_edit_visible_without_any_reload",
                 () -> ShopEditGameTests::anEditIsVisibleWithoutAnyReload);
+
+        // Ore variant coverage (OreVariantGameTests)
+        TEST_FUNCTIONS.register("ore_every_block_break_target_is_a_real_block",
+                () -> OreVariantGameTests::everyBlockBreakTargetIsARealBlock);
+        TEST_FUNCTIONS.register("ore_every_ore_quest_counts_its_deepslate_variant",
+                () -> OreVariantGameTests::everyOreQuestAlsoCountsItsDeepslateVariant);
+        TEST_FUNCTIONS.register("ore_breaking_deepslate_hits_its_quest",
+                () -> OreVariantGameTests::breakingDeepslateHitsItsQuest);
+        TEST_FUNCTIONS.register("ore_breaking_deepslate_diamond_hits_diamond_quest",
+                () -> OreVariantGameTests::breakingDeepslateDiamondOreHitsTheDiamondQuest);
+        TEST_FUNCTIONS.register("ore_both_forms_feed_the_same_quest",
+                () -> OreVariantGameTests::bothOreFormsFeedTheSameQuest);
     }
 
     private ModTestFunctions() {

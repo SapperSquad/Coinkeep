@@ -4,6 +4,9 @@
     "description":  "The real payday.",
     "trigger":  "block_break",
     "target":  "minecraft:diamond_ore",
+    "extra_targets":  [
+                          "minecraft:deepslate_diamond_ore"
+                      ],
     "count":  8,
     "rewards":  [
                     {

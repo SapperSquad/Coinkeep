@@ -152,7 +152,8 @@ public class QuestEvents {
         }
     }
 
-    private static String blockId(BlockState state) {
+    /** Public so a GameTest can assert against the REAL conversion, not a copy. */
+    public static String blockId(BlockState state) {
         Identifier key = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         return key == null ? "" : key.toString();
     }
