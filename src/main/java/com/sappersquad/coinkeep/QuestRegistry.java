@@ -63,9 +63,14 @@ public class QuestRegistry {
         registry.stream().sorted(Comparator.comparing(Quest::id)).forEach(quest -> {
             ids.put(quest.id(), quest);
             lines.computeIfAbsent(quest.lineId(), key -> new ArrayList<>()).add(quest);
-            triggers.computeIfAbsent(quest.triggerType(), key -> new LinkedHashMap<>())
-                    .computeIfAbsent(quest.triggerTarget(), key -> new ArrayList<>())
-                    .add(quest);
+            // Every id the quest answers to, not just the primary one - an ore
+            // has a deepslate form, and both have to land on the same quest so
+            // they feed one lifetime total.
+            Map<String, List<Quest>> forType = triggers
+                    .computeIfAbsent(quest.triggerType(), key -> new LinkedHashMap<>());
+            for (String target : quest.allTargets()) {
+                forType.computeIfAbsent(target, key -> new ArrayList<>()).add(quest);
+            }
         });
 
         cachedQuestRegistry = registry;
@@ -149,6 +154,20 @@ public class QuestRegistry {
             }
             if (quest.requiredCount() < 1) {
                 problems.add("Quest '" + quest.id() + "' has a required count below 1");
+            }
+            // A block_break quest naming a block that does not exist looks
+            // exactly like one nobody has got round to: it renders, it
+            // indexes, it just never moves. That is how every ore quest
+            // shipped blind to its deepslate variant - so say it out loud.
+            if (quest.triggerType() == TriggerType.BLOCK_BREAK) {
+                for (String target : quest.allTargets()) {
+                    net.minecraft.resources.Identifier id =
+                            net.minecraft.resources.Identifier.tryParse(target);
+                    if (id == null || !net.minecraft.core.registries.BuiltInRegistries.BLOCK.containsKey(id)) {
+                        problems.add("Quest '" + quest.id() + "' mines '" + target
+                                + "', which is not a block any mod registers - it can never progress");
+                    }
+                }
             }
         }
 

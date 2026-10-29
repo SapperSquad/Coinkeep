@@ -3,6 +3,9 @@
     "line":  "mining",
     "trigger":  "block_break",
     "target":  "minecraft:emerald_ore",
+    "extra_targets":  [
+                          "minecraft:deepslate_emerald_ore"
+                      ],
     "count":  4,
     "rewards":  [
                     {

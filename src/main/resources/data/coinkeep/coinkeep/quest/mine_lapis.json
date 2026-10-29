@@ -3,6 +3,9 @@
     "line":  "mining",
     "trigger":  "block_break",
     "target":  "minecraft:lapis_ore",
+    "extra_targets":  [
+                          "minecraft:deepslate_lapis_ore"
+                      ],
     "count":  16,
     "rewards":  [
                     {

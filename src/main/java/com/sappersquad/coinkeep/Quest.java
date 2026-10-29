@@ -25,6 +25,14 @@ import java.util.Optional;
  *
  * @param dependencies ids of quests that must be completed first. Empty means
  *                     the quest is available immediately.
+ * @param extraTargets further ids that fire the same quest, feeding ONE
+ *                     lifetime total. This exists because an ore is not one
+ *                     block any more: diamond below y=0 is
+ *                     {@code deepslate_diamond_ore}, a different id, and
+ *                     without this those breaks counted for nothing. The
+ *                     primary {@code target} still drives the quest's name
+ *                     and icon, so the book reads "Mine 8x Diamond Ore"
+ *                     rather than listing every form.
  */
 public record Quest(
         String id,
@@ -35,12 +43,31 @@ public record Quest(
         List<String> dependencies,
         TriggerType triggerType,
         String triggerTarget,
+        List<String> extraTargets,
         int requiredCount,
         List<QuestReward> rewards,
         int maxTier,
         double targetGrowth,
         double rewardGrowth
 ) {
+    /**
+     * Every id that advances this quest, primary first, without duplicates.
+     * This is what the trigger index is built from.
+     */
+    public List<String> allTargets() {
+        if (extraTargets.isEmpty()) {
+            return List.of(triggerTarget);
+        }
+        List<String> all = new java.util.ArrayList<>(extraTargets.size() + 1);
+        all.add(triggerTarget);
+        for (String extra : extraTargets) {
+            if (!all.contains(extra)) {
+                all.add(extra);
+            }
+        }
+        return List.copyOf(all);
+    }
+
     /**
      * Progress is a LIFETIME running total that is never reset - clearing a
      * tier just raises the bar. So a player who has mined 40 iron still has
@@ -94,16 +121,21 @@ public record Quest(
             Codec.STRING.listOf().optionalFieldOf("dependencies", List.of()).forGetter(Quest::dependencies),
             TriggerType.CODEC.fieldOf("trigger").forGetter(Quest::triggerType),
             Codec.STRING.fieldOf("target").forGetter(Quest::triggerTarget),
+            // Optional and empty by default, so every pre-1.5.0 quest JSON -
+            // shipped or hand-written by a modpack - still loads unchanged.
+            Codec.STRING.listOf().optionalFieldOf("extra_targets", List.of())
+                    .forGetter(Quest::extraTargets),
             Codec.INT.optionalFieldOf("count", 1).forGetter(Quest::requiredCount),
             QuestReward.CODEC.listOf().optionalFieldOf("rewards", List.of()).forGetter(Quest::rewards),
             // 1 = one-shot (the default), 0 = repeats forever, N = caps at N.
             Codec.INT.optionalFieldOf("max_tier", 1).forGetter(Quest::maxTier),
             Codec.DOUBLE.optionalFieldOf("target_growth", 1.5).forGetter(Quest::targetGrowth),
             Codec.DOUBLE.optionalFieldOf("reward_growth", 1.5).forGetter(Quest::rewardGrowth)
-    ).apply(instance, (id, line, name, description, icon, dependencies, trigger, target, count, rewards,
-                       maxTier, targetGrowth, rewardGrowth) ->
+    ).apply(instance, (id, line, name, description, icon, dependencies, trigger, target, extraTargets,
+                       count, rewards, maxTier, targetGrowth, rewardGrowth) ->
             new Quest(id, line, name.orElse(null), description.orElse(null), icon.orElse(null),
-                    dependencies, trigger, target, count, rewards, maxTier, targetGrowth, rewardGrowth)));
+                    dependencies, trigger, target, extraTargets, count, rewards, maxTier,
+                    targetGrowth, rewardGrowth)));
 
     /** Never blank - falls back to a generated description of the trigger. */
     public String resolveName() {

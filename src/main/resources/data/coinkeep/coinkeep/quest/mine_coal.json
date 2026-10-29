@@ -3,6 +3,9 @@
     "line":  "mining",
     "trigger":  "block_break",
     "target":  "minecraft:coal_ore",
+    "extra_targets":  [
+                          "minecraft:deepslate_coal_ore"
+                      ],
     "count":  32,
     "rewards":  [
                     {
