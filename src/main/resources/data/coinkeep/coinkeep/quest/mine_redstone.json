@@ -3,6 +3,9 @@
     "line":  "mining",
     "trigger":  "block_break",
     "target":  "minecraft:redstone_ore",
+    "extra_targets":  [
+                          "minecraft:deepslate_redstone_ore"
+                      ],
     "count":  16,
     "rewards":  [
                     {

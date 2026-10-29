@@ -166,14 +166,23 @@ nothing ever renders unnamed or icon-less:
   "line": "mining",
   "trigger": "block_break",
   "target": "minecraft:coal_ore",
+  "extra_targets": [ "minecraft:deepslate_coal_ore" ],
   "count": 32,
   "rewards": [ { "type": "money", "amount": 200 } ]
 }
 ```
 
 **Quest fields:** `trigger` is one of `block_break`, `mob_kill`, `item_craft`, `advancement`.
-Optional: `name`, `description`, `icon`, `dependencies`, `max_tier` (1 = one-shot,
-0 = repeats forever), `target_growth`, `reward_growth`.
+Optional: `name`, `description`, `icon`, `dependencies`, `extra_targets`, `max_tier`
+(1 = one-shot, 0 = repeats forever), `target_growth`, `reward_growth`.
+
+`extra_targets` lists further ids that advance the **same** quest, feeding one lifetime
+total. It exists because an ore is not one block any more — diamond below y=0 is
+`minecraft:deepslate_diamond_ore`, a different id — and it is the right tool whenever a
+modpack wants one quest to accept several forms of the same thing. The primary `target`
+still drives the quest's name and icon, so the book reads "Mine 32x Coal Ore" rather than
+listing every form. Coinkeep's content validator now refuses to stay quiet about a
+`block_break` target no mod registers; check the server log on load if a quest never moves.
 
 **Reward types** — every reward states what it gives, so a command reward never renders as
 the bare word "command":
